@@ -7,8 +7,11 @@
  * No es SM-2, pero evita la mentira de "dominado para siempre" con 3 aciertos
  * seguidos en un minuto.
  */
-import { getDb } from '../db.ts';
+import { getDb, getSetting, setSetting } from '../db.ts';
 import { getUnit, getNextUnit, UNITS, type Unit } from './units.ts';
+import { JLPT_GOAL_LEVELS, type JlptGoalLevel } from './goal-levels.ts';
+
+export { JLPT_GOAL_LEVELS, type JlptGoalLevel };
 
 const MASTER_STREAK = 5;
 const MAX_INTERVAL_DAYS = 16;
@@ -172,6 +175,46 @@ export function checkAndUnlockNext(unitId: string): void {
     `INSERT INTO curriculum_unit_progress (unit_id, status) VALUES (?, 'available')
      ON CONFLICT(unit_id) DO NOTHING`,
   ).run(next.id);
+}
+
+const LEVEL_ORDER: Unit['level'][] = ['hiragana', 'katakana', 'N5', 'N4', 'N3', 'N2', 'N1'];
+
+/**
+ * Progreso acumulado hacia una meta JLPT: todo lo que hay que dominar desde
+ * el principio del curriculum hasta ese nivel incluido (el curriculum es
+ * secuencial, no tiene sentido medir el nivel meta aislado del resto).
+ */
+export function getGoalProgress(goalLevel: JlptGoalLevel): { mastered: number; total: number } {
+  const goalIndex = LEVEL_ORDER.indexOf(goalLevel);
+  const relevantUnits = UNITS.filter((u) => LEVEL_ORDER.indexOf(u.level) <= goalIndex);
+  const unitIds = relevantUnits.map((u) => u.id);
+  const total = relevantUnits.reduce((sum, u) => sum + u.items.length, 0);
+  if (unitIds.length === 0 || total === 0) return { mastered: 0, total: 0 };
+
+  const placeholders = unitIds.map(() => '?').join(',');
+  const mastered = (
+    getDb()
+      .prepare(
+        `SELECT count(*) c FROM curriculum_item_progress
+         WHERE mastered = 1 AND unit_id IN (${placeholders})`,
+      )
+      .get(...unitIds) as { c: number }
+  ).c;
+
+  return { mastered, total };
+}
+
+export type JlptGoal = { level: JlptGoalLevel; targetDate: string | null };
+
+export function getGoal(): JlptGoal | null {
+  const level = getSetting('jlpt_goal_level');
+  if (!level || !(JLPT_GOAL_LEVELS as readonly string[]).includes(level)) return null;
+  return { level: level as JlptGoalLevel, targetDate: getSetting('jlpt_goal_date') || null };
+}
+
+export function setGoal(level: JlptGoalLevel, targetDate: string | null): void {
+  setSetting('jlpt_goal_level', level);
+  setSetting('jlpt_goal_date', targetDate ?? '');
 }
 
 export function startSession(unitId: string): number {

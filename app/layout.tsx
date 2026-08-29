@@ -38,6 +38,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 Anki
               </Link>
               <Link
+                href="/progreso"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Progreso
+              </Link>
+              <Link
                 href="/ajustes"
                 className="text-sm text-muted-foreground hover:text-foreground"
               >

@@ -14,7 +14,6 @@ const DICT_DB_PATH = path.join(DATA_DIR, 'jmdict.db');
 /**
  * Migraciones. Cada índice del array = una versión de schema (PRAGMA user_version).
  * Solo se agregan al final, nunca se editan las ya aplicadas.
- * Las tablas de Fase 2 (study_logs, grammar_explanations) NO van acá todavía.
  */
 const MIGRATIONS: string[] = [
   // v1 — Fase 1 completa
@@ -107,6 +106,17 @@ const MIGRATIONS: string[] = [
     correct_count INTEGER NOT NULL DEFAULT 0,
     total_count   INTEGER NOT NULL DEFAULT 0
   );
+  `,
+  // v3 — Fase 2: registro de actividad de estudio (dashboard, rachas)
+  `
+  CREATE TABLE study_logs (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    activity   TEXT NOT NULL CHECK (activity IN ('mining','anki_review','curriculum')),
+    minutes    INTEGER,
+    notes      TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX idx_study_logs_date ON study_logs(date(created_at));
   `,
 ];
 
