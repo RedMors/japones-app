@@ -37,6 +37,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/anki" className="text-sm text-muted-foreground hover:text-foreground">
                 Anki
               </Link>
+              <Link
+                href="/ajustes"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Ajustes
+              </Link>
             </div>
           </nav>
           {children}

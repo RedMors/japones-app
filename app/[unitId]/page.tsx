@@ -5,7 +5,7 @@ import { buildSession } from '@/lib/curriculum/exercises';
 import { SessionRunner } from '@/components/curriculum/session-runner';
 import { LockedUnit } from '@/components/curriculum/locked-unit';
 import { NothingDue } from '@/components/curriculum/nothing-due';
-import { beginSession, submitAnswer, endSession } from './actions';
+import { beginSession, submitAnswer, endSession, explainGrammar } from './actions';
 
 const REVIEW_SESSION_SIZE = 10;
 
@@ -56,6 +56,7 @@ export default async function UnitPage({
         beginSession={beginSession}
         submitAnswer={submitAnswer}
         endSession={endSession}
+        explainGrammar={unit.id.startsWith('grammar-') ? explainGrammar : undefined}
         readOnly={isReview}
       />
     </main>

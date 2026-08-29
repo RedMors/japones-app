@@ -13,17 +13,51 @@ import type { DictEntry } from '@/lib/dictionary';
 
 const DEBOUNCE_MS = 250;
 
+type SpokenRange = { key: string; start: number; end: number };
+
+function entryKey(entry: DictEntry): string {
+  return `${entry.lemma}-${entry.glosses}`;
+}
+
+// Resalta el tramo de `reading` que se está pronunciando en este instante
+// (estilo Duolingo). `range` viene de SpeechSynthesisUtterance.onboundary —
+// soporte irregular entre navegadores, por eso siempre hay texto de fallback.
+function renderSpokenReading(reading: string, range: SpokenRange | null) {
+  if (!range || range.start < 0) return reading;
+
+  return Array.from(reading).map((char, i) => (
+    <span
+      key={i}
+      className={i >= range.start && i < range.end ? 'text-foreground font-semibold' : undefined}
+    >
+      {char}
+    </span>
+  ));
+}
+
 export function SearchBox({ search }: { search: typeof searchAction }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<DictEntry[]>([]);
   const [searched, setSearched] = useState(false);
   const [, startTransition] = useTransition();
+  const [spoken, setSpoken] = useState<SpokenRange | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ttsAvailable = useRef(false);
 
   useEffect(() => {
     ttsAvailable.current = isTtsAvailable();
   }, []);
+
+  function handleSpeak(entry: DictEntry) {
+    const key = entryKey(entry);
+    const text = entry.reading || entry.lemma;
+    setSpoken({ key, start: -1, end: -1 });
+    speakJapanese(text, {
+      onBoundary: (charIndex, charLength) =>
+        setSpoken({ key, start: charIndex, end: charIndex + charLength }),
+      onEnd: () => setSpoken(null),
+    });
+  }
 
   function handleChange(value: string) {
     setQuery(value);
@@ -66,13 +100,18 @@ export function SearchBox({ search }: { search: typeof searchAction }) {
 
       <div className="space-y-2">
         {results.map((entry) => (
-          <Card key={`${entry.lemma}-${entry.glosses}`}>
+          <Card key={entryKey(entry)}>
             <CardContent className="flex items-start gap-3 py-4">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-baseline gap-2">
                   <span className="jp text-xl">{entry.lemma}</span>
                   {entry.reading && (
-                    <span className="text-sm text-muted-foreground">{entry.reading}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {renderSpokenReading(
+                        entry.reading,
+                        spoken?.key === entryKey(entry) ? spoken : null,
+                      )}
+                    </span>
                   )}
                   {entry.reading && (
                     <span className="text-xs text-muted-foreground">
@@ -91,7 +130,7 @@ export function SearchBox({ search }: { search: typeof searchAction }) {
                 variant="ghost"
                 size="icon"
                 className="shrink-0 text-muted-foreground"
-                onClick={() => speakJapanese(entry.lemma)}
+                onClick={() => handleSpeak(entry)}
                 title="Escuchar"
               >
                 <Volume2 className="size-4" />

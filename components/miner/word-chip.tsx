@@ -3,10 +3,11 @@
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Check, Loader2, X } from 'lucide-react';
+import { Check, Loader2, Volume2, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { speakJapanese } from '@/lib/tts';
 import type { MinedWordRow } from '@/lib/miner';
 import type { addWordToAnki, skipWord } from '@/app/miner/actions';
 
@@ -76,6 +77,15 @@ export function WordChip({ word, addAction, skipAction }: Props) {
         </span>
       </div>
       <div className="ml-1 flex gap-1">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="size-7 text-muted-foreground"
+          onClick={() => speakJapanese(word.reading || word.lemma)}
+          title="Escuchar"
+        >
+          <Volume2 className="size-4" />
+        </Button>
         <Button
           size="icon"
           variant="ghost"

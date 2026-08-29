@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Check, X, PartyPopper, Volume2 } from 'lucide-react';
+import { Check, X, PartyPopper, Volume2, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,7 +12,7 @@ import { speakJapanese } from '@/lib/tts';
 import { stripFurigana } from '@/lib/curriculum/furigana';
 import { FuriganaText } from '@/components/curriculum/furigana-text';
 import type { MultipleChoiceQuestion } from '@/lib/curriculum/exercises';
-import type { beginSession, submitAnswer, endSession } from '@/app/[unitId]/actions';
+import type { beginSession, submitAnswer, endSession, explainGrammar } from '@/app/[unitId]/actions';
 
 type Props = {
   unitId: string;
@@ -21,6 +21,8 @@ type Props = {
   beginSession: typeof beginSession;
   submitAnswer: typeof submitAnswer;
   endSession: typeof endSession;
+  /** Solo se pasa en unidades de gramática — ahí tiene sentido pedir el "por qué". */
+  explainGrammar?: typeof explainGrammar;
   /** Repaso libre: no persiste sesión ni progreso, es solo un autochequeo. */
   readOnly?: boolean;
 };
@@ -32,24 +34,25 @@ export function SessionRunner({
   beginSession,
   submitAnswer,
   endSession,
+  explainGrammar,
   readOnly = false,
 }: Props) {
   const router = useRouter();
   const [, startTransition] = useTransition();
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [isExplaining, startExplainTransition] = useTransition();
 
-  // La sesión se crea en un efecto, no durante el render: el render de un
-  // Server o Client Component puede repetirse (prefetch de Link,
-  // revalidaciones, Strict Mode), y cada repetición insertaría una sesión
-  // fantasma si el side effect viviera ahí. El ref evita el doble disparo del
-  // efecto que Strict Mode hace a propósito en desarrollo.
+  // La sesión se crea recién con la primera respuesta, no al montar: si la
+  // unidad monta dos veces sin que el usuario llegue a contestar nada
+  // (doble-click, recarga a mitad de carga), antes quedaba una sesión
+  // huérfana (0/0, nunca termina) en curriculum_sessions. Creándola on-demand,
+  // sin interacción no hay sesión que crear.
   const sessionIdPromise = useRef<Promise<number> | null>(null);
-  const startedRef = useRef(false);
-  useEffect(() => {
-    if (readOnly || startedRef.current) return;
-    startedRef.current = true;
-    sessionIdPromise.current = beginSession(unitId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [readOnly]);
+  function ensureSession(): Promise<number> | null {
+    if (readOnly) return null;
+    if (!sessionIdPromise.current) sessionIdPromise.current = beginSession(unitId);
+    return sessionIdPromise.current;
+  }
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
@@ -70,13 +73,24 @@ export function SessionRunner({
     setSelected(choice);
     if (isCorrect) setCorrectCount((c) => c + 1);
     if (!readOnly) {
+      ensureSession();
       startTransition(() => {
         void submitAnswer(unitId, question.itemId, isCorrect);
       });
     }
   }
 
+  function handleExplain() {
+    if (!explainGrammar) return;
+    setExplanation(null);
+    startExplainTransition(async () => {
+      const text = await explainGrammar(question.prompt, question.answer, question.subtext);
+      setExplanation(text);
+    });
+  }
+
   function handleContinue() {
+    setExplanation(null);
     const isLast = index + 1 >= totalQuestions;
     if (!isLast) {
       setIndex((i) => i + 1);
@@ -205,6 +219,30 @@ export function SessionRunner({
           </div>
         </CardContent>
       </Card>
+
+      {selected && explainGrammar && (
+        <div className="space-y-3">
+          {explanation === null ? (
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={handleExplain}
+              disabled={isExplaining}
+            >
+              {isExplaining ? (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : (
+                <Sparkles className="mr-2 size-4" />
+              )}
+              {isExplaining ? 'Pensando...' : '¿Por qué? (explicar con IA)'}
+            </Button>
+          ) : (
+            <p className="rounded-lg border bg-muted/50 p-4 text-sm text-muted-foreground">
+              {explanation}
+            </p>
+          )}
+        </div>
+      )}
 
       {selected && (
         <Button className="w-full" size="lg" onClick={handleContinue}>

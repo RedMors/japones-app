@@ -220,6 +220,74 @@ export async function extractWords(
   return out;
 }
 
+const HAS_KANJI_RE = /[一-鿿㐀-䶿々]/;
+const LEADING_KANA_RE = /^[ぁ-ゟー]+/;
+const TRAILING_KANA_RE = /[ぁ-ゟー]+$/;
+
+/**
+ * Anota un token con furigana solo sobre su parte kanji, dejando afuera de
+ * los corchetes tanto el okurigana (terminación en hiragana de verbos/
+ * adjetivos: 食べる -> 食[た]べる) como el prefijo honorífico お/ご
+ * (お願いします -> お願[ねが]いします, no お願[おねが]いします — sin
+ * despegar el prefijo, la lectura completa おねが quedaba puesta sobre 願
+ * mientras la お de al lado se mostraba de nuevo como texto plano, duplicada
+ * visualmente). Misma convención que el contenido de gramática/vocabulario
+ * escrito a mano (ver grammar-data.ts), donde el furigana solo cubre el kanji.
+ */
+function annotateToken(surface: string, readingHiragana: string): string {
+  if (!HAS_KANJI_RE.test(surface)) return surface;
+  if (readingHiragana === surface) return surface;
+
+  const leadingMatch = surface.match(LEADING_KANA_RE);
+  const leading = leadingMatch ? leadingMatch[0] : '';
+  // Si el prefijo no calza con el arranque de la lectura, es un caso raro
+  // donde no se puede separar con confianza: se anota la palabra entera.
+  if (leading && !readingHiragana.startsWith(leading)) {
+    return `${surface}[${readingHiragana}]`;
+  }
+  const afterLeading = surface.slice(leading.length);
+  const readingAfterLeading = leading ? readingHiragana.slice(leading.length) : readingHiragana;
+
+  const trailingMatch = afterLeading.match(TRAILING_KANA_RE);
+  const trailing = trailingMatch ? trailingMatch[0] : '';
+  const kanjiPart = trailing ? afterLeading.slice(0, -trailing.length) : afterLeading;
+
+  if (!kanjiPart) return `${surface}[${readingHiragana}]`;
+
+  if (trailing && readingAfterLeading.endsWith(trailing)) {
+    const readingPart = readingAfterLeading.slice(0, -trailing.length);
+    return `${leading}${kanjiPart}[${readingPart}]${trailing}`;
+  }
+
+  // Okurigana no calza con la lectura (irregular) o no hay okurigana: se
+  // anota el resto entero (con prefijo ya separado), sigue siendo válido
+  // para parseFurigana.
+  return `${leading}${kanjiPart}[${readingAfterLeading}]`;
+}
+
+/**
+ * Anota una oración completa con furigana por token: "店長は毎日ラーメンを
+ * 食べる" -> "店長[てんちょう]は毎日[まいにち]ラーメンを食[た]べる",
+ * formato que entiende `parseFurigana`. A diferencia de `extractWords`, acá
+ * se anota TODO lo que tiene kanji, no solo el vocabulario nuevo — sirve para
+ * mostrar la oración entera legible, no para minar.
+ */
+export async function annotateFurigana(text: string): Promise<string> {
+  if (!text.trim() || !HAS_KANJI_RE.test(text)) return text;
+
+  const tokens = await tokenizeRaw(text);
+  return tokens
+    .map((token) => {
+      const surface = token.surface_form;
+      if (!HAS_KANJI_RE.test(surface)) return surface;
+      const reading =
+        token.reading && token.reading !== '*' ? katakanaToHiragana(token.reading) : null;
+      if (!reading) return surface;
+      return annotateToken(surface, reading);
+    })
+    .join('');
+}
+
 /**
  * Varias líneas de una vez. Devuelve los candidatos por línea, conservando el
  * índice original para poder mapear cada palabra a su oración y timestamp.
