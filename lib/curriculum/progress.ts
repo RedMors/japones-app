@@ -1,0 +1,192 @@
+/**
+ * Progreso del curriculum: qué ítems domina el usuario, qué unidades están
+ * desbloqueadas, y el registro de sesiones para el resumen al terminar.
+ *
+ * Repetición espaciada tipo Leitner simplificado: cada acierto duplica el
+ * intervalo hasta el tope de 16 días; un error lo resetea a "disponible ya".
+ * No es SM-2, pero evita la mentira de "dominado para siempre" con 3 aciertos
+ * seguidos en un minuto.
+ */
+import { getDb } from '../db.ts';
+import { getUnit, getNextUnit, UNITS, type Unit } from './units.ts';
+
+const MASTER_STREAK = 5;
+const MAX_INTERVAL_DAYS = 16;
+const ITEMS_PER_SESSION = 10;
+
+function intervalForStreak(streak: number): number {
+  if (streak <= 0) return 0;
+  return Math.min(2 ** (streak - 1), MAX_INTERVAL_DAYS);
+}
+
+type ItemProgressRow = {
+  item_id: string;
+  unit_id: string;
+  correct_streak: number;
+  seen_count: number;
+  interval_days: number;
+  next_review_at: string;
+  mastered: number;
+  last_seen_at: string | null;
+};
+
+export type UnitStatus = 'locked' | 'available' | 'completed';
+
+export function getUnitStatus(unitId: string): UnitStatus {
+  const row = getDb()
+    .prepare('SELECT status FROM curriculum_unit_progress WHERE unit_id = ?')
+    .get(unitId) as { status: UnitStatus } | undefined;
+  if (row) return row.status;
+  // Sin registro todavía: la primera unidad arranca disponible, el resto bloqueada.
+  return UNITS[0]?.id === unitId ? 'available' : 'locked';
+}
+
+/**
+ * Todas las unidades con su estado y progreso, en 2 queries en total en vez
+ * de 2 por unidad — con 400+ unidades esa diferencia es real.
+ */
+export function listUnitsWithStatus(): (Unit & { status: UnitStatus; masteredCount: number })[] {
+  const db = getDb();
+
+  const statusRows = db
+    .prepare('SELECT unit_id, status FROM curriculum_unit_progress')
+    .all() as { unit_id: string; status: UnitStatus }[];
+  const statusByUnit = new Map(statusRows.map((r) => [r.unit_id, r.status]));
+
+  const masteredRows = db
+    .prepare(
+      'SELECT unit_id, count(*) c FROM curriculum_item_progress WHERE mastered = 1 GROUP BY unit_id',
+    )
+    .all() as { unit_id: string; c: number }[];
+  const masteredByUnit = new Map(masteredRows.map((r) => [r.unit_id, r.c]));
+
+  return UNITS.map((unit) => ({
+    ...unit,
+    status: statusByUnit.get(unit.id) ?? (UNITS[0]?.id === unit.id ? 'available' : 'locked'),
+    masteredCount: masteredByUnit.get(unit.id) ?? 0,
+  }));
+}
+
+function getItemProgress(itemId: string): ItemProgressRow | undefined {
+  return getDb()
+    .prepare('SELECT * FROM curriculum_item_progress WHERE item_id = ?')
+    .get(itemId) as ItemProgressRow | undefined;
+}
+
+/**
+ * Ítems para la próxima sesión: primero los nunca vistos (para ir avanzando
+ * contenido nuevo), después los que ya vencieron su repaso. Nunca mezcla
+ * ítems que todavía no vencieron — eso sería repasar sin necesidad.
+ */
+export function getSessionItems(unitId: string): { id: string; prompt: string; answer: string; group: string }[] {
+  const unit = getUnit(unitId);
+  if (!unit) return [];
+
+  const db = getDb();
+  const seen = new Set(
+    (
+      db
+        .prepare('SELECT item_id FROM curriculum_item_progress WHERE unit_id = ?')
+        .all(unitId) as { item_id: string }[]
+    ).map((r) => r.item_id),
+  );
+
+  const neverSeen = unit.items.filter((i) => !seen.has(i.id));
+  if (neverSeen.length > 0) return neverSeen.slice(0, ITEMS_PER_SESSION);
+
+  const dueIds = new Set(
+    (
+      db
+        .prepare(
+          `SELECT item_id FROM curriculum_item_progress
+           WHERE unit_id = ? AND mastered = 0 AND next_review_at <= datetime('now')`,
+        )
+        .all(unitId) as { item_id: string }[]
+    ).map((r) => r.item_id),
+  );
+
+  return unit.items.filter((i) => dueIds.has(i.id)).slice(0, ITEMS_PER_SESSION);
+}
+
+export function recordAnswer(unitId: string, itemId: string, correct: boolean): void {
+  const existing = getItemProgress(itemId);
+  const prevStreak = existing?.correct_streak ?? 0;
+  const streak = correct ? prevStreak + 1 : 0;
+  const intervalDays = intervalForStreak(streak);
+  const mastered = streak >= MASTER_STREAK ? 1 : 0;
+
+  getDb()
+    .prepare(
+      `INSERT INTO curriculum_item_progress
+         (item_id, unit_id, correct_streak, seen_count, interval_days, next_review_at, mastered, last_seen_at)
+       VALUES (@itemId, @unitId, @streak, 1, @intervalDays,
+               datetime('now', @intervalOffset), @mastered, datetime('now'))
+       ON CONFLICT(item_id) DO UPDATE SET
+         correct_streak = @streak,
+         seen_count = seen_count + 1,
+         interval_days = @intervalDays,
+         next_review_at = datetime('now', @intervalOffset),
+         mastered = @mastered,
+         last_seen_at = datetime('now')`,
+    )
+    .run({
+      itemId,
+      unitId,
+      streak,
+      intervalDays,
+      intervalOffset: `+${intervalDays} days`,
+      mastered,
+    });
+}
+
+export function isUnitComplete(unitId: string): boolean {
+  const unit = getUnit(unitId);
+  if (!unit || unit.items.length === 0) return false;
+
+  const masteredCount = (
+    getDb()
+      .prepare(
+        'SELECT count(*) c FROM curriculum_item_progress WHERE unit_id = ? AND mastered = 1',
+      )
+      .get(unitId) as { c: number }
+  ).c;
+
+  return masteredCount >= unit.items.length;
+}
+
+/** Marca la unidad completa y desbloquea la siguiente, si corresponde. */
+export function checkAndUnlockNext(unitId: string): void {
+  if (!isUnitComplete(unitId)) return;
+
+  const db = getDb();
+  db.prepare(
+    `INSERT INTO curriculum_unit_progress (unit_id, status, completed_at)
+     VALUES (?, 'completed', datetime('now'))
+     ON CONFLICT(unit_id) DO UPDATE SET status = 'completed', completed_at = datetime('now')`,
+  ).run(unitId);
+
+  const next = getNextUnit(unitId);
+  if (!next) return;
+
+  db.prepare(
+    `INSERT INTO curriculum_unit_progress (unit_id, status) VALUES (?, 'available')
+     ON CONFLICT(unit_id) DO NOTHING`,
+  ).run(next.id);
+}
+
+export function startSession(unitId: string): number {
+  const result = getDb()
+    .prepare('INSERT INTO curriculum_sessions (unit_id) VALUES (?)')
+    .run(unitId);
+  return Number(result.lastInsertRowid);
+}
+
+export function finishSession(sessionId: number, correctCount: number, totalCount: number): void {
+  getDb()
+    .prepare(
+      `UPDATE curriculum_sessions
+       SET finished_at = datetime('now'), correct_count = ?, total_count = ?
+       WHERE id = ?`,
+    )
+    .run(correctCount, totalCount, sessionId);
+}

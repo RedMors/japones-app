@@ -1,0 +1,27 @@
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+.DS_Store
+
+# Datos locales. app.db se versiona; el resto no.
+data/jmdict.db
+data/jmdict.db-wal
+data/jmdict.db-shm
+data/app.db-wal
+data/app.db-shm
+data/raw/
+data/clips/
+# Copia temporal para tests de integración (npm run check:curriculum). Nunca
+# se versiona ni se toca la app.db real.
+data/.test-app.db
+data/.test-app.db-wal
+data/.test-app.db-shm
+
+# data/jlpt/raw/*.csv SÍ se versiona a propósito (508KB, MIT,
+# elzup/jlpt-word-list) — reproducibilidad completa de build:jlpt-vocab
+# sin depender de que el link externo siga vivo.
+
+# Fase 2
+.env.local
+.env*.local
