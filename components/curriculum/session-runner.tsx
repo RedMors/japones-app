@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { speakJapanese } from '@/lib/tts';
+import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import { stripFurigana } from '@/lib/curriculum/furigana';
 import { FuriganaText } from '@/components/curriculum/furigana-text';
 import type { MultipleChoiceQuestion } from '@/lib/curriculum/exercises';
@@ -81,7 +82,12 @@ export function SessionRunner({
     const choice = picked;
     const isCorrect = choice === question.answer;
     setSelected(choice);
-    if (isCorrect) setCorrectCount((c) => c + 1);
+    if (isCorrect) {
+      setCorrectCount((c) => c + 1);
+      playCorrectSound();
+    } else {
+      playIncorrectSound();
+    }
     if (!readOnly) {
       ensureSession();
       startTransition(() => {
