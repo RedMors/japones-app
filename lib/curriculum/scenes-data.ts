@@ -198,6 +198,56 @@ export const SCENE_THEMES: SceneTheme[] = [
     title: 'Frases de cortesía',
     emoji: '🙇',
     description: 'Lo que se dice siempre, en el momento justo.',
+    imageItems: [
+      {
+        id: 'img-ojigi',
+        word: 'お辞儀[じぎ]',
+        reading: 'ojigi',
+        translation: 'la reverencia (saludo)',
+        imagePrompt:
+          'a person bowing politely, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-genkan',
+        word: '玄関[げんかん]',
+        reading: 'genkan',
+        translation: 'la entrada de una casa',
+        imagePrompt:
+          'a Japanese house entrance genkan with shoes lined up, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-hashi-taberu',
+        word: '箸[はし]',
+        reading: 'hashi',
+        translation: 'palitos, para comer',
+        imagePrompt:
+          'a hand holding chopsticks over a bowl of rice, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-aisatsu',
+        word: '挨拶[あいさつ]',
+        reading: 'aisatsu',
+        translation: 'el saludo',
+        imagePrompt:
+          'two people greeting each other with a bow, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-shigoto',
+        word: '仕事[しごと]',
+        reading: 'shigoto',
+        translation: 'el trabajo',
+        imagePrompt:
+          'a briefcase and a desk, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-arigatou',
+        word: 'ありがとう',
+        reading: 'arigatou',
+        translation: 'gracias',
+        imagePrompt:
+          'two hands pressed together in a thank-you gesture with a small heart, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+    ],
     phrases: [
       { id: 'k1', tiles: ['お邪魔[じゃま]', 'します'], translation: 'Con permiso (al entrar).' },
       { id: 'k2', tiles: ['いただきます'], translation: 'Antes de comer.' },
