@@ -7,19 +7,23 @@
  * cada ficha también suena sola al tocarla para poder verificar de oído
  * antes de confirmar.
  *
- * Cubre las 10 filas básicas del gojūon (あかたなはまやらわん) en hiragana
- * y katakana — el mismo set de 46 caracteres que `/caracteres` (básico, sin
- * dakuten/yōon). Curado a mano, mismo criterio que gramática y `/temas`:
- * oraciones N5 reales (no inventadas), sin espacios entre palabras — el
- * japonés no los usa. No restringidas a "solo kana ya visto en filas
- * anteriores" (eso volvería todo artificial, です mismo usa で, de la fila
- * た); el criterio es que la fila objetivo aparezca seguido, no que sea lo
- * único presente.
+ * Cubre las 10 filas básicas del gojūon (あかたなはまやらわん) MÁS dakuten
+ * (がざだばぱ) y yōon (きゃしゃちゃにゃひゃみゃりゃぎゃじゃびゃぴゃ) en
+ * hiragana y katakana — el set completo de `/caracteres` (básico + avanzado).
+ * Curado a mano, mismo criterio que gramática y `/temas`: oraciones N5
+ * reales (no inventadas), sin espacios entre palabras — el japonés no los
+ * usa. No restringidas a "solo kana ya visto en filas anteriores" (eso
+ * volvería todo artificial, です mismo usa で, de la fila た); el criterio es
+ * que la fila objetivo aparezca seguido, no que sea lo único presente.
  *
- * Filas や, わ y ん en katakana tienen mucho menos vocabulario real
- * disponible (ヲ casi no se usa, ヤユヨ dan pocas palabras extranjeras) — sus
- * pools son más chicos a propósito, preferible eso a rellenar con ejemplos
- * forzados o mal formados.
+ * Varias filas tienen MUY poco vocabulario real disponible — algunas casi
+ * nada (みゃ, ぴゃ en hiragana; プレゼント excluida de katakana por lo mismo
+ * en varias filas de yōon). Ahí el pool queda deliberadamente chico (2-4
+ * oraciones) en vez de forzar ejemplos artificiales o mal formados — y
+ * cuando ni eso alcanza para un pool honesto (ej. リャ o ギャ en préstamos
+ * del inglés), la fila directamente no está: hueco documentado > contenido
+ * de baja precisión. Katakana ya/わ/ん también tienen pools chicos por la
+ * misma razón (ヲ casi no se usa, ヤユヨ dan pocas palabras extranjeras).
  *
  * El pool de cada fila es más grande que una sesión (`SESSION_SIZE`) para
  * que "otra sesión" con la misma fila muestre una mezcla distinta, no
@@ -220,6 +224,214 @@ export const KANA_ROW_PRACTICE: KanaRowPractice[] = [
     ],
   },
   {
+    id: 'hiragana-ga',
+    kind: 'hiragana',
+    chars: 'がぎぐげご',
+    sentences: [
+      { id: 'hga1', jp: 'がっこうにいきます。', reading: 'gakkou ni ikimasu.', translation: 'Voy a la escuela.' },
+      { id: 'hga2', jp: 'かぎをわすれました。', reading: 'kagi wo wasuremashita.', translation: 'Me olvidé la llave.' },
+      { id: 'hga3', jp: 'ぐあいがわるいです。', reading: 'guai ga warui desu.', translation: 'Me siento mal.' },
+      { id: 'hga4', jp: 'げんきですか。', reading: 'genki desu ka.', translation: '¿Cómo estás?' },
+      { id: 'hga5', jp: 'ごはんをたべます。', reading: 'gohan wo tabemasu.', translation: 'Como arroz.' },
+      { id: 'hga6', jp: 'えいごをはなします。', reading: 'eigo wo hanashimasu.', translation: 'Hablo inglés.' },
+      { id: 'hga7', jp: 'かがみをみます。', reading: 'kagami wo mimasu.', translation: 'Me miro al espejo.' },
+      { id: 'hga8', jp: 'すごいですね。', reading: 'sugoi desu ne.', translation: '¡Qué genial!' },
+    ],
+  },
+  {
+    id: 'hiragana-za',
+    kind: 'hiragana',
+    chars: 'ざじずぜぞ',
+    sentences: [
+      { id: 'hza1', jp: 'ざんねんです。', reading: 'zannen desu.', translation: 'Qué lástima.' },
+      { id: 'hza2', jp: 'じかんがありません。', reading: 'jikan ga arimasen.', translation: 'No tengo tiempo.' },
+      { id: 'hza3', jp: 'かぜをひきました。', reading: 'kaze wo hikimashita.', translation: 'Me resfrié.' },
+      { id: 'hza4', jp: 'ぜんぶわかりました。', reading: 'zenbu wakarimashita.', translation: 'Entendí todo.' },
+      { id: 'hza5', jp: 'ぞうがいます。', reading: 'zou ga imasu.', translation: 'Hay un elefante.' },
+      { id: 'hza6', jp: 'ざっしをよみます。', reading: 'zasshi wo yomimasu.', translation: 'Leo una revista.' },
+      { id: 'hza7', jp: 'じしょをつかいます。', reading: 'jisho wo tsukaimasu.', translation: 'Uso el diccionario.' },
+      { id: 'hza8', jp: 'しずかなばしょです。', reading: 'shizuka na basho desu.', translation: 'Es un lugar tranquilo.' },
+    ],
+  },
+  {
+    id: 'hiragana-da',
+    kind: 'hiragana',
+    chars: 'だぢづでど',
+    sentences: [
+      { id: 'hda1', jp: 'だいじょうぶです。', reading: 'daijoubu desu.', translation: 'Está bien.' },
+      { id: 'hda2', jp: 'でんしゃがおくれました。', reading: 'densha ga okuremashita.', translation: 'El tren se atrasó.' },
+      { id: 'hda3', jp: 'どようびにあいましょう。', reading: 'doyoubi ni aimashou.', translation: 'Veámonos el sábado.' },
+      { id: 'hda4', jp: 'だれもいません。', reading: 'dare mo imasen.', translation: 'No hay nadie.' },
+      { id: 'hda5', jp: 'どこにいますか。', reading: 'doko ni imasu ka.', translation: '¿Dónde estás?' },
+      { id: 'hda6', jp: 'でかけます。', reading: 'dekakemasu.', translation: 'Salgo de casa.' },
+      { id: 'hda7', jp: 'だいすきです。', reading: 'daisuki desu.', translation: 'Me encanta.' },
+      { id: 'hda8', jp: 'どうぶつがすきです。', reading: 'doubutsu ga suki desu.', translation: 'Me gustan los animales.' },
+    ],
+  },
+  {
+    id: 'hiragana-ba',
+    kind: 'hiragana',
+    chars: 'ばびぶべぼ',
+    sentences: [
+      { id: 'hba1', jp: 'ばんごはんをたべます。', reading: 'bangohan wo tabemasu.', translation: 'Como la cena.' },
+      { id: 'hba2', jp: 'かばんをかいました。', reading: 'kaban wo kaimashita.', translation: 'Compré un bolso.' },
+      { id: 'hba3', jp: 'ぶたにくがすきです。', reading: 'butaniku ga suki desu.', translation: 'Me gusta la carne de cerdo.' },
+      { id: 'hba4', jp: 'べんきょうします。', reading: 'benkyou shimasu.', translation: 'Estudio.' },
+      { id: 'hba5', jp: 'ぼうしをかぶります。', reading: 'boushi wo kaburimasu.', translation: 'Me pongo el sombrero.' },
+      { id: 'hba6', jp: 'たばこをすいません。', reading: 'tabako wo suimasen.', translation: 'No fumo.' },
+      { id: 'hba7', jp: 'そばやにいきます。', reading: 'sobaya ni ikimasu.', translation: 'Voy a una fideería.' },
+      { id: 'hba8', jp: 'ばんぐみをみます。', reading: 'bangumi wo mimasu.', translation: 'Veo un programa de TV.' },
+    ],
+  },
+  {
+    id: 'hiragana-pa',
+    kind: 'hiragana',
+    chars: 'ぱぴぷぺぽ',
+    sentences: [
+      { id: 'hpa1', jp: 'おなかがぺこぺこです。', reading: 'onaka ga pekopeko desu.', translation: 'Tengo mucha hambre.' },
+      { id: 'hpa2', jp: 'ほしがぴかぴかです。', reading: 'hoshi ga pikapika desu.', translation: 'Las estrellas brillan.' },
+      { id: 'hpa3', jp: 'てんきがぽかぽかです。', reading: 'tenki ga pokapoka desu.', translation: 'El clima está calentito.' },
+      { id: 'hpa4', jp: 'おこってぷんぷんしています。', reading: 'okotte punpun shiteimasu.', translation: 'Está enojado.' },
+      { id: 'hpa5', jp: 'ぱくぱくたべます。', reading: 'pakupaku tabemasu.', translation: 'Come vorazmente.' },
+    ],
+  },
+  {
+    id: 'hiragana-kya',
+    kind: 'hiragana',
+    chars: 'きゃきゅきょ',
+    sentences: [
+      { id: 'hkya1', jp: 'きょうはいそがしいです。', reading: 'kyou wa isogashii desu.', translation: 'Hoy estoy ocupado.' },
+      { id: 'hkya2', jp: 'きゅうにあめがふりました。', reading: 'kyuu ni ame ga furimashita.', translation: 'De repente llovió.' },
+      { id: 'hkya3', jp: 'おきゃくさんがきました。', reading: 'okyakusan ga kimashita.', translation: 'Vino un cliente.' },
+      { id: 'hkya4', jp: 'きょうしつはひろいです。', reading: 'kyoushitsu wa hiroi desu.', translation: 'El salón de clases es grande.' },
+      { id: 'hkya5', jp: 'きゅうりょうがはいりました。', reading: 'kyuuryou ga hairimashita.', translation: 'Me depositaron el sueldo.' },
+      { id: 'hkya6', jp: 'きょねんにほんへいきました。', reading: 'kyonen nihon e ikimashita.', translation: 'El año pasado fui a Japón.' },
+      { id: 'hkya7', jp: 'きゅうけいしましょう。', reading: 'kyuukei shimashou.', translation: 'Descansemos.' },
+      { id: 'hkya8', jp: 'おきゃくさまをごあんないします。', reading: 'okyakusama wo goannai shimasu.', translation: 'Guío al cliente.' },
+    ],
+  },
+  {
+    id: 'hiragana-sha',
+    kind: 'hiragana',
+    chars: 'しゃしゅしょ',
+    sentences: [
+      { id: 'hsha1', jp: 'しゃしんをとります。', reading: 'shashin wo torimasu.', translation: 'Saco una foto.' },
+      { id: 'hsha2', jp: 'しゅくだいをします。', reading: 'shukudai wo shimasu.', translation: 'Hago la tarea.' },
+      { id: 'hsha3', jp: 'しょうがっこうにいきます。', reading: 'shougakkou ni ikimasu.', translation: 'Voy a la primaria.' },
+      { id: 'hsha4', jp: 'しゃちょうにあいます。', reading: 'shachou ni aimasu.', translation: 'Me encuentro con el jefe.' },
+      { id: 'hsha5', jp: 'しゅみはなんですか。', reading: 'shumi wa nan desu ka.', translation: '¿Cuál es tu hobby?' },
+      { id: 'hsha6', jp: 'しょくじをします。', reading: 'shokuji wo shimasu.', translation: 'Como una comida.' },
+      { id: 'hsha7', jp: 'しゃかいがかわります。', reading: 'shakai ga kawarimasu.', translation: 'La sociedad cambia.' },
+      { id: 'hsha8', jp: 'じしょがひつようです。', reading: 'jisho ga hitsuyou desu.', translation: 'Necesito un diccionario.' },
+    ],
+  },
+  {
+    id: 'hiragana-cha',
+    kind: 'hiragana',
+    chars: 'ちゃちゅちょ',
+    sentences: [
+      { id: 'hcha1', jp: 'おちゃをのみます。', reading: 'ocha wo nomimasu.', translation: 'Tomo té.' },
+      { id: 'hcha2', jp: 'ちゅうしゃじょうはどこですか。', reading: 'chuushajou wa doko desu ka.', translation: '¿Dónde está el estacionamiento?' },
+      { id: 'hcha3', jp: 'ちょうどいいです。', reading: 'choudo ii desu.', translation: 'Está justo bien.' },
+      { id: 'hcha4', jp: 'ちゃいろがすきです。', reading: 'chairo ga suki desu.', translation: 'Me gusta el color marrón.' },
+      { id: 'hcha5', jp: 'ちゅうごくごをはなします。', reading: 'chuugokugo wo hanashimasu.', translation: 'Hablo chino.' },
+      { id: 'hcha6', jp: 'ちょきんをします。', reading: 'chokin wo shimasu.', translation: 'Ahorro dinero.' },
+      { id: 'hcha7', jp: 'おもちゃがすきです。', reading: 'omocha ga suki desu.', translation: 'Me gustan los juguetes.' },
+      { id: 'hcha8', jp: 'ちゅういしてください。', reading: 'chuui shite kudasai.', translation: 'Tenga cuidado, por favor.' },
+    ],
+  },
+  {
+    id: 'hiragana-nya',
+    kind: 'hiragana',
+    chars: 'にゃにゅにょ',
+    sentences: [
+      { id: 'hnya1', jp: 'こんにゃくをたべます。', reading: 'konnyaku wo tabemasu.', translation: 'Como konjac.' },
+      { id: 'hnya2', jp: 'にゅうがくしました。', reading: 'nyuugaku shimashita.', translation: 'Ingresé a la escuela.' },
+      { id: 'hnya3', jp: 'ねこがにゃあとなきます。', reading: 'neko ga nyaa to nakimasu.', translation: 'El gato maúlla.' },
+      { id: 'hnya4', jp: 'ぎゅうにゅうをのみます。', reading: 'gyuunyuu wo nomimasu.', translation: 'Tomo leche.' },
+      { id: 'hnya5', jp: 'にゅうよくします。', reading: 'nyuuyoku shimasu.', translation: 'Me baño.' },
+    ],
+  },
+  {
+    id: 'hiragana-hya',
+    kind: 'hiragana',
+    chars: 'ひゃひゅひょ',
+    sentences: [
+      { id: 'hhya1', jp: 'ひゃくえんです。', reading: 'hyaku en desu.', translation: 'Son 100 yenes.' },
+      { id: 'hhya2', jp: 'ひょうがふります。', reading: 'hyou ga furimasu.', translation: 'Cae granizo.' },
+      { id: 'hhya3', jp: 'ひゃっかてんにいきます。', reading: 'hyakkaten ni ikimasu.', translation: 'Voy a la tienda por departamentos.' },
+      { id: 'hhya4', jp: 'ひょうじょうがいいです。', reading: 'hyoujou ga ii desu.', translation: 'Tiene buena expresión.' },
+      { id: 'hhya5', jp: 'かぜがひゅうとふきます。', reading: 'kaze ga hyuu to fukimasu.', translation: 'El viento sopla con un silbido.' },
+    ],
+  },
+  {
+    id: 'hiragana-mya',
+    kind: 'hiragana',
+    chars: 'みゃみゅみょ',
+    sentences: [
+      { id: 'hmya1', jp: 'みょうじをおしえてください。', reading: 'myouji wo oshiete kudasai.', translation: 'Dígame su apellido, por favor.' },
+      { id: 'hmya2', jp: 'みゃくがはやいです。', reading: 'myaku ga hayai desu.', translation: 'El pulso está rápido.' },
+    ],
+  },
+  {
+    id: 'hiragana-rya',
+    kind: 'hiragana',
+    chars: 'りゃりゅりょ',
+    sentences: [
+      { id: 'hrya1', jp: 'りょこうにいきます。', reading: 'ryokou ni ikimasu.', translation: 'Voy de viaje.' },
+      { id: 'hrya2', jp: 'りょうりをつくります。', reading: 'ryouri wo tsukurimasu.', translation: 'Cocino.' },
+      { id: 'hrya3', jp: 'りょうしんとすんでいます。', reading: 'ryoushin to sundeimasu.', translation: 'Vivo con mis padres.' },
+      { id: 'hrya4', jp: 'りゅうがすきです。', reading: 'ryuu ga suki desu.', translation: 'Me gustan los dragones.' },
+      { id: 'hrya5', jp: 'りょかんにとまります。', reading: 'ryokan ni tomarimasu.', translation: 'Me alojo en un ryokan.' },
+      { id: 'hrya6', jp: 'りょうがえをします。', reading: 'ryougae wo shimasu.', translation: 'Hago cambio de moneda.' },
+    ],
+  },
+  {
+    id: 'hiragana-gya',
+    kind: 'hiragana',
+    chars: 'ぎゃぎゅぎょ',
+    sentences: [
+      { id: 'hgya1', jp: 'ぎゃくにしてください。', reading: 'gyaku ni shite kudasai.', translation: 'Hágalo al revés, por favor.' },
+      { id: 'hgya2', jp: 'ぎゅうにゅうをのみます。', reading: 'gyuunyuu wo nomimasu.', translation: 'Tomo leche.' },
+      { id: 'hgya3', jp: 'ぎょせんがみえます。', reading: 'gyosen ga miemasu.', translation: 'Se ve un barco pesquero.' },
+      { id: 'hgya4', jp: 'きんぎょをかいます。', reading: 'kingyo wo kaimasu.', translation: 'Compro un pez dorado.' },
+    ],
+  },
+  {
+    id: 'hiragana-ja',
+    kind: 'hiragana',
+    chars: 'じゃじゅじょ',
+    sentences: [
+      { id: 'hja1', jp: 'じゃがいもがすきです。', reading: 'jagaimo ga suki desu.', translation: 'Me gustan las papas.' },
+      { id: 'hja2', jp: 'じゅぎょうがあります。', reading: 'jugyou ga arimasu.', translation: 'Tengo clase.' },
+      { id: 'hja3', jp: 'にほんごがじょうずです。', reading: 'nihongo ga jouzu desu.', translation: 'Es hábil en japonés.' },
+      { id: 'hja4', jp: 'おじゃまします。', reading: 'ojama shimasu.', translation: 'Con permiso, al entrar.' },
+      { id: 'hja5', jp: 'じゅうしょをおしえてください。', reading: 'juusho wo oshiete kudasai.', translation: 'Dígame su dirección, por favor.' },
+      { id: 'hja6', jp: 'じょうたいがいいです。', reading: 'joutai ga ii desu.', translation: 'Está en buen estado.' },
+      { id: 'hja7', jp: 'じゃんけんをします。', reading: 'janken wo shimasu.', translation: 'Juego a piedra, papel o tijera.' },
+      { id: 'hja8', jp: 'じゅんびができました。', reading: 'junbi ga dekimashita.', translation: 'Está listo.' },
+    ],
+  },
+  {
+    id: 'hiragana-bya',
+    kind: 'hiragana',
+    chars: 'びゃびゅびょ',
+    sentences: [
+      { id: 'hbya1', jp: 'びょういんにいきます。', reading: 'byouin ni ikimasu.', translation: 'Voy al hospital.' },
+      { id: 'hbya2', jp: 'びょうきです。', reading: 'byouki desu.', translation: 'Estoy enfermo.' },
+      { id: 'hbya3', jp: 'さんびゃくえんです。', reading: 'sanbyaku en desu.', translation: 'Son 300 yenes.' },
+    ],
+  },
+  {
+    id: 'hiragana-pya',
+    kind: 'hiragana',
+    chars: 'ぴゃぴゅぴょ',
+    sentences: [
+      { id: 'hpya1', jp: 'はっぴゃくえんです。', reading: 'happyaku en desu.', translation: 'Son 800 yenes.' },
+      { id: 'hpya2', jp: 'ぴょんぴょんとびます。', reading: 'pyonpyon tobimasu.', translation: 'Salta dando saltitos.' },
+    ],
+  },
+  {
     id: 'hiragana-sa',
     kind: 'hiragana',
     chars: 'さしすせそ',
@@ -401,6 +613,154 @@ export const KANA_ROW_PRACTICE: KanaRowPractice[] = [
       { id: 'kn8', jp: 'サンドイッチをたべます。', reading: 'sandoicchi wo tabemasu.', translation: 'Como un sándwich.' },
       { id: 'kn9', jp: 'コンサートにいきます。', reading: 'konsaato ni ikimasu.', translation: 'Voy a un concierto.' },
       { id: 'kn10', jp: 'デザインがいいです。', reading: 'dezain ga ii desu.', translation: 'El diseño es bueno.' },
+    ],
+  },
+  {
+    id: 'katakana-ga',
+    kind: 'katakana',
+    chars: 'ガギグゲゴ',
+    sentences: [
+      { id: 'kga1', jp: 'ガムをかみます。', reading: 'gamu wo kamimasu.', translation: 'Mastico chicle.' },
+      { id: 'kga2', jp: 'ギターをひきます。', reading: 'gitaa wo hikimasu.', translation: 'Toco la guitarra.' },
+      { id: 'kga3', jp: 'グラスをください。', reading: 'gurasu wo kudasai.', translation: 'Un vaso, por favor.' },
+      { id: 'kga4', jp: 'ゲームをします。', reading: 'geemu wo shimasu.', translation: 'Juego videojuegos.' },
+      { id: 'kga5', jp: 'ゴルフをします。', reading: 'gorufu wo shimasu.', translation: 'Juego al golf.' },
+      { id: 'kga6', jp: 'ガソリンがひつようです。', reading: 'gasorin ga hitsuyou desu.', translation: 'Necesito nafta.' },
+      { id: 'kga7', jp: 'ガイドをよみます。', reading: 'gaido wo yomimasu.', translation: 'Leo la guía.' },
+      { id: 'kga8', jp: 'ゴールにつきました。', reading: 'gooru ni tsukimashita.', translation: 'Llegué a la meta.' },
+    ],
+  },
+  {
+    id: 'katakana-za',
+    kind: 'katakana',
+    chars: 'ザジズゼゾ',
+    sentences: [
+      { id: 'kza1', jp: 'デザートをたべます。', reading: 'dezaato wo tabemasu.', translation: 'Como postre.' },
+      { id: 'kza2', jp: 'サイズをはかります。', reading: 'saizu wo hakarimasu.', translation: 'Mido el tamaño.' },
+      { id: 'kza3', jp: 'ジーンズをはきます。', reading: 'jiinzu wo hakimasu.', translation: 'Me pongo los jeans.' },
+      { id: 'kza4', jp: 'ゼロからはじめます。', reading: 'zero kara hajimemasu.', translation: 'Empiezo desde cero.' },
+      { id: 'kza5', jp: 'カジノにいきます。', reading: 'kajino ni ikimasu.', translation: 'Voy a un casino.' },
+      { id: 'kza6', jp: 'ズボンをかいました。', reading: 'zubon wo kaimashita.', translation: 'Compré pantalones.' },
+      { id: 'kza7', jp: 'マガジンをよみます。', reading: 'magajin wo yomimasu.', translation: 'Leo una revista.' },
+      { id: 'kza8', jp: 'ジムにいきます。', reading: 'jimu ni ikimasu.', translation: 'Voy al gimnasio.' },
+    ],
+  },
+  {
+    id: 'katakana-da',
+    kind: 'katakana',
+    chars: 'ダヂヅデド',
+    sentences: [
+      { id: 'kda1', jp: 'ドアをあけます。', reading: 'doa wo akemasu.', translation: 'Abro la puerta.' },
+      { id: 'kda2', jp: 'デザインがいいです。', reading: 'dezain ga ii desu.', translation: 'El diseño es bueno.' },
+      { id: 'kda3', jp: 'ダイエットをします。', reading: 'daietto wo shimasu.', translation: 'Hago dieta.' },
+      { id: 'kda4', jp: 'カードをつかいます。', reading: 'kaado wo tsukaimasu.', translation: 'Uso la tarjeta.' },
+      { id: 'kda5', jp: 'ハンドルをもちます。', reading: 'handoru wo mochimasu.', translation: 'Sostengo el volante.' },
+      { id: 'kda6', jp: 'ダンスをします。', reading: 'dansu wo shimasu.', translation: 'Bailo.' },
+      { id: 'kda7', jp: 'レモネードをのみます。', reading: 'remoneedo wo nomimasu.', translation: 'Tomo limonada.' },
+      { id: 'kda8', jp: 'デートにいきます。', reading: 'deeto ni ikimasu.', translation: 'Voy a una cita.' },
+    ],
+  },
+  {
+    id: 'katakana-ba',
+    kind: 'katakana',
+    chars: 'バビブベボ',
+    sentences: [
+      { id: 'kba1', jp: 'バスにのります。', reading: 'basu ni norimasu.', translation: 'Subo al bus.' },
+      { id: 'kba2', jp: 'テレビをみます。', reading: 'terebi wo mimasu.', translation: 'Veo la tele.' },
+      { id: 'kba3', jp: 'ベッドでねます。', reading: 'beddo de nemasu.', translation: 'Duermo en la cama.' },
+      { id: 'kba4', jp: 'ボールをなげます。', reading: 'booru wo nagemasu.', translation: 'Tiro la pelota.' },
+      { id: 'kba5', jp: 'バナナをたべます。', reading: 'banana wo tabemasu.', translation: 'Como banana.' },
+      { id: 'kba6', jp: 'バイクにのります。', reading: 'baiku ni norimasu.', translation: 'Subo a la moto.' },
+      { id: 'kba7', jp: 'アルバイトをします。', reading: 'arubaito wo shimasu.', translation: 'Trabajo medio tiempo.' },
+      { id: 'kba8', jp: 'バターをぬります。', reading: 'bataa wo nurimasu.', translation: 'Unto manteca.' },
+    ],
+  },
+  {
+    id: 'katakana-pa',
+    kind: 'katakana',
+    chars: 'パピプペポ',
+    sentences: [
+      { id: 'kpa1', jp: 'パンをたべます。', reading: 'pan wo tabemasu.', translation: 'Como pan.' },
+      { id: 'kpa2', jp: 'スーパーにいきます。', reading: 'suupaa ni ikimasu.', translation: 'Voy al supermercado.' },
+      { id: 'kpa3', jp: 'パーティーにいきます。', reading: 'paatii ni ikimasu.', translation: 'Voy a una fiesta.' },
+      { id: 'kpa4', jp: 'ペンキをぬります。', reading: 'penki wo nurimasu.', translation: 'Pinto con pintura.' },
+      { id: 'kpa5', jp: 'パスポートをみせてください。', reading: 'pasupooto wo misete kudasai.', translation: 'Muestre el pasaporte, por favor.' },
+      { id: 'kpa6', jp: 'ポケットにいれます。', reading: 'poketto ni iremasu.', translation: 'Lo pongo en el bolsillo.' },
+      { id: 'kpa7', jp: 'サポートがひつようです。', reading: 'sapooto ga hitsuyou desu.', translation: 'Necesito ayuda.' },
+      { id: 'kpa8', jp: 'プレゼントをかいました。', reading: 'purezento wo kaimashita.', translation: 'Compré un regalo.' },
+    ],
+  },
+  {
+    id: 'katakana-kya',
+    kind: 'katakana',
+    chars: 'キャキュキョ',
+    sentences: [
+      { id: 'kkya1', jp: 'キャベツをかいました。', reading: 'kyabetsu wo kaimashita.', translation: 'Compré repollo.' },
+      { id: 'kkya2', jp: 'キャンプにいきます。', reading: 'kyanpu ni ikimasu.', translation: 'Voy de campamento.' },
+      { id: 'kkya3', jp: 'キューをつかいます。', reading: 'kyuu wo tsukaimasu.', translation: 'Uso el taco de billar.' },
+      { id: 'kkya4', jp: 'キャンセルしました。', reading: 'kyanseru shimashita.', translation: 'Cancelé.' },
+      { id: 'kkya5', jp: 'キャプテンです。', reading: 'kyaputen desu.', translation: 'Es el capitán.' },
+    ],
+  },
+  {
+    id: 'katakana-sha',
+    kind: 'katakana',
+    chars: 'シャシュショ',
+    sentences: [
+      { id: 'ksha1', jp: 'シャワーをあびます。', reading: 'shawaa wo abimasu.', translation: 'Me doy una ducha.' },
+      { id: 'ksha2', jp: 'シャツをきます。', reading: 'shatsu wo kimasu.', translation: 'Me pongo la camisa.' },
+      { id: 'ksha3', jp: 'シュークリームがすきです。', reading: 'shuukuriimu ga suki desu.', translation: 'Me gusta la crema pastelera.' },
+      { id: 'ksha4', jp: 'ショッピングをします。', reading: 'shoppingu wo shimasu.', translation: 'Voy de compras.' },
+      { id: 'ksha5', jp: 'シャンプーをつかいます。', reading: 'shanpuu wo tsukaimasu.', translation: 'Uso champú.' },
+      { id: 'ksha6', jp: 'ショートケーキをたべます。', reading: 'shootokeeki wo tabemasu.', translation: 'Como shortcake.' },
+      { id: 'ksha7', jp: 'シャッターをおします。', reading: 'shattaa wo oshimasu.', translation: 'Aprieto el obturador.' },
+      { id: 'ksha8', jp: 'シャベルをつかいます。', reading: 'shaberu wo tsukaimasu.', translation: 'Uso la pala.' },
+    ],
+  },
+  {
+    id: 'katakana-cha',
+    kind: 'katakana',
+    chars: 'チャチュチョ',
+    sentences: [
+      { id: 'kcha1', jp: 'チャンスがあります。', reading: 'chansu ga arimasu.', translation: 'Hay una oportunidad.' },
+      { id: 'kcha2', jp: 'チャレンジします。', reading: 'charenji shimasu.', translation: 'Lo intento.' },
+      { id: 'kcha3', jp: 'チューリップがきれいです。', reading: 'chuurippu ga kirei desu.', translation: 'Los tulipanes son lindos.' },
+      { id: 'kcha4', jp: 'チョコレートがすきです。', reading: 'chokoreeto ga suki desu.', translation: 'Me gusta el chocolate.' },
+      { id: 'kcha5', jp: 'チャイムがなります。', reading: 'chaimu ga narimasu.', translation: 'Suena el timbre.' },
+      { id: 'kcha6', jp: 'チャットをします。', reading: 'chatto wo shimasu.', translation: 'Chateo.' },
+    ],
+  },
+  {
+    id: 'katakana-nya',
+    kind: 'katakana',
+    chars: 'ニャニュニョ',
+    sentences: [
+      { id: 'knya1', jp: 'ネコがニャーとなきます。', reading: 'neko ga nyaa to nakimasu.', translation: 'El gato maúlla.' },
+      { id: 'knya2', jp: 'ニュアンスがちがいます。', reading: 'nyuansu ga chigaimasu.', translation: 'El matiz es diferente.' },
+      { id: 'knya3', jp: 'マニュアルをよみます。', reading: 'manyuaru wo yomimasu.', translation: 'Leo el manual.' },
+    ],
+  },
+  {
+    id: 'katakana-mya',
+    kind: 'katakana',
+    chars: 'ミャミュミョ',
+    sentences: [
+      { id: 'kmya1', jp: 'ミュージックをききます。', reading: 'myuujikku wo kikimasu.', translation: 'Escucho música.' },
+      { id: 'kmya2', jp: 'ミュージアムにいきます。', reading: 'myuujiamu ni ikimasu.', translation: 'Voy al museo.' },
+    ],
+  },
+  {
+    id: 'katakana-ja',
+    kind: 'katakana',
+    chars: 'ジャジュジョ',
+    sentences: [
+      { id: 'kja1', jp: 'ジャムをぬります。', reading: 'jamu wo nurimasu.', translation: 'Unto mermelada.' },
+      { id: 'kja2', jp: 'ジャケットをきます。', reading: 'jaketto wo kimasu.', translation: 'Me pongo la campera.' },
+      { id: 'kja3', jp: 'ジュースをのみます。', reading: 'juusu wo nomimasu.', translation: 'Tomo jugo.' },
+      { id: 'kja4', jp: 'ジョギングをします。', reading: 'jogingu wo shimasu.', translation: 'Hago jogging.' },
+      { id: 'kja5', jp: 'ジャズがすきです。', reading: 'jazu ga suki desu.', translation: 'Me gusta el jazz.' },
+      { id: 'kja6', jp: 'ジャンプします。', reading: 'janpu shimasu.', translation: 'Salto.' },
+      { id: 'kja7', jp: 'ジョークをいいます。', reading: 'jooku wo iimasu.', translation: 'Digo un chiste.' },
     ],
   },
   {
