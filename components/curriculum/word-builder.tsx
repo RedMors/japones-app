@@ -1,8 +1,7 @@
 'use client';
 
-import { useMemo, useState, useTransition } from 'react';
-import Link from 'next/link';
-import { Volume2, PartyPopper } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -28,20 +27,17 @@ function tilesOf(phrase: ScenePhrase): Tile[] {
 }
 
 type Props = {
-  themeTitle: string;
   phrases: ScenePhrase[];
-  onFinish?: () => void;
+  onFinish: (score: number, total: number) => void;
 };
 
-export function WordBuilder({ themeTitle, phrases, onFinish }: Props) {
+export function WordBuilder({ phrases, onFinish }: Props) {
   const [index, setIndex] = useState(0);
   const [bank, setBank] = useState<Tile[]>(() => shuffle(tilesOf(phrases[0])));
   const [answer, setAnswer] = useState<Tile[]>([]);
   const [phase, setPhase] = useState<'building' | 'result'>('building');
   const [correct, setCorrect] = useState(false);
   const [score, setScore] = useState(0);
-  const [finished, setFinished] = useState(false);
-  const [, startTransition] = useTransition();
 
   const phrase = phrases[index];
   const fullSentence = useMemo(() => phrase.tiles.join(''), [phrase]);
@@ -73,8 +69,7 @@ export function WordBuilder({ themeTitle, phrases, onFinish }: Props) {
   function handleNext() {
     const isLast = index + 1 >= phrases.length;
     if (isLast) {
-      setFinished(true);
-      if (onFinish) startTransition(() => onFinish());
+      onFinish(score, phrases.length);
       return;
     }
     const next = phrases[index + 1];
@@ -82,24 +77,6 @@ export function WordBuilder({ themeTitle, phrases, onFinish }: Props) {
     setBank(shuffle(tilesOf(next)));
     setAnswer([]);
     setPhase('building');
-  }
-
-  if (finished) {
-    const pct = Math.round((score / phrases.length) * 100);
-    return (
-      <div className="space-y-4 text-center">
-        {pct >= 80 && <PartyPopper className="mx-auto size-10 text-accent-foreground" />}
-        <h1 className="text-2xl font-semibold">
-          {score} de {phrases.length}
-        </h1>
-        <p className="text-muted-foreground">
-          {pct >= 80 ? `¡Ya te sale natural en "${themeTitle}"!` : 'Seguí practicando esta escena.'}
-        </p>
-        <Button asChild className="mt-2">
-          <Link href="/temas">Volver</Link>
-        </Button>
-      </div>
-    );
   }
 
   return (

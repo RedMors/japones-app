@@ -12,6 +12,7 @@ data/app.db-wal
 data/app.db-shm
 data/raw/
 data/clips/
+data/images/
 # Copia temporal para tests de integración (npm run check:curriculum). Nunca
 # se versiona ni se toca la app.db real.
 data/.test-app.db

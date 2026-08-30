@@ -15,12 +15,25 @@ export type ScenePhrase = {
   translation: string;
 };
 
+/** Vocabulario visual: "¿cuál de estas imágenes es X?" — imágenes generadas
+ *  por IA y cacheadas en disco (lib/image-cache.ts), nunca regeneradas para
+ *  el mismo prompt. `imagePrompt` va en inglés, estilo ícono plano simple,
+ *  no fotorrealista (más barato y consistente). */
+export type SceneImageItem = {
+  id: string;
+  word: string;
+  reading: string;
+  translation: string;
+  imagePrompt: string;
+};
+
 export type SceneTheme = {
   id: string;
   title: string;
   emoji: string;
   description: string;
   phrases: ScenePhrase[];
+  imageItems?: SceneImageItem[];
 };
 
 export const SCENE_THEMES: SceneTheme[] = [
@@ -29,6 +42,56 @@ export const SCENE_THEMES: SceneTheme[] = [
     title: 'Restaurante',
     emoji: '🍜',
     description: 'Pedir, pagar, agradecer la comida.',
+    imageItems: [
+      {
+        id: 'img-sushi',
+        word: 'すし',
+        reading: 'sushi',
+        translation: 'sushi',
+        imagePrompt:
+          'a plate of sushi rolls, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-ocha',
+        word: 'お茶[ちゃ]',
+        reading: 'ocha',
+        translation: 'té verde',
+        imagePrompt:
+          'a cup of green tea, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-mizu',
+        word: '水[みず]',
+        reading: 'mizu',
+        translation: 'agua',
+        imagePrompt:
+          'a glass of water, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-hashi',
+        word: 'お箸[はし]',
+        reading: 'ohashi',
+        translation: 'palitos chinos',
+        imagePrompt:
+          'a pair of wooden chopsticks, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-kaikei',
+        word: 'お会計[かいけい]',
+        reading: 'okaikei',
+        translation: 'la cuenta',
+        imagePrompt:
+          'a restaurant bill receipt on a small tray, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-menu',
+        word: 'メニュー',
+        reading: 'menyuu',
+        translation: 'menú',
+        imagePrompt:
+          'a restaurant menu booklet, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+    ],
     phrases: [
       { id: 'r1', tiles: ['これ', 'を', 'ください'], translation: 'Esto, por favor.' },
       {
