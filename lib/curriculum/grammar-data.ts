@@ -465,6 +465,55 @@ const grammarN2Items = GRAMMAR_N2.map((raw, i) =>
   toItem(raw, i, 'grammar-n2-patrones', 'n2-patrones'),
 );
 
+/** Gramática N1: mismo criterio, 10 patrones estándar de cualquier curso N1
+ *  (Shin Kanzen Master N1, Sou Matome N1) — se evitó a propósito lo más
+ *  literario/raro (まじき, てやまない) por menor confianza en la nuance. */
+const GRAMMAR_N1: RawItem[] = [
+  // 〜ざるを得ない (no tener más remedio que, verbo nai-stem + ざるを得ない)
+  { sentence: '忙[いそが]しくても、行[い]か___。', answer: 'ざるを得ない', translation: 'Aunque esté ocupado, no tengo más remedio que ir.' },
+  { sentence: '台風[たいふう]のため、旅行[りょこう]を中止[ちゅうし]せ___。', answer: 'ざるを得ない', translation: 'Por el tifón, no hay más remedio que cancelar el viaje.' },
+
+  // 〜を余儀なくされる (verse forzado a, sin poder evitarlo)
+  { sentence: '資金[しきん]不足[ぶそく]で、計画[けいかく]の変更[へんこう]___。', answer: 'を余儀なくされた', translation: 'Por falta de fondos, se vio forzado el cambio de plan.' },
+  { sentence: '事故[じこ]のため、電車[でんしゃ]は運休[うんきゅう]___。', answer: 'を余儀なくされた', translation: 'Por el accidente, el tren se vio forzado a suspender el servicio.' },
+
+  // 〜にたえない (insoportable, no poder soportar — verbo diccionario + にたえない)
+  { sentence: 'あまりにひどくて、見[み]る___光景[こうけい]だった。', answer: 'にたえない', translation: 'Era una escena tan terrible que no se podía soportar mirarla.' },
+  { sentence: '彼[かれ]の態度[たいど]は聞[き]く___ものだった。', answer: 'にたえない', translation: 'Su actitud era insoportable de escuchar.' },
+
+  // 〜極まりない (extremadamente — adjetivo-な + 極まりない)
+  { sentence: 'この計画[けいかく]は無謀[むぼう]___。', answer: '極まりない', translation: 'Este plan es extremadamente imprudente.' },
+  { sentence: '彼[かれ]の態度[たいど]は失礼[しつれい]___。', answer: '極まりない', translation: 'Su actitud es extremadamente maleducada.' },
+
+  // 〜ならでは (propio de, único de — solo posible gracias a)
+  { sentence: 'これはこの店[みせ]___の味[あじ]です。', answer: 'ならでは', translation: 'Este es un sabor único de esta tienda.' },
+  { sentence: '京都[きょうと]___の景色[けしき]を楽[たの]しみました。', answer: 'ならでは', translation: 'Disfruté de un paisaje único de Kioto.' },
+
+  // 〜んばかりに (como si estuviera a punto de — verbo a-stem + んばかりに)
+  { sentence: '今[いま]にも泣[な]き___の顔[かお]をしていた。', answer: 'んばかりに', translation: 'Tenía una cara como si estuviera a punto de llorar.' },
+  { sentence: '彼[かれ]は「行[い]け」と言[い]わ___の勢[いきお]いで私[わたし]を見[み]た。', answer: 'んばかりに', translation: 'Me miró con una fuerza como si dijera "andá".' },
+
+  // 〜にひきかえ (en contraste con)
+  { sentence: '兄[あに]の真面目[まじめ]さ___、弟[おとうと]は遊[あそ]んでばかりいる。', answer: 'にひきかえ', translation: 'En contraste con la seriedad del hermano mayor, el menor solo juega.' },
+  { sentence: '去年[きょねん]___、今年[ことし]は雪[ゆき]が少[すく]ない。', answer: 'にひきかえ', translation: 'En contraste con el año pasado, este año hay poca nieve.' },
+
+  // 〜ものを (si tan solo..., pero — reproche/arrepentimiento)
+  { sentence: 'すぐ謝[あやま]れば良[よ]かった___、意地[いじ]を張[は]ってしまった。', answer: 'ものを', translation: 'Si tan solo hubiera pedido perdón enseguida, pero me puse terco.' },
+  { sentence: '教[おし]えてくれれば良[よ]かった___、黙[だま]っていた。', answer: 'ものを', translation: 'Si tan solo me hubiera avisado, pero se quedó callado.' },
+
+  // 〜にもまして (todavía más que, aún más que)
+  { sentence: '今年[ことし]は去年[きょねん]___暑[あつ]い。', answer: 'にもまして', translation: 'Este año hace todavía más calor que el año pasado.' },
+  { sentence: '彼女[かのじょ]は以前[いぜん]___美[うつく]しくなった。', answer: 'にもまして', translation: 'Ella se puso todavía más linda que antes.' },
+
+  // 〜すら (hasta, incluso — más formal que さえ)
+  { sentence: '子供[こども]___知[し]っている常識[じょうしき]だ。', answer: 'すら', translation: 'Es de conocimiento común, hasta los niños lo saben.' },
+  { sentence: '彼[かれ]は自分[じぶん]の名前[なまえ]___忘[わす]れてしまった。', answer: 'すら', translation: 'Se olvidó hasta de su propio nombre.' },
+];
+
+const grammarN1Items = GRAMMAR_N1.map((raw, i) =>
+  toItem(raw, i, 'grammar-n1-patrones', 'n1-patrones'),
+);
+
 export const GRAMMAR_UNITS: Omit<Unit, 'order'>[] = [
   {
     id: 'grammar-n5-particulas',
@@ -489,6 +538,12 @@ export const GRAMMAR_UNITS: Omit<Unit, 'order'>[] = [
     title: 'N2 — Patrones gramaticales',
     level: 'N2',
     items: grammarN2Items,
+  },
+  {
+    id: 'grammar-n1-patrones',
+    title: 'N1 — Patrones gramaticales',
+    level: 'N1',
+    items: grammarN1Items,
   },
 ];
 
