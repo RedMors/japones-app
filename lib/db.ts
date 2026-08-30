@@ -133,6 +133,10 @@ const MIGRATIONS: string[] = [
   ALTER TABLE study_logs_new RENAME TO study_logs;
   CREATE INDEX idx_study_logs_date ON study_logs(date(created_at));
   `,
+  // v5 — clip de audio (ffmpeg) por oración minada, para adjuntar a Anki.
+  `
+  ALTER TABLE mined_words ADD COLUMN audio_clip_path TEXT;
+  `,
 ];
 
 function applyMigrations(db: DB): void {

@@ -5,6 +5,8 @@
  * Fricción cero significa que esta es la única función que hace falta llamar
  * desde la UI para procesar un episodio entero.
  */
+import fs from 'node:fs';
+import path from 'node:path';
 import { getDb } from './db.ts';
 import { lookupWords } from './dictionary.ts';
 import {
@@ -17,6 +19,7 @@ import {
 import { extractWordsByLine, type WordCandidate } from './tokenizer.ts';
 import { fetchKnownVocab, type FetchKnownVocabOptions } from './anki-connect.ts';
 import { logStudy } from './study-log.ts';
+import { isFfmpegAvailable, extractClip } from './audio-clip.ts';
 
 export type MinedWordRow = {
   id: number;
@@ -30,6 +33,8 @@ export type MinedWordRow = {
   endMs: number | null;
   unknownInLine: number;
   status: 'new' | 'added' | 'skipped' | 'already_known';
+  /** Ruta relativa del clip de audio de la oración, si se subió video/audio fuente. */
+  audioClipPath: string | null;
 };
 
 export type EpisodeSummary = {
@@ -108,6 +113,11 @@ export type MineEpisodeInput = {
   buffer: Uint8Array;
   /** Si el nombre del archivo no trae la serie clara, se puede forzar acá. */
   animeNameOverride?: string;
+  /** Video o audio del mismo episodio, opcional: si viene, cada oración
+   *  minada saca su propio clip corto vía ffmpeg. El archivo fuente completo
+   *  se borra apenas termina — nunca queda guardado. */
+  mediaFilename?: string;
+  mediaBuffer?: Uint8Array;
 };
 
 type LineWithWords = {
@@ -215,7 +225,61 @@ export async function mineEpisode(input: MineEpisodeInput): Promise<EpisodeSumma
   const episodeId = run();
   logStudy({ activity: 'mining', notes: `${animeName} ${meta.episodeLabel ?? ''}`.trim() });
 
+  if (input.mediaBuffer && input.mediaFilename) {
+    await attachAudioClips(episodeId, input.mediaFilename, input.mediaBuffer);
+  }
+
   return getEpisodeSummary(episodeId);
+}
+
+/**
+ * Escribe el video/audio fuente a un temporal, recorta un clip por cada
+ * oración única minada, y borra el temporal al final pase lo que pase. Si
+ * ffmpeg no está instalado o un recorte falla, el episodio queda minado
+ * igual — simplemente sin audio, nunca es motivo para perder el trabajo ya
+ * hecho de tokenizar y buscar en el diccionario.
+ */
+async function attachAudioClips(
+  episodeId: number,
+  mediaFilename: string,
+  mediaBuffer: Uint8Array,
+): Promise<void> {
+  if (!(await isFfmpegAvailable())) return;
+
+  const db = getDb();
+  const ext = path.extname(mediaFilename) || '.mp4';
+  const tmpPath = path.join(process.cwd(), 'data', `.tmp-media-${episodeId}${ext}`);
+
+  const sentences = db
+    .prepare(
+      `SELECT DISTINCT start_ms, end_ms FROM mined_words
+       WHERE episode_id = ? AND start_ms IS NOT NULL AND end_ms IS NOT NULL`,
+    )
+    .all(episodeId) as { start_ms: number; end_ms: number }[];
+
+  if (sentences.length === 0) return;
+
+  try {
+    fs.writeFileSync(tmpPath, mediaBuffer);
+
+    const update = db.prepare(
+      `UPDATE mined_words SET audio_clip_path = ?
+       WHERE episode_id = ? AND start_ms = ? AND end_ms = ?`,
+    );
+
+    for (const s of sentences) {
+      try {
+        const clipId = `${s.start_ms}-${s.end_ms}`;
+        const relPath = await extractClip(tmpPath, episodeId, clipId, s.start_ms, s.end_ms);
+        update.run(relPath, episodeId, s.start_ms, s.end_ms);
+      } catch {
+        // Un clip individual puede fallar (timestamp fuera de rango, etc.) —
+        // se sigue con el resto, no vale la pena perder todo el episodio.
+      }
+    }
+  } finally {
+    if (fs.existsSync(tmpPath)) fs.rmSync(tmpPath);
+  }
 }
 
 export function getEpisodeSummary(episodeId: number): EpisodeSummary {
@@ -237,7 +301,7 @@ export function getEpisodeSummary(episodeId: number): EpisodeSummary {
   const rows = db
     .prepare(
       `SELECT id, lemma, surface, reading, meaning, pos, sentence,
-              start_ms, end_ms, unknown_in_line, status
+              start_ms, end_ms, unknown_in_line, status, audio_clip_path
        FROM mined_words
        WHERE episode_id = ?
        ORDER BY unknown_in_line ASC, id ASC`,
@@ -254,6 +318,7 @@ export function getEpisodeSummary(episodeId: number): EpisodeSummary {
     end_ms: number | null;
     unknown_in_line: number;
     status: MinedWordRow['status'];
+    audio_clip_path: string | null;
   }[];
 
   return {
@@ -274,6 +339,7 @@ export function getEpisodeSummary(episodeId: number): EpisodeSummary {
       endMs: r.end_ms,
       unknownInLine: r.unknown_in_line,
       status: r.status,
+      audioClipPath: r.audio_clip_path,
     })),
   };
 }

@@ -1,5 +1,6 @@
 'use server';
 
+import fs from 'node:fs';
 import { redirect } from 'next/navigation';
 import { getDb, getSetting, setSetting } from '@/lib/db';
 import {
@@ -9,11 +10,13 @@ import {
   refreshKnownVocab,
   DuplicateEpisodeError,
 } from '@/lib/miner';
+import { clipAbsolutePath } from '@/lib/audio-clip';
 import {
   getDeckNames,
   getModelNames,
   guessTargetConfig,
   addWordNote,
+  storeMediaFile,
   type AnkiTargetConfig,
 } from '@/lib/anki-connect';
 
@@ -25,8 +28,18 @@ export async function mineFile(formData: FormData): Promise<void> {
 
   const buffer = new Uint8Array(await file.arrayBuffer());
 
+  const media = formData.get('media');
+  const mediaFile = media instanceof File ? media : null;
+
   try {
-    const summary = await mineEpisode({ filename: file.name, buffer });
+    const summary = await mineEpisode({
+      filename: file.name,
+      buffer,
+      ...(mediaFile && {
+        mediaFilename: mediaFile.name,
+        mediaBuffer: new Uint8Array(await mediaFile.arrayBuffer()),
+      }),
+    });
     redirect(`/miner?episode=${summary.episodeId}`);
   } catch (err) {
     if (err instanceof DuplicateEpisodeError) {
@@ -71,7 +84,7 @@ export async function addWordToAnki(
   const db = getDb();
   const row = db
     .prepare(
-      `SELECT mw.lemma, mw.reading, mw.meaning, mw.sentence,
+      `SELECT mw.lemma, mw.reading, mw.meaning, mw.sentence, mw.audio_clip_path,
               e.anime_name, e.episode_label
        FROM mined_words mw JOIN episodes e ON e.id = mw.episode_id
        WHERE mw.id = ?`,
@@ -82,6 +95,7 @@ export async function addWordToAnki(
         reading: string | null;
         meaning: string | null;
         sentence: string;
+        audio_clip_path: string | null;
         anime_name: string;
         episode_label: string | null;
       }
@@ -91,6 +105,16 @@ export async function addWordToAnki(
 
   try {
     const target = await resolveAnkiTarget();
+
+    let audioClipFilename: string | null = null;
+    if (row.audio_clip_path) {
+      const absPath = clipAbsolutePath(row.audio_clip_path);
+      if (fs.existsSync(absPath)) {
+        const base64 = fs.readFileSync(absPath).toString('base64');
+        audioClipFilename = await storeMediaFile(`jp-mining-${wordId}.mp3`, base64);
+      }
+    }
+
     const noteId = await addWordNote(
       {
         word: row.lemma,
@@ -99,6 +123,7 @@ export async function addWordToAnki(
         sentence: row.sentence,
         animeName: row.anime_name,
         episodeLabel: row.episode_label,
+        audioClipFilename,
       },
       target,
     );

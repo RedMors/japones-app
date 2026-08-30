@@ -8,19 +8,32 @@ type Props = {
   action: (formData: FormData) => Promise<void>;
 };
 
+const SUB_RE = /\.(srt|ass|ssa)$/i;
+
 /**
- * Seleccionar el archivo YA dispara el procesamiento: no hay botón "subir"
- * de por medio. Un click para abrir el picker, un click para elegir el
- * archivo, listo.
+ * Seleccionar el/los archivo(s) YA dispara el procesamiento: no hay botón
+ * "subir" de por medio. Un click para abrir el picker, un click (o
+ * selección múltiple) para elegir, listo.
+ *
+ * Acepta opcionalmente el video/audio del mismo episodio junto con el .srt
+ * (para clips de audio por oración vía ffmpeg) — se detecta por extensión,
+ * no hace falta un campo separado.
  */
 export function SrtDropzone({ action }: Props) {
   const [isPending, startTransition] = useTransition();
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function submit(file: File) {
+  function submit(files: FileList | File[]) {
+    const list = Array.from(files);
+    const subtitleFile = list.find((f) => SUB_RE.test(f.name));
+    if (!subtitleFile) return; // solo video/audio suelto, sin .srt no hay nada que minar
+
+    const mediaFile = list.find((f) => f !== subtitleFile);
+
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', subtitleFile);
+    if (mediaFile) formData.append('media', mediaFile);
     startTransition(() => {
       void action(formData);
     });
@@ -42,8 +55,7 @@ export function SrtDropzone({ action }: Props) {
       onDrop={(e) => {
         e.preventDefault();
         setIsDragging(false);
-        const file = e.dataTransfer.files?.[0];
-        if (file) submit(file);
+        if (e.dataTransfer.files?.length) submit(e.dataTransfer.files);
       }}
       className={cn(
         'flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed px-6 py-16 text-center transition-colors',
@@ -54,11 +66,11 @@ export function SrtDropzone({ action }: Props) {
       <input
         ref={inputRef}
         type="file"
-        accept=".srt,.ass,.ssa"
+        accept=".srt,.ass,.ssa,video/*,audio/*"
+        multiple
         className="hidden"
         onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) submit(file);
+          if (e.target.files?.length) submit(e.target.files);
         }}
       />
       {isPending ? (
@@ -70,7 +82,10 @@ export function SrtDropzone({ action }: Props) {
         <p className="font-medium">
           {isPending ? 'Procesando episodio…' : 'Soltá un .srt o .ass acá'}
         </p>
-        <p className="text-sm text-muted-foreground">o hacé click para elegirlo</p>
+        <p className="text-sm text-muted-foreground">
+          o hacé click para elegirlo — sumá también el video/audio (selección múltiple) para
+          clips de pronunciación
+        </p>
       </div>
     </div>
   );

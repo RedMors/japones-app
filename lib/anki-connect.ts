@@ -134,6 +134,15 @@ export function findCards(query: string): Promise<number[]> {
   return ankiRequest<number[]>('findCards', { query });
 }
 
+/**
+ * Sube un archivo a la carpeta de medios de Anki (collection.media). Devuelve
+ * el nombre final — Anki puede modificarlo si ya existe uno con ese nombre.
+ */
+export async function storeMediaFile(filename: string, base64Data: string): Promise<string> {
+  await ankiRequest<string>('storeMediaFile', { filename, data: base64Data });
+  return filename;
+}
+
 export function findNotes(query: string): Promise<number[]> {
   return ankiRequest<number[]>('findNotes', { query });
 }
@@ -415,6 +424,10 @@ export type WordNoteInput = {
   sentence?: string | null;
   animeName: string;
   episodeLabel?: string | null;
+  /** Nombre ya subido a collection.media vía storeMediaFile(). Se agrega al
+   *  campo de oración como [sound:...] — la convención estándar de Anki, la
+   *  misma que ya sabe interpretar stripAnkiMarkup() del lado de lectura. */
+  audioClipFilename?: string | null;
 };
 
 export function buildTags(input: WordNoteInput): string[] {
@@ -432,7 +445,10 @@ function buildFields(input: WordNoteInput, config: AnkiTargetConfig): Record<str
   const fields: Record<string, string> = { [config.fields.word]: input.word };
   if (config.fields.reading && input.reading) fields[config.fields.reading] = input.reading;
   if (config.fields.meaning && input.meaning) fields[config.fields.meaning] = input.meaning;
-  if (config.fields.sentence && input.sentence) fields[config.fields.sentence] = input.sentence;
+  if (config.fields.sentence && input.sentence) {
+    const sound = input.audioClipFilename ? ` [sound:${input.audioClipFilename}]` : '';
+    fields[config.fields.sentence] = `${input.sentence}${sound}`;
+  }
   return fields;
 }
 
