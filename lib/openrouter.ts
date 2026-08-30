@@ -11,7 +11,12 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 // (ver openrouter.ai/models) en OPENROUTER_MODEL en vez de tocar este archivo.
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-001';
 
-export async function askOpenRouter(userPrompt: string): Promise<string> {
+export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
+
+export async function askOpenRouterChat(
+  messages: ChatMessage[],
+  maxTokens = 350,
+): Promise<string> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error('Falta OPENROUTER_API_KEY en .env.local');
@@ -25,8 +30,8 @@ export async function askOpenRouter(userPrompt: string): Promise<string> {
     },
     body: JSON.stringify({
       model: process.env.OPENROUTER_MODEL || DEFAULT_MODEL,
-      messages: [{ role: 'user', content: userPrompt }],
-      max_tokens: 350,
+      messages,
+      max_tokens: maxTokens,
     }),
     // Sin esto, un OpenRouter/red colgada deja el botón "Pensando..." girando
     // para siempre — la Server Action nunca resuelve ni rechaza.
@@ -42,4 +47,8 @@ export async function askOpenRouter(userPrompt: string): Promise<string> {
     choices?: { message?: { content?: string } }[];
   };
   return data.choices?.[0]?.message?.content?.trim() ?? '';
+}
+
+export async function askOpenRouter(userPrompt: string): Promise<string> {
+  return askOpenRouterChat([{ role: 'user', content: userPrompt }]);
 }
