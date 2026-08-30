@@ -118,6 +118,56 @@ export const SCENE_THEMES: SceneTheme[] = [
     title: 'En la calle',
     emoji: '🚕',
     description: 'Pedir direcciones, moverte por la ciudad.',
+    imageItems: [
+      {
+        id: 'img-eki',
+        word: '駅[えき]',
+        reading: 'eki',
+        translation: 'estación',
+        imagePrompt:
+          'a train station entrance sign, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-takushi',
+        word: 'タクシー',
+        reading: 'takushii',
+        translation: 'taxi',
+        imagePrompt:
+          'a taxi cab, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-chizu',
+        word: '地図[ちず]',
+        reading: 'chizu',
+        translation: 'mapa',
+        imagePrompt:
+          'a folded paper map, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-shingou',
+        word: '信号[しんごう]',
+        reading: 'shingou',
+        translation: 'semáforo',
+        imagePrompt:
+          'a traffic light, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-basu',
+        word: 'バス',
+        reading: 'basu',
+        translation: 'colectivo/bus',
+        imagePrompt:
+          'a city bus, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+      {
+        id: 'img-kado',
+        word: '角[かど]',
+        reading: 'kado',
+        translation: 'la esquina',
+        imagePrompt:
+          'a street corner with a signpost, simple flat icon illustration, minimal flat design, plain solid background, no text',
+      },
+    ],
     phrases: [
       {
         id: 'c1',
