@@ -48,7 +48,10 @@ export default async function UnitPage({
   const questions = buildSession(items, unit.items);
 
   return (
-    <main className="mx-auto max-w-xl px-6 py-16 lg:max-w-2xl">
+    // pb chico a propósito: SessionRunner ya reserva su propio espacio abajo
+    // (pb-28) para el botón fijo — duplicar el padding acá era lo que hacía
+    // que hasta una pregunta corta de 2-4 opciones necesitara scroll.
+    <main className="mx-auto max-w-xl px-6 pt-16 pb-4 lg:max-w-2xl">
       <SessionRunner
         unitId={unit.id}
         unitTitle={unit.title}

@@ -290,8 +290,8 @@ export const SCENE_THEMES: SceneTheme[] = [
       { id: 'co3', tiles: ['カードは', 'つかえますか'], translation: '¿Puedo pagar con tarjeta?' },
       {
         id: 'co4',
-        tiles: ['サイズを', 'かえて', 'ください'],
-        translation: 'Cámbieme la talla, por favor.',
+        tiles: ['ちがう', 'サイズは', 'ありますか'],
+        translation: '¿Tienen otra talla?',
       },
       { id: 'co5', tiles: ['レシートを', 'ください'], translation: 'El recibo, por favor.' },
       {

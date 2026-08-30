@@ -46,7 +46,10 @@ export default async function ThemePage({
   const { icon: ThemeIcon, ...sceneOnly } = theme;
 
   return (
-    <main className="mx-auto max-w-xl px-6 py-16 lg:max-w-2xl">
+    // pb chico a propósito: WordBuilder/ImageQuiz ya reservan su propio
+    // espacio abajo (pb-28) para el botón fijo — ver mismo fix en
+    // app/[unitId]/page.tsx.
+    <main className="mx-auto max-w-xl px-6 pt-16 pb-4 lg:max-w-2xl">
       <h1 className="mb-6 flex items-center gap-2 text-2xl font-semibold tracking-tight">
         <ThemeIcon className="size-6 shrink-0" /> {theme.title}
       </h1>

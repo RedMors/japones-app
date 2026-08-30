@@ -489,9 +489,11 @@ const GRAMMAR_N1: RawItem[] = [
   { sentence: 'これはこの店[みせ]___の味[あじ]です。', answer: 'ならでは', translation: 'Este es un sabor único de esta tienda.' },
   { sentence: '京都[きょうと]___の景色[けしき]を楽[たの]しみました。', answer: 'ならでは', translation: 'Disfruté de un paisaje único de Kioto.' },
 
-  // 〜んばかりに (como si estuviera a punto de — verbo a-stem + んばかりに)
-  { sentence: '今[いま]にも泣[な]き___の顔[かお]をしていた。', answer: 'んばかりに', translation: 'Tenía una cara como si estuviera a punto de llorar.' },
-  { sentence: '彼[かれ]は「行[い]け」と言[い]わ___の勢[いきお]いで私[わたし]を見[み]た。', answer: 'んばかりに', translation: 'Me miró con una fuerza como si dijera "andá".' },
+  // 〜んばかり (como si estuviera a punto de — verbo a-stem + んばかり; antes
+  // de un sustantivo va んばかりの, no んばかりに — corregido: además tenía
+  // 泣き (masu-stem) en vez de 泣か (a-stem, la que pide んばかり).
+  { sentence: '今[いま]にも泣[な]か___の顔[かお]をしていた。', answer: 'んばかり', translation: 'Tenía una cara como si estuviera a punto de llorar.' },
+  { sentence: '彼[かれ]は「行[い]け」と言[い]わ___の勢[いきお]いで私[わたし]を見[み]た。', answer: 'んばかり', translation: 'Me miró con una fuerza como si dijera "andá".' },
 
   // 〜にひきかえ (en contraste con)
   { sentence: '兄[あに]の真面目[まじめ]さ___、弟[おとうと]は遊[あそ]んでばかりいる。', answer: 'にひきかえ', translation: 'En contraste con la seriedad del hermano mayor, el menor solo juega.' },
