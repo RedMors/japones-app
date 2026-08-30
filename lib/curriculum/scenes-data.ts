@@ -1,4 +1,4 @@
-import { UtensilsCrossed, Car, Handshake, ShoppingBag, type LucideIcon } from 'lucide-react';
+import { UtensilsCrossed, Car, Handshake, ShoppingBag, Briefcase, type LucideIcon } from 'lucide-react';
 
 /**
  * Frases por escena/nicho (restaurante, calle, cultura): no es progresión
@@ -299,6 +299,33 @@ export const SCENE_THEMES: SceneTheme[] = [
         tiles: ['きて', 'みても', 'いいですか'],
         translation: '¿Me lo puedo probar?',
       },
+    ],
+  },
+  {
+    // Sin `imageItems`, mismo criterio que "De compras".
+    id: 'trabajo',
+    title: 'En el trabajo',
+    icon: Briefcase,
+    description: 'Reuniones, pedidos, salir de la oficina.',
+    phrases: [
+      {
+        id: 'tr1',
+        tiles: ['かいぎは', 'なんじから', 'ですか'],
+        translation: '¿A qué hora empieza la reunión?',
+      },
+      {
+        id: 'tr2',
+        tiles: ['これを', 'コピーして', 'ください'],
+        translation: 'Fotocopie esto, por favor.',
+      },
+      { id: 'tr3', tiles: ['しごとが', 'おわりました'], translation: 'Terminé el trabajo.' },
+      {
+        id: 'tr4',
+        tiles: ['きょうは', 'やすみを', 'とります'],
+        translation: 'Hoy tomo el día libre.',
+      },
+      { id: 'tr5', tiles: ['メールを', 'おくって', 'ください'], translation: 'Mande un mail, por favor.' },
+      { id: 'tr6', tiles: ['おさきに', 'しつれいします'], translation: 'Me retiro primero.' },
     ],
   },
 ];
