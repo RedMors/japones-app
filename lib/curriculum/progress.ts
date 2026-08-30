@@ -232,6 +232,23 @@ export function setGoal(level: JlptGoalLevel, targetDate: string | null): void {
   setSetting('jlpt_goal_date', targetDate ?? '');
 }
 
+export type KanaCharStatus = 'mastered' | 'seen' | 'new';
+
+/**
+ * Progreso de TODOS los kana en una sola query, para la vista de referencia
+ * /caracteres — a diferencia de las lecciones (10 por vez, secuenciales),
+ * acá se ve de un vistazo qué caracteres ya se dominaron.
+ */
+export function getKanaProgressMap(): Map<string, KanaCharStatus> {
+  const rows = getDb()
+    .prepare(`SELECT item_id, mastered FROM curriculum_item_progress WHERE item_id LIKE 'kana:%'`)
+    .all() as { item_id: string; mastered: number }[];
+
+  const map = new Map<string, KanaCharStatus>();
+  for (const row of rows) map.set(row.item_id, row.mastered ? 'mastered' : 'seen');
+  return map;
+}
+
 export type SpeakingItem = { itemId: string; word: string; reading: string; meaning?: string };
 
 /**

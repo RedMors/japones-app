@@ -23,6 +23,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 Aprender
               </Link>
               <Link
+                href="/caracteres"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Caracteres
+              </Link>
+              <Link
                 href="/miner"
                 className="text-sm text-muted-foreground hover:text-foreground"
               >

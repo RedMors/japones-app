@@ -13,6 +13,20 @@ function daysUntil(dateStr: string): number {
   return Math.ceil((target.getTime() - today.getTime()) / 86_400_000);
 }
 
+/** Mensaje especial en los hitos de racha — el número solo ya lo dice todo,
+ *  pero un cartel de "¡7 días!" se siente mucho más como un logro. */
+const STREAK_MILESTONES = [
+  { days: 100, emoji: '💯', label: '¡Racha de 100 días! Leyenda.' },
+  { days: 30, emoji: '🏆', label: '¡Un mes seguido! Impresionante.' },
+  { days: 14, emoji: '⚡', label: '¡Dos semanas de racha!' },
+  { days: 7, emoji: '🎉', label: '¡Una semana seguida!' },
+  { days: 3, emoji: '✨', label: '¡Ya llevás 3 días, seguí así!' },
+] as const;
+
+function streakMilestone(streak: number): { emoji: string; label: string } | null {
+  return STREAK_MILESTONES.find((m) => streak >= m.days) ?? null;
+}
+
 const ACTIVITY_LABEL = {
   mining: { emoji: '⛏️', label: 'Minado' },
   curriculum: { emoji: '📚', label: 'Lecciones' },
@@ -24,7 +38,8 @@ export default async function ProgresoPage() {
   const byDay = getActivityByDay(126);
   const streak = computeStudyStreak(byDay);
   const totals = getActivityTotals();
-  const totalActivities = totals.mining + totals.curriculum + totals.anki_review;
+  const totalActivities = totals.mining + totals.curriculum + totals.speaking + totals.anki_review;
+  const milestone = streakMilestone(streak);
   const goal = getGoal();
   const goalProgress = goal ? getGoalProgress(goal.level) : null;
   const goalPct = goalProgress && goalProgress.total > 0
@@ -62,6 +77,13 @@ export default async function ProgresoPage() {
           </CardContent>
         </Card>
       </div>
+
+      {milestone && (
+        <div className="mt-4 flex items-center gap-3 rounded-xl border border-accent-foreground/30 bg-accent p-4 text-accent-foreground">
+          <span className="text-2xl">{milestone.emoji}</span>
+          <p className="text-sm font-medium">{milestone.label}</p>
+        </div>
+      )}
 
       {goal && goalProgress && (
         <Card className="mt-4">
