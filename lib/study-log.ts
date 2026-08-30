@@ -5,7 +5,7 @@
  */
 import { getDb } from './db.ts';
 
-export type StudyActivity = 'mining' | 'anki_review' | 'curriculum';
+export type StudyActivity = 'mining' | 'anki_review' | 'curriculum' | 'speaking';
 
 export type StudyLogEntry = {
   activity: StudyActivity;
@@ -62,7 +62,7 @@ export function getActivityTotals(): ActivityTotals {
     .prepare(`SELECT activity, COUNT(*) AS count FROM study_logs GROUP BY activity`)
     .all() as { activity: StudyActivity; count: number }[];
 
-  const totals: ActivityTotals = { mining: 0, anki_review: 0, curriculum: 0 };
+  const totals: ActivityTotals = { mining: 0, anki_review: 0, curriculum: 0, speaking: 0 };
   for (const row of rows) totals[row.activity] = row.count;
   return totals;
 }

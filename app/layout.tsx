@@ -34,6 +34,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               >
                 Buscar
               </Link>
+              <Link
+                href="/hablar"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Hablar
+              </Link>
               <Link href="/anki" className="text-sm text-muted-foreground hover:text-foreground">
                 Anki
               </Link>

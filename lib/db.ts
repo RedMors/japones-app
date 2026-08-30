@@ -118,6 +118,21 @@ const MIGRATIONS: string[] = [
   );
   CREATE INDEX idx_study_logs_date ON study_logs(date(created_at));
   `,
+  // v4 — agrega 'speaking' a study_logs. SQLite no permite ALTER de un CHECK,
+  // así que se reconstruye la tabla (patrón estándar: nueva tabla, copiar, swap).
+  `
+  CREATE TABLE study_logs_new (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    activity   TEXT NOT NULL CHECK (activity IN ('mining','anki_review','curriculum','speaking')),
+    minutes    INTEGER,
+    notes      TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  INSERT INTO study_logs_new SELECT id, activity, minutes, notes, created_at FROM study_logs;
+  DROP TABLE study_logs;
+  ALTER TABLE study_logs_new RENAME TO study_logs;
+  CREATE INDEX idx_study_logs_date ON study_logs(date(created_at));
+  `,
 ];
 
 function applyMigrations(db: DB): void {

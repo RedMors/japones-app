@@ -16,6 +16,7 @@ function daysUntil(dateStr: string): number {
 const ACTIVITY_LABEL = {
   mining: { emoji: '⛏️', label: 'Minado' },
   curriculum: { emoji: '📚', label: 'Lecciones' },
+  speaking: { emoji: '🗣️', label: 'Habla' },
   anki_review: { emoji: '🎴', label: 'Repasos' },
 } as const;
 

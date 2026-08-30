@@ -10,6 +10,7 @@
 import { getDb, getSetting, setSetting } from '../db.ts';
 import { getUnit, getNextUnit, UNITS, type Unit } from './units.ts';
 import { JLPT_GOAL_LEVELS, type JlptGoalLevel } from './goal-levels.ts';
+import { stripFurigana, toReading } from './furigana.ts';
 
 export { JLPT_GOAL_LEVELS, type JlptGoalLevel };
 
@@ -229,6 +230,40 @@ export function getGoal(): JlptGoal | null {
 export function setGoal(level: JlptGoalLevel, targetDate: string | null): void {
   setSetting('jlpt_goal_level', level);
   setSetting('jlpt_goal_date', targetDate ?? '');
+}
+
+export type SpeakingItem = { itemId: string; word: string; reading: string; meaning?: string };
+
+/**
+ * Vocabulario y kana ya dominados, listos para practicar pronunciación. Se
+ * excluyen las unidades de gramática (oraciones para completar, no palabras
+ * sueltas para pronunciar) — no dan un target de pronunciación limpio.
+ */
+export function getSpeakingPracticeItems(limit: number): SpeakingItem[] {
+  const masteredRows = getDb()
+    .prepare(
+      `SELECT item_id FROM curriculum_item_progress WHERE mastered = 1 ORDER BY RANDOM() LIMIT ?`,
+    )
+    .all(limit * 3) as { item_id: string }[]; // de sobra: se descartan gramática/no encontrados
+
+  const out: SpeakingItem[] = [];
+  for (const row of masteredRows) {
+    if (out.length >= limit) break;
+    const unit = UNITS.find((u) => u.items.some((i) => i.id === row.item_id));
+    if (!unit || unit.id.startsWith('grammar-')) continue;
+    const item = unit.items.find((i) => i.id === row.item_id);
+    if (!item) continue;
+
+    const reading = toReading(item.prompt);
+    if (!reading) continue;
+    out.push({
+      itemId: item.id,
+      word: stripFurigana(item.prompt),
+      reading,
+      meaning: unit.level === 'hiragana' || unit.level === 'katakana' ? undefined : item.answer,
+    });
+  }
+  return out;
 }
 
 export function startSession(unitId: string): number {

@@ -146,6 +146,9 @@ try {
 } finally {
   db.prepare(`DELETE FROM episodes WHERE source_filename LIKE '[Fixture]%'`).run();
   db.prepare(`DELETE FROM known_vocab WHERE lemma = '食べる'`).run();
+  // mineEpisode() registra actividad vía logStudy() — sin este DELETE queda
+  // basura real en study_logs cada vez que se corre este check.
+  db.prepare(`DELETE FROM study_logs WHERE notes LIKE 'Test Anime%'`).run();
 
   for (const p of dictPaths) {
     if (fs.existsSync(p)) fs.rmSync(p);

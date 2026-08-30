@@ -42,6 +42,17 @@ export function stripFurigana(input: string): string {
     .join('');
 }
 
+/**
+ * Lectura completa en kana, ignorando los corchetes de furigana. Para texto
+ * sin kanji (ya en kana) da el mismo texto — sirve tanto para vocabulario
+ * con furigana como para los ítems de kana pelados.
+ */
+export function toReading(input: string): string {
+  return parseFurigana(input)
+    .map((s) => s.reading ?? s.text)
+    .join('');
+}
+
 /** Envuelve un lema con su lectura en formato furigana, si corresponde. */
 export function withFurigana(word: string, reading: string | null): string {
   if (!reading || reading === word) return word;
