@@ -24,10 +24,12 @@ export default async function ThemePage({
       try {
         const key = await getOrGenerateImageKey(item.imagePrompt);
         imageUrls[item.id] = `/api/scene-image/${key}`;
-      } catch {
+      } catch (err) {
         // Sin OPENROUTER_API_KEY configurada, o falló la generación: el
         // ejercicio de imágenes sigue andando, solo sin imagen en esa opción
-        // (ImageQuiz ya maneja el caso "sin imagen").
+        // (ImageQuiz ya maneja el caso "sin imagen"). Log server-side para
+        // poder diagnosticar — este catch no debe ser una caja negra.
+        console.error(`[temas/${themeId}] no se pudo generar imagen para "${item.id}":`, err);
       }
     }
   }

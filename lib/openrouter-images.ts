@@ -6,9 +6,12 @@
  */
 const OPENROUTER_IMAGES_URL = 'https://openrouter.ai/api/v1/images';
 
-// Modelo barato, salida tipo ícono plano — no fotorrealista, no hace falta
-// para este uso. Configurable por si OpenRouter lo deprecara.
-const DEFAULT_IMAGE_MODEL = 'recraft/recraft-v4-styles';
+// Verificado contra GET /api/v1/models (output_modalities incluye "image") —
+// el nombre puesto originalmente ("recraft/recraft-v4-styles") no existe,
+// era un dato inventado por un resumen de documentación poco confiable.
+// google/gemini-2.5-flash-image: ~$0.00003 por imagen de salida, barato y
+// bien establecido (familia "Nano Banana"). Configurable por si cambia.
+const DEFAULT_IMAGE_MODEL = 'google/gemini-2.5-flash-image';
 
 export type GeneratedImage = { base64: string; mediaType: string };
 
