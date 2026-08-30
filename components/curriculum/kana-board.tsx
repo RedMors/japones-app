@@ -75,13 +75,22 @@ function Section({
   cells: KanaCell[];
 }) {
   const mastered = cells.filter((c) => c.status === 'mastered').length;
+  const complete = mastered === cells.length;
   const rows = groupByRow(cells);
 
   return (
     <div className="mt-6 first:mt-0">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold">{title}</h2>
-        <span className="text-xs text-muted-foreground tabular-nums">
+        <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+          {title}
+          {complete && <span title="¡Sección completa!">🏆</span>}
+        </h2>
+        <span
+          className={cn(
+            'text-xs tabular-nums',
+            complete ? 'font-medium text-accent-foreground' : 'text-muted-foreground',
+          )}
+        >
           {mastered}/{cells.length} dominados
         </span>
       </div>
@@ -90,9 +99,15 @@ function Section({
           <CharGrid key={i} cells={row} />
         ))}
       </div>
-      <Button asChild variant="secondary" className="mt-4 w-full">
-        <Link href={`/${unitId}`}>Practicar</Link>
-      </Button>
+      {complete ? (
+        <p className="mt-4 rounded-lg border border-accent-foreground/30 bg-accent px-4 py-2.5 text-center text-sm font-medium text-accent-foreground">
+          🎉 ¡Dominaste todo {title.toLowerCase()}!
+        </p>
+      ) : (
+        <Button asChild variant="secondary" className="mt-4 w-full">
+          <Link href={`/${unitId}`}>Practicar</Link>
+        </Button>
+      )}
     </div>
   );
 }
