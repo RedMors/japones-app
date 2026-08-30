@@ -86,6 +86,7 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
   const [ready, setReady] = useState(false);
 
   const sentence = session[index];
+  const targetLength = correctCharsOf(sentence.jp).length;
 
   useEffect(() => {
     const fresh = sampleSession(row.sentences);
@@ -94,6 +95,12 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
     setReady(true);
     // Una sola vez al montar — "otra sesión" resamplea explícitamente vía handleAnother.
   }, []);
+
+  // Se reproduce sola al entrar a cada oración (como Duolingo) — sin esto,
+  // hay que acordarse de tocar el parlante antes de poder intentar.
+  useEffect(() => {
+    if (ready) speakJapanese(sentence.jp);
+  }, [ready, sentence.id, sentence.jp]);
 
   function playTile(text: string) {
     speakJapanese(text);
@@ -153,7 +160,9 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
     setFinished(false);
   }
 
-  if (!ready || !sentence) return null;
+  if (!ready || !sentence) {
+    return <p className="text-center text-sm text-muted-foreground">Cargando...</p>;
+  }
 
   if (finished) {
     return (
@@ -233,6 +242,11 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
               </p>
               <p className="text-xs opacity-80">{sentence.reading}</p>
               <p className="text-sm font-medium opacity-90">{sentence.translation}</p>
+              {!correct && (
+                <p className="jp text-xs opacity-70">
+                  Armaste: {answer.map((t) => t.text).join('')}
+                </p>
+              )}
             </div>
           )}
 
@@ -257,7 +271,7 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
           {index + 1 >= session.length ? 'Terminar' : 'Siguiente'}
         </Button>
       ) : (
-        <Button className="w-full" size="lg" onClick={handleCheck} disabled={answer.length === 0}>
+        <Button className="w-full" size="lg" onClick={handleCheck} disabled={answer.length !== targetLength}>
           Comprobar
         </Button>
       )}
