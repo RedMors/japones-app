@@ -6,7 +6,6 @@ import Link from 'next/link';
 export const dynamic = 'force-dynamic';
 import { Lock, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import {
   Accordion,
   AccordionContent,
@@ -29,11 +28,12 @@ const LEVEL_LABEL: Record<string, string> = {
 
 const LEVEL_ORDER = ['hiragana', 'katakana', 'N5', 'N4', 'N3', 'N2', 'N1'];
 
-type UnitRow = Unit & { status: UnitStatus; masteredCount: number };
+type UnitRow = Unit & { status: UnitStatus; masteredCount: number; seenCount: number };
 
 function UnitCard({ unit }: { unit: UnitRow }) {
   const total = unit.items.length;
-  const pct = total > 0 ? Math.round((unit.masteredCount / total) * 100) : 0;
+  const masteredPct = total > 0 ? Math.round((unit.masteredCount / total) * 100) : 0;
+  const seenPct = total > 0 ? Math.round((unit.seenCount / total) * 100) : 0;
   const locked = unit.status === 'locked';
 
   const content = (
@@ -50,9 +50,22 @@ function UnitCard({ unit }: { unit: UnitRow }) {
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{unit.title}</p>
-          <Progress value={pct} className="mt-2 h-1.5" />
+          {/* Track claro = ya visto al menos una vez; barra sólida = dominado
+              (5 aciertos espaciados). Sin el track claro, practicar 30 ítems
+              nuevos se ve idéntico a no haber tocado nada — desalienta. */}
+          <div className="relative mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="absolute inset-y-0 left-0 rounded-full bg-primary/25"
+              style={{ width: `${seenPct}%` }}
+            />
+            <div
+              className="absolute inset-y-0 left-0 rounded-full bg-primary"
+              style={{ width: `${masteredPct}%` }}
+            />
+          </div>
           <p className="mt-1 text-xs text-muted-foreground">
             {unit.masteredCount}/{total} dominados
+            {unit.seenCount > unit.masteredCount && ` · ${unit.seenCount}/${total} vistos`}
           </p>
         </div>
         {!locked && <ChevronRight className="size-4 shrink-0 text-muted-foreground" />}

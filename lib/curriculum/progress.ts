@@ -48,7 +48,11 @@ export function getUnitStatus(unitId: string): UnitStatus {
  * Todas las unidades con su estado y progreso, en 2 queries en total en vez
  * de 2 por unidad — con 400+ unidades esa diferencia es real.
  */
-export function listUnitsWithStatus(): (Unit & { status: UnitStatus; masteredCount: number })[] {
+export function listUnitsWithStatus(): (Unit & {
+  status: UnitStatus;
+  masteredCount: number;
+  seenCount: number;
+})[] {
   const db = getDb();
 
   const statusRows = db
@@ -63,10 +67,20 @@ export function listUnitsWithStatus(): (Unit & { status: UnitStatus; masteredCou
     .all() as { unit_id: string; c: number }[];
   const masteredByUnit = new Map(masteredRows.map((r) => [r.unit_id, r.c]));
 
+  // Cuántos ítems ya se contestaron al menos una vez, dominados o no — sin
+  // esto el contador de progreso se queda en 0 hasta el primer dominado (5
+  // aciertos espaciados en el tiempo) y da la sensación falsa de que nada
+  // avanzó, aunque el usuario ya haya hecho varias sesiones.
+  const seenRows = db
+    .prepare('SELECT unit_id, count(*) c FROM curriculum_item_progress GROUP BY unit_id')
+    .all() as { unit_id: string; c: number }[];
+  const seenByUnit = new Map(seenRows.map((r) => [r.unit_id, r.c]));
+
   return UNITS.map((unit) => ({
     ...unit,
     status: statusByUnit.get(unit.id) ?? (UNITS[0]?.id === unit.id ? 'available' : 'locked'),
     masteredCount: masteredByUnit.get(unit.id) ?? 0,
+    seenCount: seenByUnit.get(unit.id) ?? 0,
   }));
 }
 

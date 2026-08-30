@@ -163,29 +163,33 @@ export function SessionRunner({
       )}
 
       <Card>
-        <CardContent className="flex flex-col items-center gap-6 py-12">
+        <CardContent className="flex flex-col items-center gap-6 py-12 lg:gap-8 lg:py-16">
           <div className="flex items-center gap-2">
             <FuriganaText
               text={question.prompt}
               className={cn(
                 'jp text-center leading-loose',
-                stripFurigana(question.prompt).length <= 4 ? 'text-6xl' : 'text-3xl',
+                stripFurigana(question.prompt).length <= 4
+                  ? 'text-6xl lg:text-8xl'
+                  : 'text-3xl lg:text-4xl',
               )}
             />
             <Button
               variant="ghost"
               size="icon"
-              className="shrink-0 self-start text-muted-foreground"
+              className="shrink-0 self-start text-muted-foreground lg:size-10"
               onClick={() => speakJapanese(stripFurigana(question.prompt))}
               title="Escuchar"
             >
-              <Volume2 className="size-4" />
+              <Volume2 className="size-4 lg:size-5" />
             </Button>
           </div>
           {question.subtext && (
-            <p className="text-center text-sm text-muted-foreground">{question.subtext}</p>
+            <p className="text-center text-sm text-muted-foreground lg:text-base">
+              {question.subtext}
+            </p>
           )}
-          <div className="grid w-full grid-cols-2 gap-3">
+          <div className="grid w-full grid-cols-2 gap-3 lg:gap-4">
             {question.choices.map((choice) => {
               const isSelected = selected === choice;
               const isAnswer = choice === question.answer;
@@ -200,7 +204,7 @@ export function SessionRunner({
                   disabled={revealed}
                   onClick={() => handleChoice(choice)}
                   className={cn(
-                    'h-auto min-h-14 flex-col gap-0.5 whitespace-normal py-2 text-base',
+                    'h-auto min-h-14 flex-col gap-0.5 whitespace-normal py-2 text-base lg:min-h-20 lg:py-4 lg:text-lg',
                     revealed && isAnswer && 'border-accent-foreground bg-accent text-accent-foreground',
                     revealed && isSelected && !isAnswer && 'border-destructive text-destructive',
                   )}
@@ -211,7 +215,7 @@ export function SessionRunner({
                     {choice}
                   </span>
                   {reading && reading !== choice && (
-                    <span className="text-xs font-normal opacity-70">{reading}</span>
+                    <span className="text-xs font-normal opacity-70 lg:text-sm">{reading}</span>
                   )}
                 </Button>
               );
