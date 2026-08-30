@@ -417,6 +417,54 @@ const grammarN3Items = GRAMMAR_N3.map((raw, i) =>
   toItem(raw, i, 'grammar-n3-patrones', 'n3-patrones'),
 );
 
+/** Gramática N2: mismo criterio que N3 — 10 patrones estándar (Shin Kanzen
+ *  Master N2, Sou Matome N2), no obscuros, cada oración revisada a mano. */
+const GRAMMAR_N2: RawItem[] = [
+  // 〜わけではない (no es que..., negación parcial)
+  { sentence: '嫌[きら]いな___、ただ時間[じかん]がないだけです。', answer: 'わけではない', translation: 'No es que no me guste, solo que no tengo tiempo.' },
+  { sentence: '全部[ぜんぶ]分[わ]かった___、まだ質問[しつもん]があります。', answer: 'わけではない', translation: 'No es que haya entendido todo, todavía tengo preguntas.' },
+
+  // 〜にもかかわらず (a pesar de, pese a)
+  { sentence: '雨[あめ]___、試合[しあい]は行[おこな]われました。', answer: 'にもかかわらず', translation: 'A pesar de la lluvia, el partido se jugó.' },
+  { sentence: '忙[いそが]しい___、彼[かれ]は手伝[てつだ]ってくれました。', answer: 'にもかかわらず', translation: 'A pesar de estar ocupado, él me ayudó.' },
+
+  // 〜をきっかけに (a partir de, tomando como motivo)
+  { sentence: '病気[びょうき]___、生活[せいかつ]を見直[みなお]しました。', answer: 'をきっかけに', translation: 'A raíz de mi enfermedad, reconsideré mi estilo de vida.' },
+  { sentence: '友達[ともだち]の紹介[しょうかい]___、日本語[にほんご]を習[なら]い始[はじ]めました。', answer: 'をきっかけに', translation: 'Motivado por la recomendación de un amigo, empecé a estudiar japonés.' },
+
+  // 〜ものの (aunque, si bien — más formal que けど)
+  { sentence: '挑戦[ちょうせん]した___、失敗[しっぱい]しました。', answer: 'ものの', translation: 'Aunque lo intenté, fracasé.' },
+  { sentence: '約束[やくそく]した___、彼[かれ]は来[こ]なかった。', answer: 'ものの', translation: 'Aunque prometió venir, él no vino.' },
+
+  // 〜にすぎない (no es más que, simplemente es)
+  { sentence: 'それはただの噂[うわさ]___。', answer: 'にすぎない', translation: 'Eso no es más que un rumor.' },
+  { sentence: '彼[かれ]はまだ子供[こども]___。', answer: 'にすぎない', translation: 'Él no es más que un niño todavía.' },
+
+  // 〜次第で (según, dependiendo de)
+  { sentence: '結果[けっか]は努力[どりょく]___変[か]わります。', answer: '次第で', translation: 'El resultado cambia según el esfuerzo.' },
+  { sentence: '天気[てんき]___予定[よてい]を変[か]えます。', answer: '次第で', translation: 'Cambio los planes según el clima.' },
+
+  // 〜つつ (mientras, a la vez que)
+  { sentence: '音楽[おんがく]を聞[き]き___勉強[べんきょう]します。', answer: 'つつ', translation: 'Estudio mientras escucho música.' },
+  { sentence: '悪[わる]いと思[おも]い___、また遅刻[ちこく]してしまいました。', answer: 'つつ', translation: 'Aun pensando que estaba mal, llegué tarde otra vez.' },
+
+  // 〜はもちろん (sin mencionar, por supuesto que también)
+  { sentence: '英語[えいご]___、フランス語[ふらんすご]も話[はな]せます。', answer: 'はもちろん', translation: 'Además del inglés, también habla francés.' },
+  { sentence: '平日[へいじつ]___、週末[しゅうまつ]も働[はたら]いています。', answer: 'はもちろん', translation: 'Además de entre semana, también trabajo los fines de semana.' },
+
+  // 〜かねない (podría llegar a, hay riesgo de que)
+  { sentence: 'そんなことをしたら、事故[じこ]になり___。', answer: 'かねない', translation: 'Si hacés eso, podría terminar en un accidente.' },
+  { sentence: '無理[むり]をすると、体[からだ]を壊[こわ]し___。', answer: 'かねない', translation: 'Si te esforzás demasiado, podrías arruinar tu salud.' },
+
+  // 〜とはいえ (dicho esto, aun así)
+  { sentence: '便利[べんり]___、使[つか]い方[かた]が難[むずか]しいです。', answer: 'とはいえ', translation: 'Aunque es conveniente, el modo de uso es difícil.' },
+  { sentence: '子供[こども]___、もう十分[じゅうぶん]な知識[ちしき]があります。', answer: 'とはいえ', translation: 'Aunque es un niño, ya tiene suficiente conocimiento.' },
+];
+
+const grammarN2Items = GRAMMAR_N2.map((raw, i) =>
+  toItem(raw, i, 'grammar-n2-patrones', 'n2-patrones'),
+);
+
 export const GRAMMAR_UNITS: Omit<Unit, 'order'>[] = [
   {
     id: 'grammar-n5-particulas',
@@ -435,6 +483,12 @@ export const GRAMMAR_UNITS: Omit<Unit, 'order'>[] = [
     title: 'N3 — Patrones gramaticales',
     level: 'N3',
     items: grammarN3Items,
+  },
+  {
+    id: 'grammar-n2-patrones',
+    title: 'N2 — Patrones gramaticales',
+    level: 'N2',
+    items: grammarN2Items,
   },
 ];
 
