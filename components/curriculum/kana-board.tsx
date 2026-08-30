@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { speakJapanese } from '@/lib/tts';
 import type { KanaCharStatus } from '@/lib/curriculum/progress';
 
 export type KanaCell = {
@@ -46,20 +47,22 @@ function CharGrid({ cells }: { cells: KanaCell[] }) {
   return (
     <div className="grid grid-cols-5 gap-2 sm:gap-3">
       {cells.map((cell) => (
-        <div
+        <button
           key={cell.id}
+          type="button"
           title={`${cell.char} — ${cell.romaji}`}
+          onClick={() => speakJapanese(cell.char)}
           className={cn(
-            'flex flex-col items-center justify-center gap-1 rounded-xl border py-3',
+            'flex flex-col items-center justify-center gap-1 rounded-xl border py-3 transition-colors hover:bg-muted/50',
             cell.status === 'mastered'
-              ? 'border-accent-foreground/40 bg-accent'
+              ? 'border-accent-foreground/40 bg-accent hover:bg-accent'
               : 'border-border bg-card',
           )}
         >
           <span className="jp text-2xl sm:text-3xl">{cell.char}</span>
           <span className="text-[11px] text-muted-foreground">{cell.romaji}</span>
           <span className={cn('size-1.5 rounded-full', STATUS_DOT[cell.status])} />
-        </div>
+        </button>
       ))}
     </div>
   );
