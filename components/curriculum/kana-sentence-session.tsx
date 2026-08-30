@@ -2,16 +2,30 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Volume2, RotateCcw, Check, X } from 'lucide-react';
+import { Volume2, RotateCcw, Check, X, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { speakJapanese } from '@/lib/tts';
 import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
+import { HIRAGANA, KATAKANA, HIRAGANA_AVANZADO, KATAKANA_AVANZADO } from '@/lib/curriculum/kana-data';
 import { SESSION_SIZE, type KanaSentence, type KanaRowPractice } from '@/lib/curriculum/kana-sentences';
 
 type Tile = { key: string; text: string };
+
+/**
+ * Caracter suelto -> romaji, para el toggle "Mostrar romaji". Solo cubre
+ * caracteres de tamaño normal (un caracter = un sonido) — los chiquitos de
+ * yōon (ゃゅょ) y el sokuon (っ) no tienen sonido propio en soledad, se
+ * unen al de al lado (シャ = "sha", no "shi"+"a" sueltos), así que quedan
+ * sin romaji a propósito en vez de mostrar algo engañoso.
+ */
+const ROMAJI_BY_CHAR = new Map(
+  [...HIRAGANA, ...KATAKANA, ...HIRAGANA_AVANZADO, ...KATAKANA_AVANZADO]
+    .filter((k) => k.char.length === 1)
+    .map((k) => [k.char, k.romaji]),
+);
 
 function shuffle<T>(items: T[]): T[] {
   const arr = [...items];
@@ -84,6 +98,7 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
   const [ready, setReady] = useState(false);
+  const [showRomaji, setShowRomaji] = useState(false);
 
   const sentence = session[index];
   const targetLength = correctCharsOf(sentence.jp).length;
@@ -194,9 +209,15 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
         </span>
       </div>
 
-      <p className="text-sm font-medium text-muted-foreground">
-        Escuchá y tocá las fichas en orden — cada una también suena sola
-      </p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-medium text-muted-foreground">
+          Escuchá y tocá las fichas en orden — cada una también suena sola
+        </p>
+        <Button variant="ghost" size="sm" onClick={() => setShowRomaji((s) => !s)} className="shrink-0">
+          {showRomaji ? <EyeOff className="mr-1.5 size-3.5" /> : <Eye className="mr-1.5 size-3.5" />}
+          {showRomaji ? 'Ocultar romaji' : 'Mostrar romaji'}
+        </Button>
+      </div>
 
       <Card>
         <CardContent className="flex flex-col items-center gap-6 py-10">
@@ -220,9 +241,14 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
                 type="button"
                 onClick={() => unpick(tile)}
                 disabled={checked}
-                className="jp rounded-lg border border-primary bg-primary/10 px-3 py-2 text-lg disabled:cursor-default"
+                className="jp flex flex-col items-center rounded-lg border border-primary bg-primary/10 px-3 py-2 text-lg disabled:cursor-default"
               >
                 {tile.text}
+                {showRomaji && ROMAJI_BY_CHAR.has(tile.text) && (
+                  <span className="text-[10px] font-normal text-muted-foreground">
+                    {ROMAJI_BY_CHAR.get(tile.text)}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -257,9 +283,14 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
                 type="button"
                 onClick={() => pick(tile)}
                 disabled={checked}
-                className="jp rounded-lg border border-border px-3 py-2 text-lg transition-colors hover:bg-muted/50 disabled:cursor-default disabled:opacity-40"
+                className="jp flex flex-col items-center rounded-lg border border-border px-3 py-2 text-lg transition-colors hover:bg-muted/50 disabled:cursor-default disabled:opacity-40"
               >
                 {tile.text}
+                {showRomaji && ROMAJI_BY_CHAR.has(tile.text) && (
+                  <span className="text-[10px] font-normal text-muted-foreground">
+                    {ROMAJI_BY_CHAR.get(tile.text)}
+                  </span>
+                )}
               </button>
             ))}
           </div>
