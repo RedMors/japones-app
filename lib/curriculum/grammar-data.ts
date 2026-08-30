@@ -15,9 +15,9 @@ const PARTICLE_ANSWERS = ['は', 'が', 'を', 'に', 'で', 'と', 'も', 'か�
 
 type RawItem = { sentence: string; answer: string; translation: string };
 
-function toItem(raw: RawItem, index: number, group: string): CurriculumItem {
+function toItem(raw: RawItem, index: number, group: string, idPrefix: string): CurriculumItem {
   return {
-    id: `grammar:particles:${index}`,
+    id: `grammar:${idPrefix}:${index}`,
     prompt: raw.sentence.replace('___', '＿＿＿'),
     answer: raw.answer,
     group,
@@ -84,7 +84,9 @@ const PARTICLES_N5: RawItem[] = [
   },
 ];
 
-const particleItems = PARTICLES_N5.map((raw, i) => toItem(raw, i, 'grammar-n5-particulas'));
+// idPrefix se mantiene "particles" tal cual estaba (no "grammar-n5-particulas")
+// a propósito: cambiarlo invalidaría el progreso ya guardado de usuarios reales.
+const particleItems = PARTICLES_N5.map((raw, i) => toItem(raw, i, 'grammar-n5-particulas', 'particles'));
 
 /**
  * Conjugación verbal N4. A diferencia de partículas, acá el distractor
@@ -314,6 +316,107 @@ const conjugationItems: CurriculumItem[] = VERB_CONJUGATION_N4.map((raw, i) => (
   subtext: `${raw.dictForm} (${raw.meaning}) — ${raw.translation}`,
 }));
 
+/**
+ * Gramática N3: 10 patrones de los que aparece en cualquier libro de N3
+ * (Shin Kanzen Master N3, Tobira) — no de una lista pública (no se encontró
+ * ninguna confiable, ver commit), sino escritos a mano con el mismo cuidado
+ * que N5, cada oración revisada. Deliberadamente chico: mejor 10 bien hechos
+ * que apurar los ~40-50 que tendría un N3 completo.
+ */
+const GRAMMAR_N3: RawItem[] = [
+  // 〜そうだ (様態: se ve que..., por apariencia)
+  { sentence: '雨[あめ]が降[ふ]り___です。', answer: 'そう', translation: 'Parece que va a llover.' },
+  { sentence: 'このケーキ、おいし___です。', answer: 'そう', translation: 'Esta torta se ve rica.' },
+
+  // 〜ようだ (parece que..., por inferencia/observación propia)
+  { sentence: '誰[だれ]もいない___です。', answer: 'よう', translation: 'Parece que no hay nadie.' },
+  { sentence: '彼[かれ]は忙[いそが]しい___です。', answer: 'よう', translation: 'Parece que él está ocupado.' },
+
+  // 〜らしい (parece que..., por lo que se oyó/dijeron — no observación propia)
+  { sentence: '明日[あした]は雨[あめ]___です。', answer: 'らしい', translation: 'Dicen que mañana llueve.' },
+  {
+    sentence: '彼[かれ]は元[もと]先生[せんせい]___です。',
+    answer: 'らしい',
+    translation: 'Parece que él fue profesor (por lo que se dice).',
+  },
+
+  // 〜のに (a pesar de que..., contra lo esperado)
+  {
+    sentence: '頑張[がんば]った___、失敗[しっぱい]しました。',
+    answer: 'のに',
+    translation: 'A pesar de que me esforcé, fracasé.',
+  },
+  { sentence: '若[わか]い___、もう疲[つか]れています。', answer: 'のに', translation: 'A pesar de ser joven, ya está cansado.' },
+
+  // 〜ため(に) (por causa de / debido a)
+  {
+    sentence: '台風[たいふう]の___、電車[でんしゃ]が止[と]まりました。',
+    answer: 'ため',
+    translation: 'Los trenes se pararon debido al tifón.',
+  },
+  {
+    sentence: '病気[びょうき]の___、学校[がっこう]を休[やす]みました。',
+    answer: 'ため',
+    translation: 'Falté a la escuela debido a una enfermedad.',
+  },
+
+  // 〜たばかり (recién..., acabo de...)
+  { sentence: 'さっき起[お]きた___です。', answer: 'ばかり', translation: 'Recién me desperté hace un momento.' },
+  {
+    sentence: 'この店[みせ]は先月[せんげつ]できた___です。',
+    answer: 'ばかり',
+    translation: 'Esta tienda recién abrió el mes pasado.',
+  },
+
+  // 〜ように (para que..., de manera que...)
+  {
+    sentence: '忘[わす]れない___、メモしました。',
+    answer: 'ように',
+    translation: 'Anoté una nota para no olvidarme.',
+  },
+  {
+    sentence: 'みんなに聞[き]こえる___、大[おお]きな声[こえ]で話[はな]しました。',
+    answer: 'ように',
+    translation: 'Hablé fuerte para que todos pudieran oír.',
+  },
+
+  // 〜という (llamado..., que dice/se llama...)
+  { sentence: '田中[たなか]___人[ひと]を知[し]っていますか。', answer: 'という', translation: '¿Conocés a una persona llamada Tanaka?' },
+  {
+    sentence: '「もったいない」___言葉[ことば]を知[し]っていますか。',
+    answer: 'という',
+    translation: '¿Conocés la palabra "mottainai"?',
+  },
+
+  // 〜において (en, dentro de — formal, ámbito/lugar/momento)
+  {
+    sentence: 'この分野[ぶんや]___、彼[かれ]が一番[いちばん]詳[くわ]しいです。',
+    answer: 'において',
+    translation: 'En este campo, él es quien más sabe.',
+  },
+  {
+    sentence: '現代[げんだい]社会[しゃかい]___、情報[じょうほう]はとても重要[じゅうよう]です。',
+    answer: 'において',
+    translation: 'En la sociedad actual, la información es muy importante.',
+  },
+
+  // 〜によって (por, debido a / según — medio, causa o variación)
+  {
+    sentence: 'この橋[はし]は台風[たいふう]___壊[こわ]れました。',
+    answer: 'によって',
+    translation: 'Este puente se destruyó por el tifón.',
+  },
+  {
+    sentence: '人[ひと]___考[かんが]え方[かた]が違[ちが]います。',
+    answer: 'によって',
+    translation: 'La forma de pensar varía según la persona.',
+  },
+];
+
+const grammarN3Items = GRAMMAR_N3.map((raw, i) =>
+  toItem(raw, i, 'grammar-n3-patrones', 'n3-patrones'),
+);
+
 export const GRAMMAR_UNITS: Omit<Unit, 'order'>[] = [
   {
     id: 'grammar-n5-particulas',
@@ -326,6 +429,12 @@ export const GRAMMAR_UNITS: Omit<Unit, 'order'>[] = [
     title: 'N4 — Conjugación verbal básica',
     level: 'N4',
     items: conjugationItems,
+  },
+  {
+    id: 'grammar-n3-patrones',
+    title: 'N3 — Patrones gramaticales',
+    level: 'N3',
+    items: grammarN3Items,
   },
 ];
 
