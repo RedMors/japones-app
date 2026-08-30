@@ -9,7 +9,8 @@ import { WordBuilder } from '@/components/curriculum/word-builder';
 import type { SceneTheme } from '@/lib/curriculum/scenes-data';
 
 type Props = {
-  theme: SceneTheme;
+  // Sin `icon`: es un componente, no serializa de Server a Client Component.
+  theme: Omit<SceneTheme, 'icon'>;
   imageUrls: Record<string, string>;
   onFinish: () => void;
 };

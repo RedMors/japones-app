@@ -1,15 +1,24 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Volume2, Check, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Volume2, Check, X, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { FuriganaText } from '@/components/curriculum/furigana-text';
-import { stripFurigana } from '@/lib/curriculum/furigana';
+import { RomajiText } from '@/components/curriculum/romaji-text';
+import { stripFurigana, toReading } from '@/lib/curriculum/furigana';
+import { scriptOf } from '@/lib/normalize';
 import { speakJapanese } from '@/lib/tts';
 import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import type { SceneImageItem } from '@/lib/curriculum/scenes-data';
+
+const SCRIPT_LABEL = {
+  hiragana: 'Hiragana',
+  katakana: 'Katakana',
+  kanji: 'Kanji',
+  mixed: 'Kanji + kana',
+} as const;
 
 type Question = { item: SceneImageItem; choices: SceneImageItem[] };
 
@@ -36,14 +45,30 @@ type Props = {
 };
 
 export function ImageQuiz({ items, imageUrls, onDone }: Props) {
-  const [questions] = useState(() => buildQuestions(items));
+  // Sin mezclar al arrancar (igual en servidor y cliente) — Math.random()
+  // durante el render inicial descalza la hidratación ("Hydration failed"),
+  // mismo bug ya visto y arreglado en KanaSentenceSession y WordBuilder.
+  // Recién se mezcla en el useEffect de abajo, client-only.
+  const [questions, setQuestions] = useState(() =>
+    items.map((item) => ({ item, choices: [item, ...items.filter((i) => i.id !== item.id).slice(0, 2)] })),
+  );
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [score, setScore] = useState(0);
+  const [ready, setReady] = useState(false);
+  const [showRomaji, setShowRomaji] = useState(false);
+
+  useEffect(() => {
+    setQuestions(buildQuestions(items));
+    setReady(true);
+    // Una sola vez al montar — este quiz no tiene "otra sesión", se arma una vez.
+  }, []);
 
   const question = questions[index];
   const prompt = useMemo(() => stripFurigana(question.item.word), [question]);
+
+  if (!ready) return null;
 
   function handlePick(id: string) {
     if (revealed) return;
@@ -82,17 +107,38 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
         </span>
       </div>
 
-      <p className="text-sm font-medium text-muted-foreground">
-        ¿Cuál de estas imágenes es &quot;{question.item.reading}&quot;?
-      </p>
-
-      <div className="flex items-center justify-center gap-2">
-        <p className="jp text-3xl">
-          <FuriganaText text={question.item.word} />
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-medium text-muted-foreground">
+          ¿Cuál de estas imágenes es &quot;{question.item.reading}&quot;?
         </p>
-        <Button variant="ghost" size="icon" onClick={() => speakJapanese(prompt)} title="Escuchar">
-          <Volume2 className="size-4" />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="shrink-0"
+          onClick={() => setShowRomaji((s) => !s)}
+        >
+          {showRomaji ? <EyeOff className="mr-1.5 size-3.5" /> : <Eye className="mr-1.5 size-3.5" />}
+          {showRomaji ? 'Ocultar romaji' : 'Mostrar romaji'}
         </Button>
+      </div>
+
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex items-center gap-2">
+          <p className="jp text-3xl">
+            <FuriganaText text={question.item.word} />
+          </p>
+          <Button variant="ghost" size="icon" onClick={() => speakJapanese(prompt)} title="Escuchar">
+            <Volume2 className="size-4" />
+          </Button>
+        </div>
+        <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+          {SCRIPT_LABEL[scriptOf(prompt)]}
+        </span>
+        {showRomaji && (
+          <p className="text-2xl">
+            <RomajiText text={toReading(question.item.word)} />
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-3">

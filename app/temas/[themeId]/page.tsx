@@ -39,12 +39,18 @@ export default async function ThemePage({
     await logSceneSession(themeId);
   }
 
+  // theme.icon es un componente (función) — no se puede pasar como prop a
+  // un Client Component, React Server Components solo serializa datos
+  // planos. Se usa acá arriba (server) y se excluye de lo que baja al
+  // cliente.
+  const { icon: ThemeIcon, ...sceneOnly } = theme;
+
   return (
     <main className="mx-auto max-w-xl px-6 py-16 lg:max-w-2xl">
       <h1 className="mb-6 flex items-center gap-2 text-2xl font-semibold tracking-tight">
-        <theme.icon className="size-6 shrink-0" /> {theme.title}
+        <ThemeIcon className="size-6 shrink-0" /> {theme.title}
       </h1>
-      <SceneSession theme={theme} imageUrls={imageUrls} onFinish={onFinish} />
+      <SceneSession theme={sceneOnly} imageUrls={imageUrls} onFinish={onFinish} />
     </main>
   );
 }

@@ -57,12 +57,12 @@ eq('を hiragana -> ヲ katakana', KATAKANA.find((k) => k.romaji === 'wo')?.char
 
 // --- unidades ---------------------------------------------------------------
 eq('primera unidad es hiragana', getFirstUnit().id, 'hiragana-basico');
-eq('siguiente de hiragana es katakana', getNextUnit('hiragana-basico')?.id, 'katakana-basico');
+eq('siguiente de hiragana básico es hiragana avanzado', getNextUnit('hiragana-basico')?.id, 'hiragana-avanzado');
 eq('sin siguiente después de la última', getNextUnit(UNITS[UNITS.length - 1].id), undefined);
 
 // --- estado de desbloqueo ----------------------------------------------------
 eq('primera unidad disponible sin progreso previo', getUnitStatus('hiragana-basico'), 'available');
-eq('segunda unidad bloqueada sin progreso previo', getUnitStatus('katakana-basico'), 'locked');
+eq('segunda unidad bloqueada sin progreso previo', getUnitStatus('hiragana-avanzado'), 'locked');
 
 // --- selección de ítems para sesión ------------------------------------------
 const hiragana = getUnit('hiragana-basico')!;
@@ -125,7 +125,7 @@ ok('unidad completa con todos los ítems dominados', isUnitComplete('hiragana-ba
 
 checkAndUnlockNext('hiragana-basico');
 eq('unidad completada queda marcada', getUnitStatus('hiragana-basico'), 'completed');
-eq('siguiente unidad se desbloquea', getUnitStatus('katakana-basico'), 'available');
+eq('siguiente unidad se desbloquea', getUnitStatus('hiragana-avanzado'), 'available');
 
 // no debe seguir vendiendo ítems para minar en una unidad ya completa
 const afterComplete = getSessionItems('hiragana-basico');

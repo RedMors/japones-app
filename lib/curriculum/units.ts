@@ -138,9 +138,12 @@ function grammarFor(level: Unit['level']): Omit<Unit, 'order'>[] {
  * — agregar un bloque nuevo en el medio ya no rompe los siguientes.
  */
 const blocks: Omit<Unit, 'order'>[] = [
+  // Hiragana completo (básico + avanzado) antes de tocar katakana — mezclar
+  // los dos silabarios desde el arranque confunde más de lo que ayuda a un
+  // principiante real.
   HIRAGANA_UNIT,
-  KATAKANA_UNIT,
   HIRAGANA_AVANZADO_UNIT,
+  KATAKANA_UNIT,
   KATAKANA_AVANZADO_UNIT,
   ...buildVocabUnits('N5', 'n5'),
   ...grammarFor('N5'),

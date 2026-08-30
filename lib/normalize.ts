@@ -139,6 +139,23 @@ export function isKanaOnly(input: string): boolean {
   return input.length > 0 && /^[ぁ-ゟ゠-ヿー]+$/.test(input);
 }
 
+const HAS_KANJI_RE = /[一-鿿㐀-䶿々]/;
+const HAS_HIRAGANA_RE = /[ぁ-ゟ]/;
+const HAS_KATAKANA_RE = /[゠-ヿ]/;
+
+/** Con qué silabario está escrita una palabra — para mostrar "Hiragana" /
+ *  "Katakana" junto a un ejemplo y que el que recién arranca sepa qué está
+ *  mirando. `mixed` es kanji+kana (la mayoría del vocabulario real). */
+export function scriptOf(input: string): 'hiragana' | 'katakana' | 'kanji' | 'mixed' {
+  const hasKanji = HAS_KANJI_RE.test(input);
+  const hasHiragana = HAS_HIRAGANA_RE.test(input);
+  const hasKatakana = HAS_KATAKANA_RE.test(input);
+  if (hasKanji) return hasHiragana || hasKatakana ? 'mixed' : 'kanji';
+  if (hasKatakana && hasHiragana) return 'mixed';
+  if (hasKatakana) return 'katakana';
+  return 'hiragana';
+}
+
 /**
  * Campo crudo de Anki -> texto plano + lectura si venía en furigana.
  */

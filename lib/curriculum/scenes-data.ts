@@ -1,4 +1,4 @@
-import { UtensilsCrossed, Car, Handshake, type LucideIcon } from 'lucide-react';
+import { UtensilsCrossed, Car, Handshake, ShoppingBag, type LucideIcon } from 'lucide-react';
 
 /**
  * Frases por escena/nicho (restaurante, calle, cultura): no es progresión
@@ -268,6 +268,36 @@ export const SCENE_THEMES: SceneTheme[] = [
         id: 'k6',
         tiles: ['お疲[つか]れ様[さま]', 'でした'],
         translation: 'Buen trabajo (al terminar algo juntos).',
+      },
+    ],
+  },
+  {
+    // Sin `imageItems` a propósito — el piloto de vocabulario visual sigue
+    // acotado (ver comentario de arriba), no expandir sin decisión explícita
+    // por el costo real de generación. Esta escena funciona solo con el
+    // paso de armar oraciones, igual que Calle y Cortesía en la práctica.
+    id: 'compras',
+    title: 'De compras',
+    icon: ShoppingBag,
+    description: 'Preguntar precio, probar talles, pagar.',
+    phrases: [
+      { id: 'co1', tiles: ['これは', 'いくら', 'ですか'], translation: '¿Cuánto cuesta esto?' },
+      {
+        id: 'co2',
+        tiles: ['もう', 'すこし', 'やすく', 'なりますか'],
+        translation: '¿Puede ser un poco más barato?',
+      },
+      { id: 'co3', tiles: ['カードは', 'つかえますか'], translation: '¿Puedo pagar con tarjeta?' },
+      {
+        id: 'co4',
+        tiles: ['サイズを', 'かえて', 'ください'],
+        translation: 'Cámbieme la talla, por favor.',
+      },
+      { id: 'co5', tiles: ['レシートを', 'ください'], translation: 'El recibo, por favor.' },
+      {
+        id: 'co6',
+        tiles: ['きて', 'みても', 'いいですか'],
+        translation: '¿Me lo puedo probar?',
       },
     ],
   },

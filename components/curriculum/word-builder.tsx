@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -33,14 +33,31 @@ type Props = {
 
 export function WordBuilder({ phrases, onFinish }: Props) {
   const [index, setIndex] = useState(0);
-  const [bank, setBank] = useState<Tile[]>(() => shuffle(tilesOf(phrases[0])));
+  // Sin mezclar al arrancar (igual en servidor y cliente) — Math.random()
+  // durante el render inicial descalza la hidratación ("Hydration failed"),
+  // mismo bug ya visto y arreglado en KanaSentenceSession. Recién se mezcla
+  // en el useEffect de abajo, client-only.
+  const [bank, setBank] = useState<Tile[]>(() => tilesOf(phrases[0]));
   const [answer, setAnswer] = useState<Tile[]>([]);
   const [phase, setPhase] = useState<'building' | 'result'>('building');
   const [correct, setCorrect] = useState(false);
   const [score, setScore] = useState(0);
+  // Sin esto, el primer render (server + primer paint del cliente) muestra
+  // las fichas en el orden correcto — literalmente la respuesta, justo lo
+  // que este ejercicio existe para no mostrar. Se oculta hasta que el
+  // useEffect de abajo ya mezcló.
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setBank(shuffle(tilesOf(phrases[0])));
+    setReady(true);
+    // Una sola vez al montar — handleNext ya mezcla la siguiente explícitamente.
+  }, []);
 
   const phrase = phrases[index];
   const fullSentence = useMemo(() => phrase.tiles.join(''), [phrase]);
+
+  if (!ready) return null;
 
   function pick(tile: Tile) {
     if (phase === 'result') return;
