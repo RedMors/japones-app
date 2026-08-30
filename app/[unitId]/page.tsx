@@ -53,6 +53,7 @@ export default async function UnitPage({
         unitId={unit.id}
         unitTitle={unit.title}
         questions={questions}
+        pool={unit.items}
         beginSession={beginSession}
         submitAnswer={submitAnswer}
         endSession={endSession}

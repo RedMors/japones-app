@@ -1,6 +1,7 @@
 import type { CurriculumItem } from './units.ts';
 
 export type MultipleChoiceQuestion = {
+  kind: 'choice';
   itemId: string;
   prompt: string;
   answer: string;
@@ -8,6 +9,32 @@ export type MultipleChoiceQuestion = {
   subtext?: string;
   choiceReadings?: Record<string, string>;
 };
+
+/**
+ * "Armá la respuesta con las piezas": el usuario reconstruye `answer` a
+ * partir de fichas sueltas, sin verla como opción entre otras — recuerdo
+ * activo en vez de reconocimiento. Se arma en `buildFillBlank` y se usa
+ * como retry inmediato tras un error (ver session-runner.tsx) y como tipo
+ * de pregunta para ítems que ya fallaron antes (ver getSessionItems).
+ */
+export type FillBlankQuestion = {
+  kind: 'fill-blank';
+  itemId: string;
+  prompt: string;
+  answer: string;
+  subtext?: string;
+  /** Piezas correctas en orden — se comparan contra lo que arma el usuario. */
+  correctTiles: string[];
+  /** Banco completo (piezas correctas + distractores), ya mezclado. */
+  tiles: string[];
+  /** Separador para reconstruir `answer` desde las piezas elegidas. */
+  joiner: '' | ' ';
+};
+
+export type SessionQuestion = MultipleChoiceQuestion | FillBlankQuestion;
+
+/** Ítem del pool con marca opcional de si venía fallado (repaso forzado). */
+export type SessionItem = CurriculumItem & { retry?: boolean };
 
 function shuffle<T>(items: T[]): T[] {
   const arr = [...items];
@@ -34,6 +61,7 @@ export function buildMultipleChoice(
 ): MultipleChoiceQuestion {
   if (item.choices && item.choices.length > 0) {
     return {
+      kind: 'choice',
       itemId: item.id,
       prompt: item.prompt,
       answer: item.answer,
@@ -57,6 +85,7 @@ export function buildMultipleChoice(
   }
 
   return {
+    kind: 'choice',
     itemId: item.id,
     prompt: item.prompt,
     answer: item.answer,
@@ -65,9 +94,62 @@ export function buildMultipleChoice(
   };
 }
 
-export function buildSession(
-  items: CurriculumItem[],
+/**
+ * Con espacios: cada palabra es una ficha (frases/traducciones). Sin
+ * espacios: cada caracter es una ficha (kana, kanji, romaji corto) — ahí sí
+ * arma un rompecabezas real en vez de una sola ficha trivial.
+ */
+function splitIntoTiles(answer: string): { tiles: string[]; joiner: '' | ' ' } {
+  if (answer.includes(' ')) {
+    return { tiles: answer.split(' ').filter(Boolean), joiner: ' ' };
+  }
+  return { tiles: Array.from(answer), joiner: '' };
+}
+
+export function buildFillBlank(
+  item: CurriculumItem,
   pool: CurriculumItem[],
-): MultipleChoiceQuestion[] {
-  return items.map((item) => buildMultipleChoice(item, pool));
+  numDistractors = 3,
+): FillBlankQuestion {
+  const { tiles: correctTiles, joiner } = splitIntoTiles(item.answer);
+  const seen = new Set(correctTiles);
+  const distractors: string[] = [];
+
+  for (const candidate of shuffle(pool.filter((p) => p.id !== item.id))) {
+    if (distractors.length >= numDistractors) break;
+    const { tiles: candidateTiles } = splitIntoTiles(candidate.answer);
+    for (const tile of candidateTiles) {
+      if (distractors.length >= numDistractors) break;
+      if (seen.has(tile)) continue;
+      seen.add(tile);
+      distractors.push(tile);
+    }
+  }
+
+  return {
+    kind: 'fill-blank',
+    itemId: item.id,
+    prompt: item.prompt,
+    answer: item.answer,
+    subtext: item.subtext,
+    correctTiles,
+    tiles: shuffle([...correctTiles, ...distractors]),
+    joiner,
+  };
+}
+
+/**
+ * Ítems marcados `retry` (fallaron la última vez que se vieron) se sirven
+ * como fill-blank en vez de opción múltiple: ya demostraron que reconocer
+ * entre 4 opciones no alcanza, hace falta reconstruir la respuesta.
+ */
+export function buildSession(items: SessionItem[], pool: CurriculumItem[]): SessionQuestion[] {
+  return items.map((item) =>
+    // Ítems con choices curados (conjugación: otras formas del mismo verbo,
+    // con lectura) se quedan en opción múltiple — trocear su `answer` en
+    // caracteres sueltos tira las lecturas y los distractores curados.
+    item.retry && !(item.choices && item.choices.length > 0)
+      ? buildFillBlank(item, pool)
+      : buildMultipleChoice(item, pool),
+  );
 }

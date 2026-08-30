@@ -19,10 +19,16 @@ export const dynamic = 'force-dynamic';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className="min-h-screen antialiased">
+      <body className="h-dvh overflow-hidden antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Nav />
-          {children}
+          {/* Nav fijo arriba, el resto scrollea en su propia región — así una
+              pantalla que ya entra completa (ej. un ejercicio) nunca tiene ni
+              un pixel de scroll de sobra, y una larga (ej. la lista de
+              unidades) scrollea normal adentro de este contenedor. */}
+          <div className="flex h-full flex-col">
+            <Nav />
+            <div className="flex-1 overflow-y-auto">{children}</div>
+          </div>
           <TeacherWidget keyConfigured={isOpenRouterKeyConfigured()} />
           <Toaster position="top-right" />
         </ThemeProvider>

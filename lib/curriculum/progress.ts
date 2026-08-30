@@ -96,7 +96,9 @@ function getItemProgress(itemId: string): ItemProgressRow | undefined {
  * contenido nuevo), después los que ya vencieron su repaso. Nunca mezcla
  * ítems que todavía no vencieron — eso sería repasar sin necesidad.
  */
-export function getSessionItems(unitId: string): { id: string; prompt: string; answer: string; group: string }[] {
+export function getSessionItems(
+  unitId: string,
+): { id: string; prompt: string; answer: string; group: string; retry: boolean }[] {
   const unit = getUnit(unitId);
   if (!unit) return [];
 
@@ -110,20 +112,26 @@ export function getSessionItems(unitId: string): { id: string; prompt: string; a
   );
 
   const neverSeen = unit.items.filter((i) => !seen.has(i.id));
-  if (neverSeen.length > 0) return neverSeen.slice(0, ITEMS_PER_SESSION);
+  if (neverSeen.length > 0) {
+    return neverSeen.slice(0, ITEMS_PER_SESSION).map((i) => ({ ...i, retry: false }));
+  }
 
-  const dueIds = new Set(
-    (
-      db
-        .prepare(
-          `SELECT item_id FROM curriculum_item_progress
-           WHERE unit_id = ? AND mastered = 0 AND next_review_at <= datetime('now')`,
-        )
-        .all(unitId) as { item_id: string }[]
-    ).map((r) => r.item_id),
-  );
+  // correct_streak = 0 en un ítem ya visto significa que la última vez que
+  // se contestó fue un error (ver recordAnswer) — esos se sirven como
+  // fill-blank (buildSession) para confirmar que de verdad se entendió, no
+  // solo que se reconoció entre 4 opciones.
+  const dueRows = db
+    .prepare(
+      `SELECT item_id, correct_streak FROM curriculum_item_progress
+       WHERE unit_id = ? AND mastered = 0 AND next_review_at <= datetime('now')`,
+    )
+    .all(unitId) as { item_id: string; correct_streak: number }[];
+  const dueStreakById = new Map(dueRows.map((r) => [r.item_id, r.correct_streak]));
 
-  return unit.items.filter((i) => dueIds.has(i.id)).slice(0, ITEMS_PER_SESSION);
+  return unit.items
+    .filter((i) => dueStreakById.has(i.id))
+    .slice(0, ITEMS_PER_SESSION)
+    .map((i) => ({ ...i, retry: dueStreakById.get(i.id) === 0 }));
 }
 
 export function recordAnswer(unitId: string, itemId: string, correct: boolean): void {
