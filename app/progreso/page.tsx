@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { cn } from '@/lib/utils';
 import { ActivityHeatmap } from '@/components/activity-heatmap';
 import { getActivityByDay, computeStudyStreak, getActivityTotals } from '@/lib/study-log';
 import { getGoal, getGoalProgress } from '@/lib/curriculum/progress';
@@ -40,11 +41,13 @@ function streakMilestone(streak: number): { icon: LucideIcon; label: string } | 
   return STREAK_MILESTONES.find((m) => streak >= m.days) ?? null;
 }
 
+/** Un color de la paleta de charts por actividad — a color propio cada una,
+ *  en vez de todas grises, así la tarjeta no queda plana en el estado vacío. */
 const ACTIVITY_LABEL = {
-  mining: { icon: Pickaxe, label: 'Minado' },
-  curriculum: { icon: BookOpen, label: 'Lecciones' },
-  speaking: { icon: Mic, label: 'Habla' },
-  anki_review: { icon: Layers, label: 'Repasos' },
+  mining: { icon: Pickaxe, label: 'Minado', color: 'text-chart-1' },
+  curriculum: { icon: BookOpen, label: 'Lecciones', color: 'text-chart-2' },
+  speaking: { icon: Mic, label: 'Habla', color: 'text-chart-3' },
+  anki_review: { icon: Layers, label: 'Repasos', color: 'text-chart-4' },
 } as const;
 
 export default async function ProgresoPage() {
@@ -151,7 +154,7 @@ export default async function ProgresoPage() {
             return (
               <div key={key} className="flex items-center justify-between text-sm">
                 <span className="flex items-center gap-1.5">
-                  <Icon className="size-4 shrink-0 text-muted-foreground" />
+                  <Icon className={cn('size-4 shrink-0', ACTIVITY_LABEL[key].color)} />
                   {ACTIVITY_LABEL[key].label}
                 </span>
                 <span className="tabular-nums text-muted-foreground">{totals[key]}</span>
