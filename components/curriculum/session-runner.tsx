@@ -54,6 +54,10 @@ export function SessionRunner({
     return sessionIdPromise.current;
   }
   const [index, setIndex] = useState(0);
+  // picked = tocado, todavía sin confirmar (resaltado neutro). selected =
+  // confirmado y calificado (ahí recién se pinta correcto/incorrecto) — dos
+  // pasos, como Duolingo: tocar no compromete la respuesta hasta "Comprobar".
+  const [picked, setPicked] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -67,8 +71,14 @@ export function SessionRunner({
   const [totalQuestions] = useState(() => questions.length);
   const question = questions[index];
 
-  function handleChoice(choice: string) {
-    if (selected) return; // ya respondió esta pregunta
+  function handlePick(choice: string) {
+    if (selected) return; // ya se confirmó esta pregunta
+    setPicked(choice);
+  }
+
+  function handleConfirm() {
+    if (selected || !picked) return;
+    const choice = picked;
     const isCorrect = choice === question.answer;
     setSelected(choice);
     if (isCorrect) setCorrectCount((c) => c + 1);
@@ -95,6 +105,7 @@ export function SessionRunner({
     if (!isLast) {
       setIndex((i) => i + 1);
       setSelected(null);
+      setPicked(null);
       return;
     }
     if (readOnly) {
@@ -198,6 +209,7 @@ export function SessionRunner({
 
       <div className="flex flex-col gap-2.5 lg:gap-3">
         {question.choices.map((choice, i) => {
+          const isPicked = picked === choice;
           const isSelected = selected === choice;
           const isAnswer = choice === question.answer;
           const reading = question.choiceReadings?.[choice];
@@ -207,11 +219,12 @@ export function SessionRunner({
               key={choice}
               type="button"
               disabled={revealed}
-              onClick={() => handleChoice(choice)}
+              onClick={() => handlePick(choice)}
               className={cn(
                 'flex w-full items-center gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-colors lg:py-4',
                 'disabled:cursor-default',
-                !revealed && 'border-border hover:bg-muted/50',
+                !revealed && !isPicked && 'border-border hover:bg-muted/50',
+                !revealed && isPicked && 'border-primary bg-primary/10',
                 revealed && isAnswer && 'border-accent-foreground bg-accent text-accent-foreground',
                 revealed && isSelected && !isAnswer && 'border-destructive bg-destructive/10 text-destructive',
                 revealed && !isAnswer && !isSelected && 'border-border opacity-50',
@@ -220,7 +233,8 @@ export function SessionRunner({
               <span
                 className={cn(
                   'flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold lg:size-7 lg:text-sm',
-                  !revealed && 'border-muted-foreground/40 text-muted-foreground',
+                  !revealed && !isPicked && 'border-muted-foreground/40 text-muted-foreground',
+                  !revealed && isPicked && 'border-primary bg-primary text-primary-foreground',
                   revealed && isAnswer && 'border-accent-foreground bg-accent-foreground text-accent',
                   revealed && isSelected && !isAnswer && 'border-destructive bg-destructive text-white',
                   revealed && !isAnswer && !isSelected && 'border-muted-foreground/30 text-muted-foreground',
@@ -259,14 +273,15 @@ export function SessionRunner({
               {isExplaining ? 'Pensando...' : '¿Por qué?'}
             </Button>
           )}
-          <Button
-            className="flex-1"
-            size="lg"
-            onClick={handleContinue}
-            disabled={!selected}
-          >
-            Continuar
-          </Button>
+          {revealed ? (
+            <Button className="flex-1" size="lg" onClick={handleContinue}>
+              Continuar
+            </Button>
+          ) : (
+            <Button className="flex-1" size="lg" onClick={handleConfirm} disabled={!picked}>
+              Comprobar
+            </Button>
+          )}
         </div>
       </div>
     </div>
