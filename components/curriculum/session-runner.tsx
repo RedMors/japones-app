@@ -147,8 +147,10 @@ export function SessionRunner({
     );
   }
 
+  const revealed = selected !== null;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-28">
       <div className="flex items-center gap-3">
         <Progress value={((index + (selected ? 1 : 0)) / totalQuestions) * 100} className="h-2" />
         <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
@@ -161,6 +163,8 @@ export function SessionRunner({
           Repaso libre — esto no cambia tu progreso.
         </p>
       )}
+
+      <p className="text-sm font-medium text-muted-foreground">Elegí la respuesta correcta</p>
 
       <Card>
         <CardContent className="flex flex-col items-center gap-6 py-12 lg:gap-8 lg:py-16">
@@ -189,70 +193,82 @@ export function SessionRunner({
               {question.subtext}
             </p>
           )}
-          <div className="grid w-full grid-cols-2 gap-3 lg:gap-4">
-            {question.choices.map((choice) => {
-              const isSelected = selected === choice;
-              const isAnswer = choice === question.answer;
-              const revealed = selected !== null;
-              const reading = question.choiceReadings?.[choice];
-
-              return (
-                <Button
-                  key={choice}
-                  variant="outline"
-                  size="lg"
-                  disabled={revealed}
-                  onClick={() => handleChoice(choice)}
-                  className={cn(
-                    'h-auto min-h-14 flex-col gap-0.5 whitespace-normal py-2 text-base lg:min-h-20 lg:py-4 lg:text-lg',
-                    revealed && isAnswer && 'border-accent-foreground bg-accent text-accent-foreground',
-                    revealed && isSelected && !isAnswer && 'border-destructive text-destructive',
-                  )}
-                >
-                  <span>
-                    {revealed && isAnswer && <Check className="mr-1 inline size-4" />}
-                    {revealed && isSelected && !isAnswer && <X className="mr-1 inline size-4" />}
-                    {choice}
-                  </span>
-                  {reading && reading !== choice && (
-                    <span className="text-xs font-normal opacity-70 lg:text-sm">{reading}</span>
-                  )}
-                </Button>
-              );
-            })}
-          </div>
         </CardContent>
       </Card>
 
-      {selected && explainGrammar && (
-        <div className="space-y-3">
-          {explanation === null ? (
-            <Button
-              variant="secondary"
-              className="w-full"
-              onClick={handleExplain}
-              disabled={isExplaining}
+      <div className="flex flex-col gap-2.5 lg:gap-3">
+        {question.choices.map((choice, i) => {
+          const isSelected = selected === choice;
+          const isAnswer = choice === question.answer;
+          const reading = question.choiceReadings?.[choice];
+
+          return (
+            <button
+              key={choice}
+              type="button"
+              disabled={revealed}
+              onClick={() => handleChoice(choice)}
+              className={cn(
+                'flex w-full items-center gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-colors lg:py-4',
+                'disabled:cursor-default',
+                !revealed && 'border-border hover:bg-muted/50',
+                revealed && isAnswer && 'border-accent-foreground bg-accent text-accent-foreground',
+                revealed && isSelected && !isAnswer && 'border-destructive bg-destructive/10 text-destructive',
+                revealed && !isAnswer && !isSelected && 'border-border opacity-50',
+              )}
             >
+              <span
+                className={cn(
+                  'flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold lg:size-7 lg:text-sm',
+                  !revealed && 'border-muted-foreground/40 text-muted-foreground',
+                  revealed && isAnswer && 'border-accent-foreground bg-accent-foreground text-accent',
+                  revealed && isSelected && !isAnswer && 'border-destructive bg-destructive text-white',
+                  revealed && !isAnswer && !isSelected && 'border-muted-foreground/30 text-muted-foreground',
+                )}
+              >
+                {i + 1}
+              </span>
+              <span className="flex-1">
+                <span className="text-base lg:text-lg">{choice}</span>
+                {reading && reading !== choice && (
+                  <span className="ml-2 text-xs font-normal opacity-70 lg:text-sm">{reading}</span>
+                )}
+              </span>
+              {revealed && isAnswer && <Check className="size-5 shrink-0" />}
+              {revealed && isSelected && !isAnswer && <X className="size-5 shrink-0" />}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected && explainGrammar && explanation !== null && (
+        <p className="rounded-lg border bg-muted/50 p-4 text-sm text-muted-foreground">
+          {explanation}
+        </p>
+      )}
+
+      <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur">
+        <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 lg:max-w-2xl">
+          {selected && explainGrammar && explanation === null && (
+            <Button variant="secondary" onClick={handleExplain} disabled={isExplaining}>
               {isExplaining ? (
                 <Loader2 className="mr-2 size-4 animate-spin" />
               ) : (
                 <Sparkles className="mr-2 size-4" />
               )}
-              {isExplaining ? 'Pensando...' : '¿Por qué? (explicar con IA)'}
+              {isExplaining ? 'Pensando...' : '¿Por qué?'}
             </Button>
-          ) : (
-            <p className="rounded-lg border bg-muted/50 p-4 text-sm text-muted-foreground">
-              {explanation}
-            </p>
           )}
+          <Button
+            className="flex-1"
+            size="lg"
+            onClick={handleContinue}
+            disabled={!selected}
+          >
+            Continuar
+          </Button>
         </div>
-      )}
-
-      {selected && (
-        <Button className="w-full" size="lg" onClick={handleContinue}>
-          Continuar
-        </Button>
-      )}
+      </div>
     </div>
   );
 }
