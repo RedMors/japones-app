@@ -42,7 +42,7 @@ export default async function ThemePage({
   return (
     <main className="mx-auto max-w-xl px-6 py-16 lg:max-w-2xl">
       <h1 className="mb-6 flex items-center gap-2 text-2xl font-semibold tracking-tight">
-        <span>{theme.emoji}</span> {theme.title}
+        <theme.icon className="size-6 shrink-0" /> {theme.title}
       </h1>
       <SceneSession theme={theme} imageUrls={imageUrls} onFinish={onFinish} />
     </main>

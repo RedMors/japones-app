@@ -1,3 +1,16 @@
+import {
+  Flame,
+  Target,
+  Trophy,
+  Zap,
+  PartyPopper,
+  Sparkles,
+  Pickaxe,
+  BookOpen,
+  Mic,
+  Layers,
+  type LucideIcon,
+} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ActivityHeatmap } from '@/components/activity-heatmap';
@@ -16,22 +29,22 @@ function daysUntil(dateStr: string): number {
 /** Mensaje especial en los hitos de racha — el número solo ya lo dice todo,
  *  pero un cartel de "¡7 días!" se siente mucho más como un logro. */
 const STREAK_MILESTONES = [
-  { days: 100, emoji: '💯', label: '¡Racha de 100 días! Leyenda.' },
-  { days: 30, emoji: '🏆', label: '¡Un mes seguido! Impresionante.' },
-  { days: 14, emoji: '⚡', label: '¡Dos semanas de racha!' },
-  { days: 7, emoji: '🎉', label: '¡Una semana seguida!' },
-  { days: 3, emoji: '✨', label: '¡Ya llevás 3 días, seguí así!' },
+  { days: 100, icon: Trophy, label: '¡Racha de 100 días! Leyenda.' },
+  { days: 30, icon: Trophy, label: '¡Un mes seguido! Impresionante.' },
+  { days: 14, icon: Zap, label: '¡Dos semanas de racha!' },
+  { days: 7, icon: PartyPopper, label: '¡Una semana seguida!' },
+  { days: 3, icon: Sparkles, label: '¡Ya llevás 3 días, seguí así!' },
 ] as const;
 
-function streakMilestone(streak: number): { emoji: string; label: string } | null {
+function streakMilestone(streak: number): { icon: LucideIcon; label: string } | null {
   return STREAK_MILESTONES.find((m) => streak >= m.days) ?? null;
 }
 
 const ACTIVITY_LABEL = {
-  mining: { emoji: '⛏️', label: 'Minado' },
-  curriculum: { emoji: '📚', label: 'Lecciones' },
-  speaking: { emoji: '🗣️', label: 'Habla' },
-  anki_review: { emoji: '🎴', label: 'Repasos' },
+  mining: { icon: Pickaxe, label: 'Minado' },
+  curriculum: { icon: BookOpen, label: 'Lecciones' },
+  speaking: { icon: Mic, label: 'Habla' },
+  anki_review: { icon: Layers, label: 'Repasos' },
 } as const;
 
 export default async function ProgresoPage() {
@@ -59,8 +72,9 @@ export default async function ProgresoPage() {
             <CardTitle className="text-sm font-normal text-muted-foreground">Racha</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-semibold tabular-nums">
-              {streak > 0 ? `🔥 ${streak}` : streak}
+            <p className="flex items-center gap-1.5 text-3xl font-semibold tabular-nums">
+              {streak > 0 && <Flame className="size-6 shrink-0 text-accent-foreground" />}
+              {streak}
             </p>
             <p className="text-xs text-muted-foreground">días seguidos estudiando</p>
           </CardContent>
@@ -80,7 +94,7 @@ export default async function ProgresoPage() {
 
       {milestone && (
         <div className="mt-4 flex items-center gap-3 rounded-xl border border-accent-foreground/30 bg-accent p-4 text-accent-foreground">
-          <span className="text-2xl">{milestone.emoji}</span>
+          <milestone.icon className="size-6 shrink-0" />
           <p className="text-sm font-medium">{milestone.label}</p>
         </div>
       )}
@@ -88,8 +102,8 @@ export default async function ProgresoPage() {
       {goal && goalProgress && (
         <Card className="mt-4">
           <CardHeader>
-            <CardTitle className="text-sm font-normal text-muted-foreground">
-              🎯 Meta: JLPT {goal.level}
+            <CardTitle className="flex items-center gap-1.5 text-sm font-normal text-muted-foreground">
+              <Target className="size-4 shrink-0" /> Meta: JLPT {goal.level}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -132,14 +146,18 @@ export default async function ProgresoPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {(Object.keys(ACTIVITY_LABEL) as (keyof typeof ACTIVITY_LABEL)[]).map((key) => (
-            <div key={key} className="flex items-center justify-between text-sm">
-              <span>
-                {ACTIVITY_LABEL[key].emoji} {ACTIVITY_LABEL[key].label}
-              </span>
-              <span className="tabular-nums text-muted-foreground">{totals[key]}</span>
-            </div>
-          ))}
+          {(Object.keys(ACTIVITY_LABEL) as (keyof typeof ACTIVITY_LABEL)[]).map((key) => {
+            const Icon = ACTIVITY_LABEL[key].icon;
+            return (
+              <div key={key} className="flex items-center justify-between text-sm">
+                <span className="flex items-center gap-1.5">
+                  <Icon className="size-4 shrink-0 text-muted-foreground" />
+                  {ACTIVITY_LABEL[key].label}
+                </span>
+                <span className="tabular-nums text-muted-foreground">{totals[key]}</span>
+              </div>
+            );
+          })}
         </CardContent>
       </Card>
     </main>

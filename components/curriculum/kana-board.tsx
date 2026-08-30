@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Trophy, PartyPopper } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { speakJapanese } from '@/lib/tts';
@@ -86,7 +87,7 @@ function Section({
       <div className="mb-3 flex items-center justify-between">
         <h2 className="flex items-center gap-1.5 text-sm font-semibold">
           {title}
-          {complete && <span title="¡Sección completa!">🏆</span>}
+          {complete && <Trophy className="size-4 text-accent-foreground" aria-label="Sección completa" />}
         </h2>
         <span
           className={cn(
@@ -103,8 +104,8 @@ function Section({
         ))}
       </div>
       {complete ? (
-        <p className="mt-4 rounded-lg border border-accent-foreground/30 bg-accent px-4 py-2.5 text-center text-sm font-medium text-accent-foreground">
-          🎉 ¡Dominaste todo {title.toLowerCase()}!
+        <p className="mt-4 flex items-center justify-center gap-1.5 rounded-lg border border-accent-foreground/30 bg-accent px-4 py-2.5 text-center text-sm font-medium text-accent-foreground">
+          <PartyPopper className="size-4 shrink-0" /> ¡Dominaste todo {title.toLowerCase()}!
         </p>
       ) : (
         <Button asChild variant="secondary" className="mt-4 w-full">

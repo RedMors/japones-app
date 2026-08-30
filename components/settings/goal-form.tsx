@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
+import { Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { JLPT_GOAL_LEVELS, type JlptGoalLevel } from '@/lib/curriculum/goal-levels';
 import type { saveGoal } from '@/app/ajustes/actions';
@@ -20,7 +21,7 @@ export function GoalForm({ currentLevel, currentDate, saveGoal }: Props) {
   function handleSave() {
     startTransition(async () => {
       await saveGoal(level, date);
-      toast('Meta guardada — ¡vamos por eso! 🎯');
+      toast('Meta guardada — ¡vamos por eso!', { icon: <Target className="size-4" /> });
     });
   }
 

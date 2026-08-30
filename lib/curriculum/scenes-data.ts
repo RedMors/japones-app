@@ -1,3 +1,5 @@
+import { UtensilsCrossed, Car, Handshake, type LucideIcon } from 'lucide-react';
+
 /**
  * Frases por escena/nicho (restaurante, calle, cultura): no es progresión
  * JLPT, es repetición de frases hechas y conjugaciones típicas de un
@@ -30,7 +32,7 @@ export type SceneImageItem = {
 export type SceneTheme = {
   id: string;
   title: string;
-  emoji: string;
+  icon: LucideIcon;
   description: string;
   phrases: ScenePhrase[];
   imageItems?: SceneImageItem[];
@@ -40,7 +42,7 @@ export const SCENE_THEMES: SceneTheme[] = [
   {
     id: 'restaurante',
     title: 'Restaurante',
-    emoji: '🍜',
+    icon: UtensilsCrossed,
     description: 'Pedir, pagar, agradecer la comida.',
     imageItems: [
       {
@@ -116,7 +118,7 @@ export const SCENE_THEMES: SceneTheme[] = [
   {
     id: 'calle',
     title: 'En la calle',
-    emoji: '🚕',
+    icon: Car,
     description: 'Pedir direcciones, moverte por la ciudad.',
     imageItems: [
       {
@@ -196,7 +198,7 @@ export const SCENE_THEMES: SceneTheme[] = [
   {
     id: 'cultura',
     title: 'Frases de cortesía',
-    emoji: '🙇',
+    icon: Handshake,
     description: 'Lo que se dice siempre, en el momento justo.',
     imageItems: [
       {

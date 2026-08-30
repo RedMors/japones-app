@@ -16,7 +16,7 @@ export default function TemasPage() {
           <Link key={theme.id} href={`/temas/${theme.id}`}>
             <Card className="transition-colors hover:bg-muted/40">
               <CardContent className="flex items-center gap-4 py-4">
-                <span className="text-2xl">{theme.emoji}</span>
+                <theme.icon className="size-6 shrink-0 text-muted-foreground" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium">{theme.title}</p>
                   <p className="text-xs text-muted-foreground">{theme.description}</p>
