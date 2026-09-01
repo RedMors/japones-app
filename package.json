@@ -1,7 +1,7 @@
 {
   "name": "japones-app",
   "version": "0.1.0",
-  "description": "",
+  "description": "Local Japanese-learning app: anime sentence mining, spaced-repetition curriculum, and Anki sync.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -21,8 +21,8 @@
     "check:furigana-coverage": "node scripts/furigana-coverage-check.mts"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "alexis martinez",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "better-sqlite3": "^13.0.3",

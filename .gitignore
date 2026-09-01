@@ -4,10 +4,12 @@ next-env.d.ts
 *.tsbuildinfo
 .DS_Store
 
-# Datos locales. app.db se versiona; el resto no.
+# Datos locales — nada de esto se versiona. app.db se auto-crea con schema
+# vacío al primer request (ver lib/db.ts), no hace falta commitear progreso.
 data/jmdict.db
 data/jmdict.db-wal
 data/jmdict.db-shm
+data/app.db
 data/app.db-wal
 data/app.db-shm
 data/raw/
