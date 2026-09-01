@@ -206,6 +206,38 @@ const es: Dict = {
 
   'lockedUnit.title': (v) => `${v.title} todavía está bloqueada`,
   'lockedUnit.body': 'Completá la unidad anterior primero.',
+
+  'miner.cannotMineSuffix':
+    ' Podés minar igual, pero no vas a poder agregar tarjetas ni actualizar tu vocabulario conocido hasta que lo abras.',
+  'miner.processError': 'No pude procesar el archivo',
+  'miner.minedEpisodes': (v) => `Episodios minados (${v.count})`,
+  'miner.wordsCount': (v) => `${v.count} palabras`,
+  'miner.alreadyMined': 'Este episodio ya estaba minado',
+  'miner.learnedNewWords': (v) => `¡Aprendiste ${v.count} palabras nuevas!`,
+  'miner.linesProcessed': (v) => `${v.count} líneas procesadas`,
+  'miner.alreadyAddedToAnki': (v) => ` · ${v.count} ya agregadas a Anki`,
+  'miner.noNewWords':
+    'No encontré palabras nuevas en este episodio — ya conocés todo el vocabulario.',
+
+  'srtDropzone.processing': 'Procesando episodio…',
+  'srtDropzone.dropHere': 'Soltá un .srt o .ass acá',
+  'srtDropzone.orClick':
+    'o hacé click para elegirlo — sumá también el video/audio (selección múltiple) para clips de pronunciación',
+
+  'sentenceCard.ideal': 'ideal',
+
+  'wordChip.addedToAnki': (v) => `${v.lemma} agregada a Anki`,
+  'wordChip.addFailed': (v) => `No se pudo agregar ${v.lemma}`,
+  'wordChip.skipped': (v) => `${v.lemma} descartada`,
+  'wordChip.skippedDesc': 'No va a volver a aparecer en otros episodios.',
+  'wordChip.discardTitle': 'Descartar (no volver a mostrar)',
+  'wordChip.addToAnki': 'Agregar a Anki',
+
+  'syncVocab.updateVocab': 'Actualizar vocabulario',
+  'syncVocab.syncedAt': (v) => `sync: ${v.date}`,
+  'syncVocab.neverSynced': 'nunca sincronizado',
+  'syncVocab.updated': (v) => `Vocabulario actualizado: ${v.count} palabras`,
+  'syncVocab.syncFailed': 'No pude sincronizar con Anki',
 };
 
 const en: Dict = {
@@ -400,6 +432,37 @@ const en: Dict = {
 
   'lockedUnit.title': (v) => `${v.title} is still locked`,
   'lockedUnit.body': 'Complete the previous unit first.',
+
+  'miner.cannotMineSuffix':
+    ' You can still mine, but you won’t be able to add cards or update your known vocabulary until you open it.',
+  'miner.processError': 'Could not process the file',
+  'miner.minedEpisodes': (v) => `Mined episodes (${v.count})`,
+  'miner.wordsCount': (v) => `${v.count} words`,
+  'miner.alreadyMined': 'This episode was already mined',
+  'miner.learnedNewWords': (v) => `You learned ${v.count} new words!`,
+  'miner.linesProcessed': (v) => `${v.count} lines processed`,
+  'miner.alreadyAddedToAnki': (v) => ` · ${v.count} already added to Anki`,
+  'miner.noNewWords': 'I didn’t find any new words in this episode — you already know all the vocabulary.',
+
+  'srtDropzone.processing': 'Processing episode…',
+  'srtDropzone.dropHere': 'Drop an .srt or .ass here',
+  'srtDropzone.orClick':
+    'or click to choose it — also add the video/audio (multi-select) for pronunciation clips',
+
+  'sentenceCard.ideal': 'ideal',
+
+  'wordChip.addedToAnki': (v) => `${v.lemma} added to Anki`,
+  'wordChip.addFailed': (v) => `Couldn’t add ${v.lemma}`,
+  'wordChip.skipped': (v) => `${v.lemma} discarded`,
+  'wordChip.skippedDesc': 'It won’t show up again in other episodes.',
+  'wordChip.discardTitle': 'Discard (don’t show again)',
+  'wordChip.addToAnki': 'Add to Anki',
+
+  'syncVocab.updateVocab': 'Update vocabulary',
+  'syncVocab.syncedAt': (v) => `sync: ${v.date}`,
+  'syncVocab.neverSynced': 'never synced',
+  'syncVocab.updated': (v) => `Vocabulary updated: ${v.count} words`,
+  'syncVocab.syncFailed': 'Couldn’t sync with Anki',
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };

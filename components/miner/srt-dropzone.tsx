@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from 'react';
 import { UploadCloud, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/components/language-provider';
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
@@ -20,6 +21,7 @@ const SUB_RE = /\.(srt|ass|ssa)$/i;
  * no hace falta un campo separado.
  */
 export function SrtDropzone({ action }: Props) {
+  const { t } = useLanguage();
   const [isPending, startTransition] = useTransition();
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -80,12 +82,9 @@ export function SrtDropzone({ action }: Props) {
       )}
       <div>
         <p className="font-medium">
-          {isPending ? 'Procesando episodio…' : 'Soltá un .srt o .ass acá'}
+          {isPending ? t('srtDropzone.processing') : t('srtDropzone.dropHere')}
         </p>
-        <p className="text-sm text-muted-foreground">
-          o hacé click para elegirlo — sumá también el video/audio (selección múltiple) para
-          clips de pronunciación
-        </p>
+        <p className="text-sm text-muted-foreground">{t('srtDropzone.orClick')}</p>
       </div>
     </div>
   );
