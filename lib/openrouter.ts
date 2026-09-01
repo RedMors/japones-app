@@ -13,10 +13,19 @@ const DEFAULT_MODEL = 'google/gemini-2.5-flash';
 
 export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
 
-export async function askOpenRouterChat(
+export type ChatResult = {
+  content: string;
+  /** true si OpenRouter cortó la respuesta por `max_tokens`, no porque el
+   *  modelo haya terminado solo (`finish_reason: "length"` vs `"stop"`). El
+   *  caller decide qué hacer con esto — el chat del profesor lo usa para
+   *  avisar al usuario que la respuesta quedó incompleta. */
+  truncated: boolean;
+};
+
+export async function askOpenRouterChatRaw(
   messages: ChatMessage[],
   maxTokens = 350,
-): Promise<string> {
+): Promise<ChatResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error('Falta OPENROUTER_API_KEY en .env.local');
@@ -44,9 +53,21 @@ export async function askOpenRouterChat(
   }
 
   const data = (await res.json()) as {
-    choices?: { message?: { content?: string } }[];
+    choices?: { message?: { content?: string }; finish_reason?: string }[];
   };
-  return data.choices?.[0]?.message?.content?.trim() ?? '';
+  const choice = data.choices?.[0];
+  return {
+    content: choice?.message?.content?.trim() ?? '',
+    truncated: choice?.finish_reason === 'length',
+  };
+}
+
+export async function askOpenRouterChat(
+  messages: ChatMessage[],
+  maxTokens = 350,
+): Promise<string> {
+  const { content } = await askOpenRouterChatRaw(messages, maxTokens);
+  return content;
 }
 
 export async function askOpenRouter(userPrompt: string): Promise<string> {

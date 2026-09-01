@@ -1,6 +1,6 @@
 'use server';
 
-import { askOpenRouterChat, type ChatMessage } from '@/lib/openrouter';
+import { askOpenRouterChatRaw, type ChatMessage } from '@/lib/openrouter';
 import type { Lang } from '@/lib/i18n/dictionary';
 
 const SYSTEM_PROMPT_ES = [
@@ -33,9 +33,18 @@ export async function askTeacher(history: ChatTurn[], lang: Lang = 'es'): Promis
   const systemPrompt = lang === 'en' ? SYSTEM_PROMPT_EN : SYSTEM_PROMPT_ES;
   const messages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...history];
   try {
-    const text = await askOpenRouterChat(messages, 1200);
-    if (text) return text;
-    return lang === 'en' ? 'No response this time. Try again.' : 'No obtuve respuesta esta vez. Probá de nuevo.';
+    const { content, truncated } = await askOpenRouterChatRaw(messages, 1200);
+    if (!content) {
+      return lang === 'en' ? 'No response this time. Try again.' : 'No obtuve respuesta esta vez. Probá de nuevo.';
+    }
+    if (truncated) {
+      const note =
+        lang === 'en'
+          ? '\n\n(Cut off for length — ask me to continue, or if you want more examples on this.)'
+          : '\n\n(Se cortó por longitud — pedime que siga, o si querés más ejemplos de esto.)';
+      return content + note;
+    }
+    return content;
   } catch (err) {
     const message = err instanceof Error ? err.message : lang === 'en' ? 'unknown error' : 'error desconocido';
     return lang === 'en'
