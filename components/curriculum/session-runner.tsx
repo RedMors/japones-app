@@ -16,6 +16,7 @@ import { buildFillBlank, type SessionQuestion } from '@/lib/curriculum/exercises
 import type { CurriculumItem } from '@/lib/curriculum/units';
 import type { beginSession, submitAnswer, endSession, explainGrammar } from '@/app/[unitId]/actions';
 import { useLanguage } from '@/components/language-provider';
+import { MarkdownLite } from '@/components/markdown-lite';
 
 type Tile = { key: string; text: string };
 
@@ -374,9 +375,9 @@ export function SessionRunner({
       )}
 
       {revealed && explainGrammar && explanation !== null && (
-        <p className="rounded-lg border bg-muted/50 p-4 text-sm text-muted-foreground">
-          {explanation}
-        </p>
+        <div className="rounded-lg border bg-muted/50 p-4 text-sm text-muted-foreground">
+          <MarkdownLite text={explanation} />
+        </div>
       )}
 
       <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur">

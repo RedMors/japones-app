@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { askTeacher, type ChatTurn } from '@/app/profesor/actions';
 import { useLanguage } from '@/components/language-provider';
+import { MarkdownLite } from '@/components/markdown-lite';
 
 type Props = { keyConfigured: boolean };
 
@@ -87,13 +88,13 @@ export function TeacherWidget({ keyConfigured }: Props) {
               >
                 <div
                   className={cn(
-                    'max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm',
+                    'max-w-[85%] rounded-2xl px-3 py-2 text-sm',
                     turn.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'whitespace-pre-wrap bg-primary text-primary-foreground'
                       : 'border border-border bg-card',
                   )}
                 >
-                  {turn.content}
+                  {turn.role === 'assistant' ? <MarkdownLite text={turn.content} /> : turn.content}
                 </div>
               </div>
             ))}

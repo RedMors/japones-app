@@ -11,6 +11,8 @@ const SYSTEM_PROMPT_ES = [
   'Explicá con ejemplos simples antes que con reglas abstractas. Si la duda',
   'es ambigua, hacé como máximo una pregunta aclaratoria antes de responder.',
   'Sé breve: 3-5 oraciones salvo que el estudiante pida más detalle.',
+  'Usá markdown para estructurar: **negrita** en términos clave, listas con',
+  '"-" para enumerar ejemplos o pasos. No uses encabezados (#) ni tablas.',
 ].join(' ');
 
 const SYSTEM_PROMPT_EN = [
@@ -21,6 +23,8 @@ const SYSTEM_PROMPT_EN = [
   'Explain with simple examples before abstract rules. If the question is',
   'ambiguous, ask at most one clarifying question before answering.',
   'Be brief: 3-5 sentences unless the student asks for more detail.',
+  'Use markdown to structure your answer: **bold** for key terms, "-" lists',
+  'for examples or steps. Do not use headings (#) or tables.',
 ].join(' ');
 
 export type ChatTurn = { role: 'user' | 'assistant'; content: string };

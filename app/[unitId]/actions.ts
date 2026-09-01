@@ -51,7 +51,7 @@ export async function explainGrammar(
           `Grammar exercise: "${prompt}"`,
           subtext ? `Given translation/context: ${subtext}` : null,
           `The correct answer is: "${answer}".`,
-          'Explain in English, in 3-4 simple sentences, the grammar RULE behind why that is the correct answer — don\'t just translate the sentence. If relevant, mention when that form/particle is used in general, not just in this example.',
+          'Explain in English, in 3-4 simple sentences, the grammar RULE behind why that is the correct answer — don\'t just translate the sentence. If relevant, mention when that form/particle is used in general, not just in this example. Use **bold** (markdown) for the key term or particle.',
         ]
           .filter(Boolean)
           .join('\n')
@@ -60,7 +60,7 @@ export async function explainGrammar(
           `Ejercicio de gramática: "${prompt}"`,
           subtext ? `Traducción/contexto dado: ${subtext}` : null,
           `La respuesta correcta es: "${answer}".`,
-          'Explicame en español, en 3-4 oraciones simples, la REGLA gramatical detrás de por qué esa es la respuesta correcta — no solo traduzcas la oración. Si aplica, mencioná cuándo se usa esa forma/partícula en general, no solo en este ejemplo.',
+          'Explicame en español, en 3-4 oraciones simples, la REGLA gramatical detrás de por qué esa es la respuesta correcta — no solo traduzcas la oración. Si aplica, mencioná cuándo se usa esa forma/partícula en general, no solo en este ejemplo. Usá **negrita** (markdown) para el término o partícula clave.',
         ]
           .filter(Boolean)
           .join('\n');
