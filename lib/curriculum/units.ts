@@ -9,6 +9,7 @@ import {
 } from './kana-data.ts';
 import { GRAMMAR_UNITS } from './grammar-data.ts';
 import { withFurigana } from './furigana.ts';
+import type { Localized } from '@/lib/i18n/localized';
 
 export type CurriculumItem = {
   id: string;
@@ -19,7 +20,7 @@ export type CurriculumItem = {
   /** De dónde sacar los distractores: solo ítems del mismo grupo confunden de verdad. */
   group: string;
   /** Ayuda que se muestra siempre (lectura de un kanji, traducción de una oración). No se evalúa. */
-  subtext?: string;
+  subtext?: Localized;
   /**
    * Distractores propios del ítem (conjugación: otras formas del mismo
    * verbo). Si está presente, reemplaza el sampling del pool general.
@@ -32,7 +33,7 @@ export type CurriculumItem = {
 
 export type Unit = {
   id: string;
-  title: string;
+  title: Localized;
   level: 'hiragana' | 'katakana' | 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
   order: number;
   items: CurriculumItem[];
@@ -79,7 +80,7 @@ function buildVocabUnits(
     const unitId = `${idPrefix}-vocab-${i + 1}`;
     return {
       id: unitId,
-      title: `${level} — vocabulario ${i + 1}`,
+      title: { es: `${level} — vocabulario ${i + 1}`, en: `${level} — vocabulary ${i + 1}` },
       level,
       items: group.map((w) => ({
         id: `vocab:${w.lemma}`,
@@ -95,7 +96,7 @@ function buildVocabUnits(
 
 const HIRAGANA_UNIT: Unit = {
   id: 'hiragana-basico',
-  title: 'Hiragana básico',
+  title: { es: 'Hiragana básico', en: 'Basic hiragana' },
   level: 'hiragana',
   order: 0,
   items: kanaToItems(HIRAGANA, 'hiragana-basico'),
@@ -103,7 +104,7 @@ const HIRAGANA_UNIT: Unit = {
 
 const KATAKANA_UNIT: Unit = {
   id: 'katakana-basico',
-  title: 'Katakana básico',
+  title: { es: 'Katakana básico', en: 'Basic katakana' },
   level: 'katakana',
   order: 1,
   items: kanaToItems(KATAKANA, 'katakana-basico'),
@@ -111,7 +112,7 @@ const KATAKANA_UNIT: Unit = {
 
 const HIRAGANA_AVANZADO_UNIT: Unit = {
   id: 'hiragana-avanzado',
-  title: 'Hiragana avanzado (dakuten y yōon)',
+  title: { es: 'Hiragana avanzado (dakuten y yōon)', en: 'Advanced hiragana (dakuten and yōon)' },
   level: 'hiragana',
   order: 2,
   items: kanaToItems(HIRAGANA_AVANZADO, 'hiragana-avanzado'),
@@ -119,7 +120,7 @@ const HIRAGANA_AVANZADO_UNIT: Unit = {
 
 const KATAKANA_AVANZADO_UNIT: Unit = {
   id: 'katakana-avanzado',
-  title: 'Katakana avanzado (dakuten y yōon)',
+  title: { es: 'Katakana avanzado (dakuten y yōon)', en: 'Advanced katakana (dakuten and yōon)' },
   level: 'katakana',
   order: 3,
   items: kanaToItems(KATAKANA_AVANZADO, 'katakana-avanzado'),

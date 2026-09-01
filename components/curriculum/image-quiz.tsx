@@ -46,7 +46,7 @@ type Props = {
 };
 
 export function ImageQuiz({ items, imageUrls, onDone }: Props) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   // Sin mezclar al arrancar (igual en servidor y cliente) — Math.random()
   // durante el render inicial descalza la hidratación ("Hydration failed"),
   // mismo bug ya visto y arreglado en KanaSentenceSession y WordBuilder.
@@ -191,7 +191,7 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
       {revealed && (
         <Card>
           <CardContent className="py-3 text-center text-sm text-muted-foreground">
-            {question.item.reading} — {question.item.translation}
+            {question.item.reading} — {question.item.translation[lang]}
           </CardContent>
         </Card>
       )}

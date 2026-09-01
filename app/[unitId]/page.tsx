@@ -6,6 +6,7 @@ import { SessionRunner } from '@/components/curriculum/session-runner';
 import { LockedUnit } from '@/components/curriculum/locked-unit';
 import { NothingDue } from '@/components/curriculum/nothing-due';
 import { beginSession, submitAnswer, endSession, explainGrammar } from './actions';
+import { getLanguage } from '@/lib/i18n/language';
 
 const REVIEW_SESSION_SIZE = 10;
 
@@ -31,9 +32,10 @@ export default async function UnitPage({
 
   const unit = getUnit(unitId);
   if (!unit) notFound();
+  const lang = await getLanguage();
 
   const status = getUnitStatus(unitId);
-  if (status === 'locked') return <LockedUnit title={unit.title} />;
+  if (status === 'locked') return <LockedUnit title={unit.title[lang]} />;
 
   // Repaso libre: cualquier ítem de la unidad, sin importar si venció su
   // repaso programado. No se persiste nada — es solo para "¿me acuerdo?".
@@ -42,7 +44,7 @@ export default async function UnitPage({
     : getSessionItems(unitId);
 
   if (items.length === 0) {
-    return <NothingDue title={unit.title} unitId={unit.id} canReview={unit.items.length > 0} />;
+    return <NothingDue title={unit.title[lang]} unitId={unit.id} canReview={unit.items.length > 0} />;
   }
 
   const questions = buildSession(items, unit.items);
@@ -54,7 +56,7 @@ export default async function UnitPage({
     <main className="mx-auto max-w-xl px-6 pt-16 pb-4 lg:max-w-2xl">
       <SessionRunner
         unitId={unit.id}
-        unitTitle={unit.title}
+        unitTitle={unit.title[lang]}
         questions={questions}
         pool={unit.items}
         beginSession={beginSession}

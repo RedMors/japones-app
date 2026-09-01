@@ -16,7 +16,7 @@ import { listUnitsWithStatus } from '@/lib/curriculum/progress';
 import type { Unit } from '@/lib/curriculum/units';
 import type { UnitStatus } from '@/lib/curriculum/progress';
 import { getLanguage } from '@/lib/i18n/language';
-import { getDictionary, t, type Dict } from '@/lib/i18n/dictionary';
+import { getDictionary, t, type Dict, type Lang } from '@/lib/i18n/dictionary';
 
 const LEVEL_LABEL: Record<string, string> = {
   hiragana: 'Hiragana',
@@ -32,7 +32,7 @@ const LEVEL_ORDER = ['hiragana', 'katakana', 'N5', 'N4', 'N3', 'N2', 'N1'];
 
 type UnitRow = Unit & { status: UnitStatus; masteredCount: number; seenCount: number };
 
-function UnitCard({ unit, dict }: { unit: UnitRow; dict: Dict }) {
+function UnitCard({ unit, dict, lang }: { unit: UnitRow; dict: Dict; lang: Lang }) {
   const total = unit.items.length;
   const masteredPct = total > 0 ? Math.round((unit.masteredCount / total) * 100) : 0;
   const seenPct = total > 0 ? Math.round((unit.seenCount / total) * 100) : 0;
@@ -51,7 +51,7 @@ function UnitCard({ unit, dict }: { unit: UnitRow; dict: Dict }) {
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium">{unit.title}</p>
+          <p className="truncate text-sm font-medium">{unit.title[lang]}</p>
           {/* Track claro = ya visto al menos una vez; barra sólida = dominado
               (5 aciertos espaciados). Sin el track claro, practicar 30 ítems
               nuevos se ve idéntico a no haber tocado nada — desalienta. */}
@@ -80,7 +80,8 @@ function UnitCard({ unit, dict }: { unit: UnitRow; dict: Dict }) {
 }
 
 export default async function LearnHome() {
-  const dict = getDictionary(await getLanguage());
+  const lang = await getLanguage();
+  const dict = getDictionary(lang);
   const units = listUnitsWithStatus();
 
   const byLevel = new Map<string, UnitRow[]>();
@@ -130,7 +131,7 @@ export default async function LearnHome() {
             <AccordionContent>
               <div className="space-y-2">
                 {levelUnits.map((unit) => (
-                  <UnitCard key={unit.id} unit={unit} dict={dict} />
+                  <UnitCard key={unit.id} unit={unit} dict={dict} lang={lang} />
                 ))}
               </div>
             </AccordionContent>

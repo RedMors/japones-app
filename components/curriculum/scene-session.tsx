@@ -20,7 +20,7 @@ type Props = {
  *  final combinado. Si el tema no tiene imágenes (piloto solo en
  *  Restaurante), arranca directo en las oraciones. */
 export function SceneSession({ theme, imageUrls, onFinish }: Props) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const hasImages = (theme.imageItems?.length ?? 0) > 0;
   const [phase, setPhase] = useState<'images' | 'phrases' | 'done'>(
     hasImages ? 'images' : 'phrases',
@@ -66,7 +66,7 @@ export function SceneSession({ theme, imageUrls, onFinish }: Props) {
       </h1>
       <p className="text-muted-foreground">
         {pct >= 80
-          ? t('sceneSession.natural', { title: theme.title })
+          ? t('sceneSession.natural', { title: theme.title[lang] })
           : t('sceneSession.keepPracticing')}
       </p>
       <Button asChild className="mt-2">

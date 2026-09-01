@@ -18,7 +18,8 @@ const CHIP_COLORS = [
 ];
 
 export default async function TemasPage() {
-  const dict = getDictionary(await getLanguage());
+  const lang = await getLanguage();
+  const dict = getDictionary(lang);
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
       <h1 className="text-2xl font-semibold tracking-tight">{t(dict, 'nav.themes')}</h1>
@@ -35,8 +36,8 @@ export default async function TemasPage() {
                   <theme.icon className="size-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">{theme.title}</p>
-                  <p className="text-xs text-muted-foreground">{theme.description}</p>
+                  <p className="text-sm font-medium">{theme.title[lang]}</p>
+                  <p className="text-xs text-muted-foreground">{theme.description[lang]}</p>
                 </div>
                 <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
               </CardContent>

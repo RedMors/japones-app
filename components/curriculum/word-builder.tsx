@@ -33,7 +33,7 @@ type Props = {
 };
 
 export function WordBuilder({ phrases, onFinish }: Props) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [index, setIndex] = useState(0);
   // Sin mezclar al arrancar (igual en servidor y cliente) — Math.random()
   // durante el render inicial descalza la hidratación ("Hydration failed"),
@@ -149,7 +149,7 @@ export function WordBuilder({ phrases, onFinish }: Props) {
               <p className="jp text-lg">
                 <FuriganaText text={fullSentence} />
               </p>
-              <p className="mt-1 text-xs opacity-80">{phrase.translation}</p>
+              <p className="mt-1 text-xs opacity-80">{phrase.translation[lang]}</p>
             </div>
           )}
 

@@ -1,4 +1,5 @@
 import type { CurriculumItem } from './units.ts';
+import type { Localized } from '@/lib/i18n/localized';
 
 export type MultipleChoiceQuestion = {
   kind: 'choice';
@@ -6,7 +7,7 @@ export type MultipleChoiceQuestion = {
   prompt: string;
   answer: string;
   choices: string[];
-  subtext?: string;
+  subtext?: Localized;
   choiceReadings?: Record<string, string>;
 };
 
@@ -22,7 +23,7 @@ export type FillBlankQuestion = {
   itemId: string;
   prompt: string;
   answer: string;
-  subtext?: string;
+  subtext?: Localized;
   /** Piezas correctas en orden — se comparan contra lo que arma el usuario. */
   correctTiles: string[];
   /** Banco completo (piezas correctas + distractores), ya mezclado. */
