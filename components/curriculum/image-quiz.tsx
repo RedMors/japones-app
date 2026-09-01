@@ -12,6 +12,7 @@ import { scriptOf } from '@/lib/normalize';
 import { speakJapanese } from '@/lib/tts';
 import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import type { SceneImageItem } from '@/lib/curriculum/scenes-data';
+import { useLanguage } from '@/components/language-provider';
 
 const SCRIPT_LABEL = {
   hiragana: 'Hiragana',
@@ -45,6 +46,7 @@ type Props = {
 };
 
 export function ImageQuiz({ items, imageUrls, onDone }: Props) {
+  const { t } = useLanguage();
   // Sin mezclar al arrancar (igual en servidor y cliente) — Math.random()
   // durante el render inicial descalza la hidratación ("Hydration failed"),
   // mismo bug ya visto y arreglado en KanaSentenceSession y WordBuilder.
@@ -109,7 +111,7 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
 
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-medium text-muted-foreground">
-          ¿Cuál de estas imágenes es &quot;{question.item.reading}&quot;?
+          {t('imageQuiz.whichImage', { reading: question.item.reading })}
         </p>
         <Button
           variant="ghost"
@@ -118,7 +120,7 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
           onClick={() => setShowRomaji((s) => !s)}
         >
           {showRomaji ? <EyeOff className="mr-1.5 size-3.5" /> : <Eye className="mr-1.5 size-3.5" />}
-          {showRomaji ? 'Ocultar romaji' : 'Mostrar romaji'}
+          {showRomaji ? t('kana.hideRomaji') : t('kana.showRomaji')}
         </Button>
       </div>
 
@@ -127,7 +129,7 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
           <p className="jp text-3xl">
             <FuriganaText text={question.item.word} />
           </p>
-          <Button variant="ghost" size="icon" onClick={() => speakJapanese(prompt)} title="Escuchar">
+          <Button variant="ghost" size="icon" onClick={() => speakJapanese(prompt)} title={t('session.listen')}>
             <Volume2 className="size-4" />
           </Button>
         </div>
@@ -168,7 +170,7 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
                 <img src={url} alt="" className="size-full object-cover" />
               ) : (
                 <div className="flex size-full items-center justify-center bg-muted text-xs text-muted-foreground">
-                  sin imagen
+                  {t('imageQuiz.noImage')}
                 </div>
               )}
               {revealed && isAnswer && (
@@ -198,11 +200,11 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
         <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 lg:max-w-2xl">
           {revealed ? (
             <Button className="flex-1" size="lg" onClick={handleNext}>
-              Continuar
+              {t('session.continue')}
             </Button>
           ) : (
             <Button className="flex-1" size="lg" onClick={handleCheck} disabled={!picked}>
-              Comprobar
+              {t('session.check')}
             </Button>
           )}
         </div>

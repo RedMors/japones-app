@@ -90,6 +90,24 @@ const es: Dict = {
   'teacher.thinking': 'Pensando...',
   'teacher.placeholder': 'Escribí tu pregunta...',
   'teacher.fabTitle': 'Profesor (preguntas rápidas)',
+
+  'kana.loading': 'Cargando...',
+  'kana.practicedSentence': (v) => `Practicaste ${v.chars} en oraciones cortas.`,
+  'kana.anotherSession': 'Otra sesión',
+  'kana.listenAndTap': 'Escuchá y tocá las fichas en orden — cada una también suena sola',
+  'kana.hideRomaji': 'Ocultar romaji',
+  'kana.showRomaji': 'Mostrar romaji',
+  'kana.listenSentence': 'Escuchar la oración',
+  'kana.tapInOrder': 'Tocá las fichas en orden',
+  'kana.youBuilt': (v) => `Armaste: ${v.text}`,
+  'kana.finish': 'Terminar',
+  'kana.next': 'Siguiente',
+
+  'wordBuilder.listenAndBuild': 'Escuchá y armá la oración',
+  'wordBuilder.tapWordsInOrder': 'Tocá las palabras en orden',
+
+  'imageQuiz.whichImage': (v) => `¿Cuál de estas imágenes es "${v.reading}"?`,
+  'imageQuiz.noImage': 'sin imagen',
 };
 
 const en: Dict = {
@@ -170,6 +188,24 @@ const en: Dict = {
   'teacher.thinking': 'Thinking...',
   'teacher.placeholder': 'Type your question...',
   'teacher.fabTitle': 'Teacher (quick questions)',
+
+  'kana.loading': 'Loading...',
+  'kana.practicedSentence': (v) => `You practiced ${v.chars} in short sentences.`,
+  'kana.anotherSession': 'Another session',
+  'kana.listenAndTap': 'Listen and tap the tiles in order — each one also plays on its own',
+  'kana.hideRomaji': 'Hide romaji',
+  'kana.showRomaji': 'Show romaji',
+  'kana.listenSentence': 'Listen to the sentence',
+  'kana.tapInOrder': 'Tap the tiles in order',
+  'kana.youBuilt': (v) => `You built: ${v.text}`,
+  'kana.finish': 'Finish',
+  'kana.next': 'Next',
+
+  'wordBuilder.listenAndBuild': 'Listen and build the sentence',
+  'wordBuilder.tapWordsInOrder': 'Tap the words in order',
+
+  'imageQuiz.whichImage': (v) => `Which of these images is "${v.reading}"?`,
+  'imageQuiz.noImage': 'no image',
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };
