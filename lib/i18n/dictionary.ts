@@ -165,6 +165,18 @@ const es: Dict = {
   'searchBox.placeholder': 'Buscar en japonés o en inglés — 食べる, taberu, eat…',
   'searchBox.noVoices': 'Tu navegador no tiene voces de pronunciación disponibles.',
   'searchBox.noResults': (v) => `Sin resultados para "${v.query}".`,
+
+  'anki.notConnected': 'Anki no está abierto',
+  'anki.streakDaysSuffix': 'días seguidos',
+  'anki.last30Days': 'Últimos 30 días',
+  'anki.reviewsLabel': 'repasos',
+  'anki.vocabLabel': 'Vocabulario',
+  'anki.synced': 'sincronizado',
+  'anki.notSynced': 'sin sincronizar',
+  'anki.reviewTrend': 'Tendencia de repasos',
+  'anki.decksTitle': (v) => `Mazos (${v.days}+ días = dominada)`,
+  'anki.cardsCount': (v) => `${v.count} tarjetas`,
+  'anki.masteredCount': (v) => `${v.count} dominadas`,
 };
 
 const en: Dict = {
@@ -318,6 +330,18 @@ const en: Dict = {
   'searchBox.placeholder': 'Search in Japanese or English — 食べる, taberu, eat…',
   'searchBox.noVoices': 'Your browser doesn’t have pronunciation voices available.',
   'searchBox.noResults': (v) => `No results for "${v.query}".`,
+
+  'anki.notConnected': 'Anki isn’t open',
+  'anki.streakDaysSuffix': 'days in a row',
+  'anki.last30Days': 'Last 30 days',
+  'anki.reviewsLabel': 'reviews',
+  'anki.vocabLabel': 'Vocabulary',
+  'anki.synced': 'synced',
+  'anki.notSynced': 'not synced',
+  'anki.reviewTrend': 'Review trend',
+  'anki.decksTitle': (v) => `Decks (${v.days}+ days = mastered)`,
+  'anki.cardsCount': (v) => `${v.count} cards`,
+  'anki.masteredCount': (v) => `${v.count} mastered`,
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };

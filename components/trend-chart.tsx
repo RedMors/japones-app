@@ -8,14 +8,20 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-const chartConfig = {
-  reviews: {
-    label: 'Repasos',
-    color: 'var(--color-chart-1)',
-  },
-} satisfies ChartConfig;
+export function TrendChart({
+  data,
+  label = 'Repasos',
+}: {
+  data: { date: string; reviews: number }[];
+  label?: string;
+}) {
+  const chartConfig = {
+    reviews: {
+      label,
+      color: 'var(--color-chart-1)',
+    },
+  } satisfies ChartConfig;
 
-export function TrendChart({ data }: { data: { date: string; reviews: number }[] }) {
   return (
     <ChartContainer config={chartConfig} className="h-[180px] w-full">
       <AreaChart data={data} margin={{ left: 0, right: 0 }}>
