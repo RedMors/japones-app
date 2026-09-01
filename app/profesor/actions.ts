@@ -33,7 +33,7 @@ export async function askTeacher(history: ChatTurn[], lang: Lang = 'es'): Promis
   const systemPrompt = lang === 'en' ? SYSTEM_PROMPT_EN : SYSTEM_PROMPT_ES;
   const messages: ChatMessage[] = [{ role: 'system', content: systemPrompt }, ...history];
   try {
-    const text = await askOpenRouterChat(messages, 500);
+    const text = await askOpenRouterChat(messages, 1200);
     if (text) return text;
     return lang === 'en' ? 'No response this time. Try again.' : 'No obtuve respuesta esta vez. Probá de nuevo.';
   } catch (err) {
