@@ -177,6 +177,8 @@ const es: Dict = {
   'anki.decksTitle': (v) => `Mazos (${v.days}+ días = dominada)`,
   'anki.cardsCount': (v) => `${v.count} tarjetas`,
   'anki.masteredCount': (v) => `${v.count} dominadas`,
+
+  'heatmap.tooltip': (v) => `${v.date}: ${v.count} ${v.count === 1 ? 'actividad' : 'actividades'}`,
 };
 
 const en: Dict = {
@@ -342,6 +344,8 @@ const en: Dict = {
   'anki.decksTitle': (v) => `Decks (${v.days}+ days = mastered)`,
   'anki.cardsCount': (v) => `${v.count} cards`,
   'anki.masteredCount': (v) => `${v.count} mastered`,
+
+  'heatmap.tooltip': (v) => `${v.date}: ${v.count} ${v.count === 1 ? 'activity' : 'activities'}`,
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };
