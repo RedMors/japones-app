@@ -18,7 +18,7 @@ import { ActivityHeatmap } from '@/components/activity-heatmap';
 import { getActivityByDay, computeStudyStreak, getActivityTotals } from '@/lib/study-log';
 import { getGoal, getGoalProgress } from '@/lib/curriculum/progress';
 import { getLanguage } from '@/lib/i18n/language';
-import { getDictionary, t } from '@/lib/i18n/dictionary';
+import { getDictionary, t, type TranslationKey } from '@/lib/i18n/dictionary';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +39,7 @@ const STREAK_MILESTONES = [
   { days: 3, icon: Sparkles, key: 'progreso.milestone3' },
 ] as const;
 
-function streakMilestone(streak: number): { icon: LucideIcon; key: string } | null {
+function streakMilestone(streak: number): { icon: LucideIcon; key: TranslationKey } | null {
   return STREAK_MILESTONES.find((m) => streak >= m.days) ?? null;
 }
 

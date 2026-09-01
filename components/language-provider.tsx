@@ -2,13 +2,13 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getDictionary, t as translate, type Lang } from '@/lib/i18n/dictionary';
+import { getDictionary, t as translate, type Lang, type TranslationKey } from '@/lib/i18n/dictionary';
 import { LANG_COOKIE } from '@/lib/i18n/cookie';
 
 type LanguageContextValue = {
   lang: Lang;
   setLang: (lang: Lang) => void;
-  t: (key: string, vars?: Record<string, string | number>) => string;
+  t: (key: TranslationKey, vars?: Record<string, string | number>) => string;
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);

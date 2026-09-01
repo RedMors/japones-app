@@ -10,10 +10,10 @@ import {
 
 export function TrendChart({
   data,
-  label = 'Repasos',
+  label,
 }: {
   data: { date: string; reviews: number }[];
-  label?: string;
+  label: string;
 }) {
   const chartConfig = {
     reviews: {

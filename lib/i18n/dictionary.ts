@@ -2,17 +2,8 @@ export type Lang = 'es' | 'en';
 
 type Vars = Record<string, string | number>;
 type Entry = string | ((vars: Vars) => string);
-export type Dict = Record<string, Entry>;
 
-export function t(dict: Dict, key: string, vars?: Vars): string {
-  const entry = dict[key];
-  if (entry === undefined) return key;
-  if (typeof entry === 'function') return entry(vars ?? {});
-  if (!vars) return entry;
-  return entry.replace(/\{\{(\w+)\}\}/g, (_, name: string) => String(vars[name] ?? ''));
-}
-
-const es: Dict = {
+const es = {
   'nav.learn': 'Aprender',
   'nav.characters': 'Caracteres',
   'nav.themes': 'Temas',
@@ -238,7 +229,17 @@ const es: Dict = {
   'syncVocab.neverSynced': 'nunca sincronizado',
   'syncVocab.updated': (v) => `Vocabulario actualizado: ${v.count} palabras`,
   'syncVocab.syncFailed': 'No pude sincronizar con Anki',
-};
+} satisfies Record<string, Entry>;
+
+export type TranslationKey = keyof typeof es;
+export type Dict = Record<TranslationKey, Entry>;
+
+export function t(dict: Dict, key: TranslationKey, vars?: Vars): string {
+  const entry = dict[key];
+  if (typeof entry === 'function') return entry(vars ?? {});
+  if (!vars) return entry;
+  return entry.replace(/\{\{(\w+)\}\}/g, (_, name: string) => String(vars[name] ?? ''));
+}
 
 const en: Dict = {
   'nav.learn': 'Learn',

@@ -24,8 +24,9 @@ import {
 import { ThemeToggle } from '@/components/theme-toggle';
 import { LanguageToggle } from '@/components/language-toggle';
 import { useLanguage } from '@/components/language-provider';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 
-type NavItem = { href: string; labelKey: string; icon: LucideIcon };
+type NavItem = { href: string; labelKey: TranslationKey; icon: LucideIcon };
 
 // Demasiados links sueltos en una sola fila se atropellaban entre sí en
 // pantallas normales (10 ítems no entran en max-w-3xl). Agrupados por
@@ -61,7 +62,7 @@ function NavGroup({
   label: string;
   items: NavItem[];
   isActive: boolean;
-  t: (key: string) => string;
+  t: (key: TranslationKey) => string;
 }) {
   return (
     <DropdownMenu>
