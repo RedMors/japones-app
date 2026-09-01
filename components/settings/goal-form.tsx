@@ -6,6 +6,7 @@ import { Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { JLPT_GOAL_LEVELS, type JlptGoalLevel } from '@/lib/curriculum/goal-levels';
 import type { saveGoal } from '@/app/ajustes/actions';
+import { useLanguage } from '@/components/language-provider';
 
 type Props = {
   currentLevel: JlptGoalLevel | null;
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export function GoalForm({ currentLevel, currentDate, saveGoal }: Props) {
+  const { t } = useLanguage();
   const [level, setLevel] = useState<JlptGoalLevel>(currentLevel ?? 'N5');
   const [date, setDate] = useState(currentDate ?? '');
   const [isPending, startTransition] = useTransition();
@@ -21,14 +23,14 @@ export function GoalForm({ currentLevel, currentDate, saveGoal }: Props) {
   function handleSave() {
     startTransition(async () => {
       await saveGoal(level, date);
-      toast('Meta guardada — ¡vamos por eso!', { icon: <Target className="size-4" /> });
+      toast(t('goalForm.toast'), { icon: <Target className="size-4" /> });
     });
   }
 
   return (
     <div className="space-y-4">
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Nivel que quiero alcanzar</label>
+        <label className="text-sm font-medium">{t('goalForm.levelLabel')}</label>
         <div className="flex flex-wrap gap-2">
           {JLPT_GOAL_LEVELS.map((l) => (
             <button
@@ -49,7 +51,7 @@ export function GoalForm({ currentLevel, currentDate, saveGoal }: Props) {
 
       <div className="space-y-1.5">
         <label htmlFor="goal-date" className="text-sm font-medium">
-          Fecha objetivo (opcional)
+          {t('goalForm.dateLabel')}
         </label>
         <input
           id="goal-date"
@@ -58,13 +60,11 @@ export function GoalForm({ currentLevel, currentDate, saveGoal }: Props) {
           onChange={(e) => setDate(e.target.value)}
           className="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30"
         />
-        <p className="text-xs text-muted-foreground">
-          Si la ponés, el dashboard de Progreso te muestra cuánto te falta para llegar a tiempo.
-        </p>
+        <p className="text-xs text-muted-foreground">{t('goalForm.dateHelp')}</p>
       </div>
 
       <Button onClick={handleSave} disabled={isPending}>
-        {isPending ? 'Guardando...' : 'Guardar meta'}
+        {isPending ? t('settingsForm.saving') : t('goalForm.saveGoal')}
       </Button>
     </div>
   );

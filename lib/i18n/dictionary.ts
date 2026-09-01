@@ -108,6 +108,32 @@ const es: Dict = {
 
   'imageQuiz.whichImage': (v) => `¿Cuál de estas imágenes es "${v.reading}"?`,
   'imageQuiz.noImage': 'sin imagen',
+
+  'ajustes.title': 'Ajustes',
+  'ajustes.goalSectionTitle': 'Meta JLPT',
+  'ajustes.goalBodyPrefix': 'Elegí a qué nivel querés llegar. Lo vas a ver reflejado en',
+  'ajustes.aiSectionTitle': 'Gramática con IA',
+  'ajustes.aiSectionBody':
+    'Configuración de la explicación de gramática vía IA (OpenRouter). El resto de la app funciona 100% local, sin esto.',
+
+  'settingsForm.apiKeyLabel': 'API key de OpenRouter',
+  'settingsForm.apiKeyPlaceholderConfigured': 'Ya configurada — dejar vacío para no cambiarla',
+  'settingsForm.apiKeyHelp1': 'Se guarda en',
+  'settingsForm.apiKeyHelp2':
+    ', nunca sale de tu máquina ni se sube a git. Se usa solo para el botón "explicar con IA" en las unidades de gramática.',
+  'settingsForm.modelLabel': 'Modelo',
+  'settingsForm.modelHelpPrefix': 'Id de modelo de OpenRouter. Ver lista y precios en',
+  'settingsForm.saving': 'Guardando...',
+  'settingsForm.save': 'Guardar',
+  'settingsForm.nothingToSave': 'Nada para guardar',
+  'settingsForm.saved': 'Guardado',
+
+  'goalForm.levelLabel': 'Nivel que quiero alcanzar',
+  'goalForm.dateLabel': 'Fecha objetivo (opcional)',
+  'goalForm.dateHelp':
+    'Si la ponés, el dashboard de Progreso te muestra cuánto te falta para llegar a tiempo.',
+  'goalForm.saveGoal': 'Guardar meta',
+  'goalForm.toast': 'Meta guardada — ¡vamos por eso!',
 };
 
 const en: Dict = {
@@ -206,6 +232,31 @@ const en: Dict = {
 
   'imageQuiz.whichImage': (v) => `Which of these images is "${v.reading}"?`,
   'imageQuiz.noImage': 'no image',
+
+  'ajustes.title': 'Settings',
+  'ajustes.goalSectionTitle': 'JLPT goal',
+  'ajustes.goalBodyPrefix': 'Choose which level you want to reach. You’ll see it reflected in',
+  'ajustes.aiSectionTitle': 'AI grammar',
+  'ajustes.aiSectionBody':
+    'Configuration for AI-powered grammar explanations (OpenRouter). The rest of the app works 100% locally without this.',
+
+  'settingsForm.apiKeyLabel': 'OpenRouter API key',
+  'settingsForm.apiKeyPlaceholderConfigured': 'Already configured — leave empty to keep it',
+  'settingsForm.apiKeyHelp1': 'Saved in',
+  'settingsForm.apiKeyHelp2':
+    ', never leaves your machine or gets pushed to git. Used only for the "explain with AI" button in grammar units.',
+  'settingsForm.modelLabel': 'Model',
+  'settingsForm.modelHelpPrefix': 'OpenRouter model id. See list and pricing at',
+  'settingsForm.saving': 'Saving...',
+  'settingsForm.save': 'Save',
+  'settingsForm.nothingToSave': 'Nothing to save',
+  'settingsForm.saved': 'Saved',
+
+  'goalForm.levelLabel': 'Level I want to reach',
+  'goalForm.dateLabel': 'Target date (optional)',
+  'goalForm.dateHelp': 'If you set it, the Progress dashboard shows how much is left to get there on time.',
+  'goalForm.saveGoal': 'Save goal',
+  'goalForm.toast': 'Goal saved — let’s go for it!',
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };
