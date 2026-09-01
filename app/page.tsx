@@ -15,6 +15,8 @@ import {
 import { listUnitsWithStatus } from '@/lib/curriculum/progress';
 import type { Unit } from '@/lib/curriculum/units';
 import type { UnitStatus } from '@/lib/curriculum/progress';
+import { getLanguage } from '@/lib/i18n/language';
+import { getDictionary, t, type Dict } from '@/lib/i18n/dictionary';
 
 const LEVEL_LABEL: Record<string, string> = {
   hiragana: 'Hiragana',
@@ -30,7 +32,7 @@ const LEVEL_ORDER = ['hiragana', 'katakana', 'N5', 'N4', 'N3', 'N2', 'N1'];
 
 type UnitRow = Unit & { status: UnitStatus; masteredCount: number; seenCount: number };
 
-function UnitCard({ unit }: { unit: UnitRow }) {
+function UnitCard({ unit, dict }: { unit: UnitRow; dict: Dict }) {
   const total = unit.items.length;
   const masteredPct = total > 0 ? Math.round((unit.masteredCount / total) * 100) : 0;
   const seenPct = total > 0 ? Math.round((unit.seenCount / total) * 100) : 0;
@@ -64,8 +66,9 @@ function UnitCard({ unit }: { unit: UnitRow }) {
             />
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            {unit.masteredCount}/{total} dominados
-            {unit.seenCount > unit.masteredCount && ` · ${unit.seenCount}/${total} vistos`}
+            {t(dict, 'unit.masteredOf', { mastered: unit.masteredCount, total })}
+            {unit.seenCount > unit.masteredCount &&
+              t(dict, 'unit.seenSuffix', { seen: unit.seenCount, total })}
           </p>
         </div>
         {!locked && <ChevronRight className="size-4 shrink-0 text-muted-foreground" />}
@@ -76,7 +79,8 @@ function UnitCard({ unit }: { unit: UnitRow }) {
   return locked ? <div>{content}</div> : <Link href={`/${unit.id}`}>{content}</Link>;
 }
 
-export default function LearnHome() {
+export default async function LearnHome() {
+  const dict = getDictionary(await getLanguage());
   const units = listUnitsWithStatus();
 
   const byLevel = new Map<string, UnitRow[]>();
@@ -100,10 +104,8 @@ export default function LearnHome() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="text-2xl font-semibold tracking-tight">Aprender</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Un paso a la vez, de lo más básico hacia arriba.
-      </p>
+      <h1 className="text-2xl font-semibold tracking-tight">{t(dict, 'home.title')}</h1>
+      <p className="mt-1 text-sm text-muted-foreground">{t(dict, 'home.subtitle')}</p>
 
       <Accordion
         type="single"
@@ -121,14 +123,14 @@ export default function LearnHome() {
                   {LEVEL_LABEL[level] ?? level}
                 </span>
                 <span className="text-xs font-normal text-muted-foreground">
-                  {mastered}/{total} palabras · {levelUnits.length} lecciones
+                  {t(dict, 'level.summary', { mastered, total, lessons: levelUnits.length })}
                 </span>
               </span>
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
                 {levelUnits.map((unit) => (
-                  <UnitCard key={unit.id} unit={unit} />
+                  <UnitCard key={unit.id} unit={unit} dict={dict} />
                 ))}
               </div>
             </AccordionContent>
