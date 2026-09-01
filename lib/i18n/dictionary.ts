@@ -134,6 +134,27 @@ const es: Dict = {
     'Si la ponés, el dashboard de Progreso te muestra cuánto te falta para llegar a tiempo.',
   'goalForm.saveGoal': 'Guardar meta',
   'goalForm.toast': 'Meta guardada — ¡vamos por eso!',
+
+  'hablar.title': 'Práctica de habla',
+  'hablar.subtitle': 'Pronunciá en voz alta lo que ya dominaste. Necesita micrófono y Chrome (o similar).',
+  'hablar.emptyPrefix': 'Todavía no dominaste ningún ítem para practicar. Completá una lección en',
+  'hablar.emptySuffix':
+    'primero — esto practica pronunciación de lo que ya sabés, no vocabulario nuevo.',
+
+  'speaking.micNotAllowed': 'Necesito permiso de micrófono.',
+  'speaking.noSpeech': 'No escuché nada — probá de nuevo.',
+  'speaking.genericError': 'Algo falló escuchando. Probá de nuevo.',
+  'speaking.notSupported':
+    'Tu navegador no soporta reconocimiento de voz (funciona en Chrome/Edge de escritorio). Probá desde ahí.',
+  'speaking.excellentPronunciation': '¡Excelente pronunciación!',
+  'speaking.keepPracticing': 'Seguí practicando, cada vez suena mejor.',
+  'speaking.listenPronunciation': 'Escuchar cómo se pronuncia',
+  'speaking.wellPronounced': '¡Bien pronunciado!',
+  'speaking.notQuiteMatch': 'No coincide del todo',
+  'speaking.heard': (v) => `Se entendió: "${v.text}"`,
+  'speaking.expected': (v) => `Se esperaba: ${v.text}`,
+  'speaking.listening': 'Escuchando...',
+  'speaking.pronounce': 'Pronunciar',
 };
 
 const en: Dict = {
@@ -257,6 +278,26 @@ const en: Dict = {
   'goalForm.dateHelp': 'If you set it, the Progress dashboard shows how much is left to get there on time.',
   'goalForm.saveGoal': 'Save goal',
   'goalForm.toast': 'Goal saved — let’s go for it!',
+
+  'hablar.title': 'Speaking practice',
+  'hablar.subtitle': 'Say out loud what you already mastered. Needs a microphone and Chrome (or similar).',
+  'hablar.emptyPrefix': 'You haven’t mastered any items to practice yet. Complete a lesson in',
+  'hablar.emptySuffix': 'first — this practices pronunciation of what you already know, not new vocabulary.',
+
+  'speaking.micNotAllowed': 'I need microphone permission.',
+  'speaking.noSpeech': 'I didn’t hear anything — try again.',
+  'speaking.genericError': 'Something went wrong listening. Try again.',
+  'speaking.notSupported':
+    'Your browser doesn’t support speech recognition (works in desktop Chrome/Edge). Try from there.',
+  'speaking.excellentPronunciation': 'Excellent pronunciation!',
+  'speaking.keepPracticing': 'Keep practicing, it sounds better every time.',
+  'speaking.listenPronunciation': 'Listen to the pronunciation',
+  'speaking.wellPronounced': 'Well pronounced!',
+  'speaking.notQuiteMatch': 'Doesn’t quite match',
+  'speaking.heard': (v) => `Heard: "${v.text}"`,
+  'speaking.expected': (v) => `Expected: ${v.text}`,
+  'speaking.listening': 'Listening...',
+  'speaking.pronounce': 'Pronounce',
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };

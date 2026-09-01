@@ -15,6 +15,7 @@ import {
 import { katakanaToHiragana, normalizeLemma } from '@/lib/normalize';
 import type { SpeakingItem } from '@/lib/curriculum/progress';
 import type { logSpeakingSession } from '@/app/hablar/actions';
+import { useLanguage } from '@/components/language-provider';
 
 type Props = {
   items: SpeakingItem[];
@@ -32,6 +33,7 @@ function isMatch(transcript: string, item: SpeakingItem): boolean {
 }
 
 export function SpeakingPractice({ items, logSession }: Props) {
+  const { t } = useLanguage();
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('idle');
   const [transcript, setTranscript] = useState('');
@@ -52,10 +54,10 @@ export function SpeakingPractice({ items, logSession }: Props) {
       if (!result.ok) {
         setMicError(
           result.error === 'not-allowed'
-            ? 'Necesito permiso de micrófono.'
+            ? t('speaking.micNotAllowed')
             : result.error === 'no-speech'
-              ? 'No escuché nada — probá de nuevo.'
-              : 'Algo falló escuchando. Probá de nuevo.',
+              ? t('speaking.noSpeech')
+              : t('speaking.genericError'),
         );
         setPhase('idle');
         return;
@@ -87,8 +89,7 @@ export function SpeakingPractice({ items, logSession }: Props) {
     return (
       <Card>
         <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          Tu navegador no soporta reconocimiento de voz (funciona en Chrome/Edge de escritorio).
-          Probá desde ahí.
+          {t('speaking.notSupported')}
         </CardContent>
       </Card>
     );
@@ -100,13 +101,13 @@ export function SpeakingPractice({ items, logSession }: Props) {
       <div className="space-y-4 text-center">
         {pct >= 80 && <PartyPopper className="mx-auto size-10 text-accent-foreground" />}
         <h1 className="text-2xl font-semibold">
-          {score} de {items.length}
+          {t('session.scoreOf', { correct: score, total: items.length })}
         </h1>
         <p className="text-muted-foreground">
-          {pct >= 80 ? '¡Excelente pronunciación!' : 'Seguí practicando, cada vez suena mejor.'}
+          {pct >= 80 ? t('speaking.excellentPronunciation') : t('speaking.keepPracticing')}
         </p>
         <Button asChild className="mt-2">
-          <Link href="/">Volver</Link>
+          <Link href="/">{t('session.back')}</Link>
         </Button>
       </div>
     );
@@ -130,7 +131,7 @@ export function SpeakingPractice({ items, logSession }: Props) {
               size="icon"
               className="shrink-0 self-start text-muted-foreground"
               onClick={() => speakJapanese(item.word)}
-              title="Escuchar cómo se pronuncia"
+              title={t('speaking.listenPronunciation')}
             >
               <Volume2 className="size-4" />
             </Button>
@@ -149,11 +150,11 @@ export function SpeakingPractice({ items, logSession }: Props) {
             >
               <p className="flex items-center justify-center gap-1.5 text-sm font-medium">
                 {correct ? <Check className="size-4" /> : <X className="size-4" />}
-                {correct ? '¡Bien pronunciado!' : 'No coincide del todo'}
+                {correct ? t('speaking.wellPronounced') : t('speaking.notQuiteMatch')}
               </p>
-              <p className="mt-1 text-xs opacity-80">Se entendió: &quot;{transcript}&quot;</p>
+              <p className="mt-1 text-xs opacity-80">{t('speaking.heard', { text: transcript })}</p>
               {!correct && (
-                <p className="mt-1 text-xs opacity-80">Se esperaba: {item.reading}</p>
+                <p className="mt-1 text-xs opacity-80">{t('speaking.expected', { text: item.reading })}</p>
               )}
             </div>
           ) : (
@@ -165,7 +166,7 @@ export function SpeakingPractice({ items, logSession }: Props) {
               className="gap-2"
             >
               <Mic className="size-4" />
-              {phase === 'listening' ? 'Escuchando...' : 'Pronunciar'}
+              {phase === 'listening' ? t('speaking.listening') : t('speaking.pronounce')}
             </Button>
           )}
           {micError && <p className="text-xs text-destructive">{micError}</p>}
@@ -174,7 +175,7 @@ export function SpeakingPractice({ items, logSession }: Props) {
 
       {phase === 'result' && (
         <Button className="w-full" size="lg" onClick={handleNext}>
-          Continuar
+          {t('session.continue')}
         </Button>
       )}
     </div>
