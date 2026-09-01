@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { syncVocabFromAnki } from '@/app/miner/actions';
+import { useLanguage } from '@/components/language-provider';
 
 export function SyncVocabButton({
   action,
@@ -14,6 +15,7 @@ export function SyncVocabButton({
   action: typeof syncVocabFromAnki;
   syncedAt: string | null;
 }) {
+  const { t } = useLanguage();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -21,10 +23,10 @@ export function SyncVocabButton({
     startTransition(async () => {
       const result = await action();
       if (result.ok) {
-        toast.success(`Vocabulario actualizado: ${result.count} palabras`);
+        toast.success(t('syncVocab.updated', { count: result.count }));
         router.refresh();
       } else {
-        toast.error('No pude sincronizar con Anki', { description: result.error });
+        toast.error(t('syncVocab.syncFailed'), { description: result.error });
       }
     });
   }
@@ -37,10 +39,10 @@ export function SyncVocabButton({
         ) : (
           <RefreshCw className="size-3.5" />
         )}
-        Actualizar vocabulario
+        {t('syncVocab.updateVocab')}
       </Button>
       <span className="text-xs text-muted-foreground">
-        {syncedAt ? `sync: ${syncedAt}` : 'nunca sincronizado'}
+        {syncedAt ? t('syncVocab.syncedAt', { date: syncedAt }) : t('syncVocab.neverSynced')}
       </span>
     </div>
   );

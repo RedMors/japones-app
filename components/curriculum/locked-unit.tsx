@@ -1,17 +1,20 @@
 import Link from 'next/link';
 import { Lock } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { getLanguage } from '@/lib/i18n/language';
+import { getDictionary, t } from '@/lib/i18n/dictionary';
 
-export function LockedUnit({ title }: { title: string }) {
+export async function LockedUnit({ title }: { title: string }) {
+  const dict = getDictionary(await getLanguage());
   return (
     <main className="mx-auto max-w-xl px-6 py-16">
       <Alert>
         <Lock className="size-4" />
-        <AlertTitle>{title} todavía está bloqueada</AlertTitle>
+        <AlertTitle>{t(dict, 'lockedUnit.title', { title })}</AlertTitle>
         <AlertDescription>
-          Completá la unidad anterior primero.{' '}
+          {t(dict, 'lockedUnit.body')}{' '}
           <Link href="/" className="underline underline-offset-2">
-            Volver
+            {t(dict, 'session.back')}
           </Link>
         </AlertDescription>
       </Alert>

@@ -9,6 +9,7 @@ import { FuriganaText } from '@/components/curriculum/furigana-text';
 import { speakJapanese } from '@/lib/tts';
 import type { MinedWordRow } from '@/lib/miner';
 import type { addWordToAnki, skipWord } from '@/app/miner/actions';
+import { useLanguage } from '@/components/language-provider';
 
 type Props = {
   sentence: string;
@@ -40,6 +41,7 @@ export function SentenceCard({
   addAction,
   skipAction,
 }: Props) {
+  const { t } = useLanguage();
   const timestamp = formatTimestamp(startMs);
   const pending = words.filter((w) => w.status === 'new').length;
 
@@ -54,7 +56,7 @@ export function SentenceCard({
               size="icon"
               className="size-7 shrink-0 text-muted-foreground"
               onClick={() => speakJapanese(sentence)}
-              title="Escuchar"
+              title={t('session.listen')}
             >
               <Volume2 className="size-4" />
             </Button>
@@ -64,7 +66,7 @@ export function SentenceCard({
               <span className="text-xs tabular-nums text-muted-foreground">{timestamp}</span>
             )}
             {pending === 1 && (
-              <Badge className="bg-accent text-accent-foreground">ideal</Badge>
+              <Badge className="bg-accent text-accent-foreground">{t('sentenceCard.ideal')}</Badge>
             )}
           </div>
         </div>

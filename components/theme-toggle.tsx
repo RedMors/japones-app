@@ -10,11 +10,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useLanguage } from '@/components/language-provider';
 
 const OPTIONS = [
-  { value: 'light', label: 'Claro', icon: Sun },
-  { value: 'dark', label: 'Oscuro', icon: Moon },
-  { value: 'system', label: 'Sistema', icon: Monitor },
+  { value: 'light', labelKey: 'themeToggle.light', icon: Sun },
+  { value: 'dark', labelKey: 'themeToggle.dark', icon: Moon },
+  { value: 'system', labelKey: 'themeToggle.system', icon: Monitor },
 ] as const;
 
 /**
@@ -25,6 +26,7 @@ const OPTIONS = [
  */
 export function ThemeToggle({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
+  const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -34,7 +36,13 @@ export function ThemeToggle({ className }: { className?: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm" title="Tema" aria-label="Cambiar tema" className={className}>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          title={t('themeToggle.title')}
+          aria-label={t('themeToggle.ariaLabel')}
+          className={className}
+        >
           <Icon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -45,7 +53,7 @@ export function ThemeToggle({ className }: { className?: string }) {
             className="gap-2"
             onClick={() => setTheme(option.value)}
           >
-            <option.icon className="size-4" /> {option.label}
+            <option.icon className="size-4" /> {t(option.labelKey)}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

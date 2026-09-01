@@ -11,17 +11,20 @@ import {
 } from '@/lib/anki-connect';
 import { getKnownVocabCount, getKnownVocabSyncedAt } from '@/lib/miner';
 import { CircleAlert } from 'lucide-react';
+import { getLanguage } from '@/lib/i18n/language';
+import { getDictionary, t } from '@/lib/i18n/dictionary';
 
 export default async function Home() {
+  const dict = getDictionary(await getLanguage());
   const status = await getStatus();
 
   if (!status.connected) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-16">
-        <h1 className="text-2xl font-semibold tracking-tight">Progreso</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t(dict, 'progreso.title')}</h1>
         <Alert className="mt-6" variant="destructive">
           <CircleAlert className="size-4" />
-          <AlertTitle>Anki no está abierto</AlertTitle>
+          <AlertTitle>{t(dict, 'anki.notConnected')}</AlertTitle>
           <AlertDescription>{status.message}</AlertDescription>
         </Alert>
       </main>
@@ -36,39 +39,41 @@ export default async function Home() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="text-2xl font-semibold tracking-tight">Progreso</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">{t(dict, 'progreso.title')}</h1>
 
       <div className="mt-6 grid grid-cols-3 gap-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground">Racha</CardTitle>
+            <CardTitle className="text-sm font-normal text-muted-foreground">
+              {t(dict, 'progreso.streakLabel')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-semibold tabular-nums">{streak}</p>
-            <p className="text-xs text-muted-foreground">días seguidos</p>
+            <p className="text-xs text-muted-foreground">{t(dict, 'anki.streakDaysSuffix')}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground">
-              Últimos 30 días
+              {t(dict, 'anki.last30Days')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-semibold tabular-nums">{totalReviews30d}</p>
-            <p className="text-xs text-muted-foreground">repasos</p>
+            <p className="text-xs text-muted-foreground">{t(dict, 'anki.reviewsLabel')}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground">
-              Vocabulario
+              {t(dict, 'anki.vocabLabel')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-semibold tabular-nums">{knownVocab}</p>
             <p className="text-xs text-muted-foreground">
-              {syncedAt ? 'sincronizado' : 'sin sincronizar'}
+              {syncedAt ? t(dict, 'anki.synced') : t(dict, 'anki.notSynced')}
             </p>
           </CardContent>
         </Card>
@@ -77,18 +82,18 @@ export default async function Home() {
       <Card className="mt-4">
         <CardHeader>
           <CardTitle className="text-sm font-normal text-muted-foreground">
-            Tendencia de repasos
+            {t(dict, 'anki.reviewTrend')}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <TrendChart data={reviews} />
+          <TrendChart data={reviews} label={t(dict, 'anki.reviewsLabel')} />
         </CardContent>
       </Card>
 
       <Card className="mt-4">
         <CardHeader>
           <CardTitle className="text-sm font-normal text-muted-foreground">
-            Mazos ({MATURE_INTERVAL_DAYS}+ días = dominada)
+            {t(dict, 'anki.decksTitle', { days: MATURE_INTERVAL_DAYS })}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -98,9 +103,9 @@ export default async function Home() {
               <div key={d.deckName} className="flex items-center justify-between text-sm">
                 <span>{d.deckName}</span>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary">{d.total} tarjetas</Badge>
+                  <Badge variant="secondary">{t(dict, 'anki.cardsCount', { count: d.total })}</Badge>
                   <Badge className="bg-accent text-accent-foreground">
-                    {d.mature} dominadas
+                    {t(dict, 'anki.masteredCount', { count: d.mature })}
                   </Badge>
                 </div>
               </div>

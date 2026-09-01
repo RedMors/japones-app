@@ -10,6 +10,7 @@ import { stripFurigana } from '@/lib/curriculum/furigana';
 import { speakJapanese } from '@/lib/tts';
 import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import type { ScenePhrase } from '@/lib/curriculum/scenes-data';
+import { useLanguage } from '@/components/language-provider';
 
 type Tile = { key: string; text: string };
 
@@ -32,6 +33,7 @@ type Props = {
 };
 
 export function WordBuilder({ phrases, onFinish }: Props) {
+  const { t } = useLanguage();
   const [index, setIndex] = useState(0);
   // Sin mezclar al arrancar (igual en servidor y cliente) — Math.random()
   // durante el render inicial descalza la hidratación ("Hydration failed"),
@@ -105,7 +107,7 @@ export function WordBuilder({ phrases, onFinish }: Props) {
         </span>
       </div>
 
-      <p className="text-sm font-medium text-muted-foreground">Escuchá y armá la oración</p>
+      <p className="text-sm font-medium text-muted-foreground">{t('wordBuilder.listenAndBuild')}</p>
 
       <Card>
         <CardContent className="flex flex-col items-center gap-6 py-10">
@@ -114,14 +116,14 @@ export function WordBuilder({ phrases, onFinish }: Props) {
             size="icon"
             className="size-16 rounded-full"
             onClick={() => speakJapanese(stripFurigana(fullSentence))}
-            title="Escuchar"
+            title={t('session.listen')}
           >
             <Volume2 className="size-6" />
           </Button>
 
           <div className="flex min-h-14 w-full flex-wrap items-center justify-center gap-2 border-b border-dashed border-border pb-4">
             {answer.length === 0 && (
-              <span className="text-sm text-muted-foreground">Tocá las palabras en orden</span>
+              <span className="text-sm text-muted-foreground">{t('wordBuilder.tapWordsInOrder')}</span>
             )}
             {answer.map((tile) => (
               <button
@@ -171,7 +173,7 @@ export function WordBuilder({ phrases, onFinish }: Props) {
         <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 lg:max-w-2xl">
           {phase === 'result' ? (
             <Button className="flex-1" size="lg" onClick={handleNext}>
-              Continuar
+              {t('session.continue')}
             </Button>
           ) : (
             <Button
@@ -180,7 +182,7 @@ export function WordBuilder({ phrases, onFinish }: Props) {
               onClick={handleCheck}
               disabled={answer.length === 0 || bank.length > 0}
             >
-              Comprobar
+              {t('session.check')}
             </Button>
           )}
         </div>

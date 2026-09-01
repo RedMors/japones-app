@@ -22,25 +22,28 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { LanguageToggle } from '@/components/language-toggle';
+import { useLanguage } from '@/components/language-provider';
+import type { TranslationKey } from '@/lib/i18n/dictionary';
 
-type NavItem = { href: string; label: string; icon: LucideIcon };
+type NavItem = { href: string; labelKey: TranslationKey; icon: LucideIcon };
 
 // Demasiados links sueltos en una sola fila se atropellaban entre sí en
 // pantallas normales (10 ítems no entran en max-w-3xl). Agrupados por
 // función: "Practicar" son las formas de estudiar, "Herramientas" es todo
 // lo que no es una lección en sí.
 const PRACTICE_ITEMS: NavItem[] = [
-  { href: '/', label: 'Aprender', icon: GraduationCap },
-  { href: '/caracteres', label: 'Caracteres', icon: Grid3x3 },
-  { href: '/temas', label: 'Temas', icon: MessageSquareText },
-  { href: '/hablar', label: 'Hablar', icon: Mic },
+  { href: '/', labelKey: 'nav.learn', icon: GraduationCap },
+  { href: '/caracteres', labelKey: 'nav.characters', icon: Grid3x3 },
+  { href: '/temas', labelKey: 'nav.themes', icon: MessageSquareText },
+  { href: '/hablar', labelKey: 'nav.speak', icon: Mic },
 ];
 
 const TOOL_ITEMS: NavItem[] = [
-  { href: '/miner', label: 'Minar episodio', icon: Pickaxe },
-  { href: '/buscar', label: 'Buscar', icon: Search },
-  { href: '/anki', label: 'Anki', icon: Layers },
-  { href: '/ajustes', label: 'Ajustes', icon: Settings },
+  { href: '/miner', labelKey: 'nav.mineEpisode', icon: Pickaxe },
+  { href: '/buscar', labelKey: 'nav.search', icon: Search },
+  { href: '/anki', labelKey: 'nav.anki', icon: Layers },
+  { href: '/ajustes', labelKey: 'nav.settings', icon: Settings },
 ];
 
 function linkClass(active: boolean) {
@@ -50,7 +53,17 @@ function linkClass(active: boolean) {
   );
 }
 
-function NavGroup({ label, items, isActive }: { label: string; items: NavItem[]; isActive: boolean }) {
+function NavGroup({
+  label,
+  items,
+  isActive,
+  t,
+}: {
+  label: string;
+  items: NavItem[];
+  isActive: boolean;
+  t: (key: TranslationKey) => string;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={cn('flex items-center gap-1 outline-none', linkClass(isActive))}>
@@ -61,7 +74,7 @@ function NavGroup({ label, items, isActive }: { label: string; items: NavItem[];
         {items.map((item) => (
           <DropdownMenuItem key={item.href} className="gap-2" asChild>
             <Link href={item.href}>
-              <item.icon className="size-4" /> {item.label}
+              <item.icon className="size-4" /> {t(item.labelKey)}
             </Link>
           </DropdownMenuItem>
         ))}
@@ -72,6 +85,7 @@ function NavGroup({ label, items, isActive }: { label: string; items: NavItem[];
 
 export function Nav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const inPractice = PRACTICE_ITEMS.some((i) => i.href === pathname);
   const inTools = TOOL_ITEMS.some((i) => i.href === pathname);
 
@@ -81,12 +95,15 @@ export function Nav() {
         <Link href="/" className="shrink-0 text-sm font-semibold tracking-tight">
           日本語
         </Link>
-        <NavGroup label="Practicar" items={PRACTICE_ITEMS} isActive={inPractice} />
+        <NavGroup label={t('nav.practiceGroup')} items={PRACTICE_ITEMS} isActive={inPractice} t={t} />
         <Link href="/progreso" className={linkClass(pathname === '/progreso')}>
-          Progreso
+          {t('nav.progress')}
         </Link>
-        <NavGroup label="Herramientas" items={TOOL_ITEMS} isActive={inTools} />
-        <ThemeToggle className="ml-auto" />
+        <NavGroup label={t('nav.toolsGroup')} items={TOOL_ITEMS} isActive={inTools} t={t} />
+        <div className="ml-auto flex items-center gap-1">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </div>
     </nav>
   );

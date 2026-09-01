@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import type { saveSettings } from '@/app/ajustes/actions';
+import { useLanguage } from '@/components/language-provider';
 
 type Props = {
   keyConfigured: boolean;
@@ -13,19 +14,20 @@ type Props = {
 };
 
 export function SettingsForm({ keyConfigured, currentModel, saveSettings }: Props) {
+  const { t } = useLanguage();
   const [apiKey, setApiKey] = useState('');
   const [model, setModel] = useState(currentModel ?? '');
   const [isPending, startTransition] = useTransition();
 
   function handleSave() {
     if (!apiKey.trim() && !model.trim()) {
-      toast('Nada para guardar');
+      toast(t('settingsForm.nothingToSave'));
       return;
     }
     startTransition(async () => {
       await saveSettings(apiKey, model);
       setApiKey('');
-      toast('Guardado');
+      toast(t('settingsForm.saved'));
     });
   }
 
@@ -33,25 +35,25 @@ export function SettingsForm({ keyConfigured, currentModel, saveSettings }: Prop
     <div className="space-y-4">
       <div className="space-y-1.5">
         <label htmlFor="openrouter-key" className="text-sm font-medium">
-          API key de OpenRouter
+          {t('settingsForm.apiKeyLabel')}
         </label>
         <Input
           id="openrouter-key"
           type="password"
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
-          placeholder={keyConfigured ? 'Ya configurada — dejar vacío para no cambiarla' : 'sk-or-...'}
+          placeholder={keyConfigured ? t('settingsForm.apiKeyPlaceholderConfigured') : 'sk-or-...'}
           autoComplete="off"
         />
         <p className="text-xs text-muted-foreground">
-          Se guarda en <code>.env.local</code>, nunca sale de tu máquina ni se sube a git. Se usa
-          solo para el botón &quot;explicar con IA&quot; en las unidades de gramática.
+          {t('settingsForm.apiKeyHelp1')} <code>.env.local</code>
+          {t('settingsForm.apiKeyHelp2')}
         </p>
       </div>
 
       <div className="space-y-1.5">
         <label htmlFor="openrouter-model" className="text-sm font-medium">
-          Modelo
+          {t('settingsForm.modelLabel')}
         </label>
         <Input
           id="openrouter-model"
@@ -60,7 +62,7 @@ export function SettingsForm({ keyConfigured, currentModel, saveSettings }: Prop
           placeholder="google/gemini-2.0-flash-001"
         />
         <p className="text-xs text-muted-foreground">
-          Id de modelo de OpenRouter. Ver lista y precios en{' '}
+          {t('settingsForm.modelHelpPrefix')}{' '}
           <a
             href="https://openrouter.ai/models"
             target="_blank"
@@ -74,7 +76,7 @@ export function SettingsForm({ keyConfigured, currentModel, saveSettings }: Prop
       </div>
 
       <Button onClick={handleSave} disabled={isPending}>
-        {isPending ? 'Guardando...' : 'Guardar'}
+        {isPending ? t('settingsForm.saving') : t('settingsForm.save')}
       </Button>
     </div>
   );

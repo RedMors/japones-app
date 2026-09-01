@@ -1,4 +1,6 @@
 import type { DayActivity } from '@/lib/study-log';
+import { getLanguage } from '@/lib/i18n/language';
+import { getDictionary, t } from '@/lib/i18n/dictionary';
 
 const WEEKS = 18; // ~4 meses, estilo GitHub
 
@@ -20,7 +22,8 @@ const LEVEL_CLASS = [
   'bg-primary',
 ] as const;
 
-export function ActivityHeatmap({ data }: { data: DayActivity[] }) {
+export async function ActivityHeatmap({ data }: { data: DayActivity[] }) {
+  const dict = getDictionary(await getLanguage());
   const byDate = new Map(data.map((d) => [d.date, d.count]));
   const max = Math.max(1, ...data.map((d) => d.count));
 
@@ -52,7 +55,7 @@ export function ActivityHeatmap({ data }: { data: DayActivity[] }) {
             return (
               <div
                 key={day.date}
-                title={`${day.date}: ${day.count} actividad${day.count === 1 ? '' : 'es'}`}
+                title={t(dict, 'heatmap.tooltip', { date: day.date, count: day.count })}
                 className={`size-3 rounded-sm ${
                   inFuture ? 'bg-transparent' : LEVEL_CLASS[levelFor(day.count, max)]
                 }`}

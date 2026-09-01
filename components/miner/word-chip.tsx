@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { speakJapanese } from '@/lib/tts';
 import type { MinedWordRow } from '@/lib/miner';
 import type { addWordToAnki, skipWord } from '@/app/miner/actions';
+import { useLanguage } from '@/components/language-provider';
 
 type Props = {
   word: MinedWordRow;
@@ -19,6 +20,7 @@ type Props = {
 
 /** Agregar a Anki, o descartar para siempre: cada una es un solo click. */
 export function WordChip({ word, addAction, skipAction }: Props) {
+  const { t } = useLanguage();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const done = word.status === 'added' || word.status === 'skipped';
@@ -27,10 +29,10 @@ export function WordChip({ word, addAction, skipAction }: Props) {
     startTransition(async () => {
       const result = await addAction(word.id);
       if (result.ok) {
-        toast.success(`${word.lemma} agregada a Anki`);
+        toast.success(t('wordChip.addedToAnki', { lemma: word.lemma }));
         router.refresh();
       } else {
-        toast.error(`No se pudo agregar ${word.lemma}`, { description: result.error });
+        toast.error(t('wordChip.addFailed', { lemma: word.lemma }), { description: result.error });
       }
     });
   }
@@ -38,8 +40,8 @@ export function WordChip({ word, addAction, skipAction }: Props) {
   function handleSkip() {
     startTransition(async () => {
       await skipAction(word.id, word.lemma);
-      toast(`${word.lemma} descartada`, {
-        description: 'No va a volver a aparecer en otros episodios.',
+      toast(t('wordChip.skipped', { lemma: word.lemma }), {
+        description: t('wordChip.skippedDesc'),
       });
       router.refresh();
     });
@@ -82,7 +84,7 @@ export function WordChip({ word, addAction, skipAction }: Props) {
           variant="ghost"
           className="size-7 text-muted-foreground"
           onClick={() => speakJapanese(word.reading || word.lemma)}
-          title="Escuchar"
+          title={t('session.listen')}
         >
           <Volume2 className="size-4" />
         </Button>
@@ -92,7 +94,7 @@ export function WordChip({ word, addAction, skipAction }: Props) {
           className="size-7 text-muted-foreground hover:text-destructive"
           disabled={isPending || done}
           onClick={handleSkip}
-          title="Descartar (no volver a mostrar)"
+          title={t('wordChip.discardTitle')}
         >
           <X className="size-4" />
         </Button>
@@ -101,7 +103,7 @@ export function WordChip({ word, addAction, skipAction }: Props) {
           className="size-7"
           disabled={isPending || done}
           onClick={handleAdd}
-          title="Agregar a Anki"
+          title={t('wordChip.addToAnki')}
         >
           {isPending ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
         </Button>

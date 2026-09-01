@@ -8,6 +8,8 @@ import { getStatus } from '@/lib/anki-connect';
 import { getEpisodeSummary, getKnownVocabSyncedAt, listEpisodes, type MinedWordRow } from '@/lib/miner';
 import { annotateFurigana } from '@/lib/tokenizer';
 import { mineFile, addWordToAnki, skipWord, syncVocabFromAnki } from './actions';
+import { getLanguage } from '@/lib/i18n/language';
+import { getDictionary, t } from '@/lib/i18n/dictionary';
 
 type Group = { sentence: string; startMs: number | null; words: MinedWordRow[] };
 
@@ -33,6 +35,7 @@ export default async function MinerPage({
   searchParams: Promise<{ episode?: string; duplicate?: string; error?: string }>;
 }) {
   const params = await searchParams;
+  const dict = getDictionary(await getLanguage());
   const status = await getStatus();
   const syncedAt = getKnownVocabSyncedAt();
 
@@ -51,17 +54,17 @@ export default async function MinerPage({
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Minar episodio</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t(dict, 'nav.mineEpisode')}</h1>
         <SyncVocabButton action={syncVocabFromAnki} syncedAt={syncedAt} />
       </div>
 
       {!status.connected && (
         <Alert className="mt-6" variant="destructive">
           <CircleAlert className="size-4" />
-          <AlertTitle>Anki no está abierto</AlertTitle>
+          <AlertTitle>{t(dict, 'anki.notConnected')}</AlertTitle>
           <AlertDescription>
-            {status.message} Podés minar igual, pero no vas a poder agregar tarjetas ni
-            actualizar tu vocabulario conocido hasta que lo abras.
+            {status.message}
+            {t(dict, 'miner.cannotMineSuffix')}
           </AlertDescription>
         </Alert>
       )}
@@ -69,7 +72,7 @@ export default async function MinerPage({
       {params.error && (
         <Alert className="mt-6" variant="destructive">
           <CircleAlert className="size-4" />
-          <AlertTitle>No pude procesar el archivo</AlertTitle>
+          <AlertTitle>{t(dict, 'miner.processError')}</AlertTitle>
           <AlertDescription>{decodeURIComponent(params.error)}</AlertDescription>
         </Alert>
       )}
@@ -82,7 +85,7 @@ export default async function MinerPage({
         <div className="mt-8">
           <h2 className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <History className="size-4" />
-            Episodios minados ({episodes.length})
+            {t(dict, 'miner.minedEpisodes', { count: episodes.length })}
           </h2>
           <div className="mt-2 divide-y divide-border rounded-lg border">
             {episodes.map((ep) => (
@@ -97,7 +100,8 @@ export default async function MinerPage({
                   {ep.animeName} {ep.episodeLabel ?? ''}
                 </span>
                 <span className="shrink-0 text-xs text-muted-foreground">
-                  {ep.newWordCount} palabras · {new Date(ep.createdAt).toLocaleDateString()}
+                  {t(dict, 'miner.wordsCount', { count: ep.newWordCount })} ·{' '}
+                  {new Date(ep.createdAt).toLocaleDateString()}
                 </span>
               </Link>
             ))}
@@ -111,20 +115,18 @@ export default async function MinerPage({
             <PartyPopper className="size-4 text-accent-foreground" />
             <AlertTitle>
               {params.duplicate
-                ? 'Este episodio ya estaba minado'
-                : `¡Aprendiste ${summary.newWordCount} palabras nuevas!`}
+                ? t(dict, 'miner.alreadyMined')
+                : t(dict, 'miner.learnedNewWords', { count: summary.newWordCount })}
             </AlertTitle>
             <AlertDescription>
-              {summary.animeName} {summary.episodeLabel ?? ''} · {summary.totalLines} líneas
-              procesadas
-              {addedCount > 0 && ` · ${addedCount} ya agregadas a Anki`}
+              {summary.animeName} {summary.episodeLabel ?? ''} ·{' '}
+              {t(dict, 'miner.linesProcessed', { count: summary.totalLines })}
+              {addedCount > 0 && t(dict, 'miner.alreadyAddedToAnki', { count: addedCount })}
             </AlertDescription>
           </Alert>
 
           {groups.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No encontré palabras nuevas en este episodio — ya conocés todo el vocabulario.
-            </p>
+            <p className="text-sm text-muted-foreground">{t(dict, 'miner.noNewWords')}</p>
           ) : (
             <div className="space-y-3">
               {groupsWithFurigana.map((group, i) => (

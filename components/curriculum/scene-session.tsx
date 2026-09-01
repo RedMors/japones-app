@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ImageQuiz } from '@/components/curriculum/image-quiz';
 import { WordBuilder } from '@/components/curriculum/word-builder';
 import type { SceneTheme } from '@/lib/curriculum/scenes-data';
+import { useLanguage } from '@/components/language-provider';
 
 type Props = {
   // Sin `icon`: es un componente, no serializa de Server a Client Component.
@@ -19,6 +20,7 @@ type Props = {
  *  final combinado. Si el tema no tiene imágenes (piloto solo en
  *  Restaurante), arranca directo en las oraciones. */
 export function SceneSession({ theme, imageUrls, onFinish }: Props) {
+  const { t } = useLanguage();
   const hasImages = (theme.imageItems?.length ?? 0) > 0;
   const [phase, setPhase] = useState<'images' | 'phrases' | 'done'>(
     hasImages ? 'images' : 'phrases',
@@ -60,13 +62,15 @@ export function SceneSession({ theme, imageUrls, onFinish }: Props) {
     <div className="space-y-4 text-center">
       {pct >= 80 && <PartyPopper className="mx-auto size-10 text-accent-foreground" />}
       <h1 className="text-2xl font-semibold">
-        {totalCorrect} de {totalQuestions}
+        {t('session.scoreOf', { correct: totalCorrect, total: totalQuestions })}
       </h1>
       <p className="text-muted-foreground">
-        {pct >= 80 ? `¡Ya te sale natural en "${theme.title}"!` : 'Seguí practicando esta escena.'}
+        {pct >= 80
+          ? t('sceneSession.natural', { title: theme.title })
+          : t('sceneSession.keepPracticing')}
       </p>
       <Button asChild className="mt-2">
-        <Link href="/temas">Volver</Link>
+        <Link href="/temas">{t('session.back')}</Link>
       </Button>
     </div>
   );

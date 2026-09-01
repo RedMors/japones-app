@@ -11,6 +11,7 @@ import { speakJapanese } from '@/lib/tts';
 import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import { HIRAGANA, KATAKANA, HIRAGANA_AVANZADO, KATAKANA_AVANZADO } from '@/lib/curriculum/kana-data';
 import { SESSION_SIZE, type KanaSentence, type KanaRowPractice } from '@/lib/curriculum/kana-sentences';
+import { useLanguage } from '@/components/language-provider';
 
 type Tile = { key: string; text: string };
 
@@ -80,6 +81,7 @@ type Props = {
  * una mezcla distinta.
  */
 export function KanaSentenceSession({ row, onFinish }: Props) {
+  const { t } = useLanguage();
   // Arranca con el orden fijo del pool y el banco SIN mezclar (igual en
   // servidor y cliente) y recién en el useEffect de abajo se sortea de
   // verdad. Math.random() corriendo durante el render (server o el primer
@@ -176,24 +178,22 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
   }
 
   if (!ready || !sentence) {
-    return <p className="text-center text-sm text-muted-foreground">Cargando...</p>;
+    return <p className="text-center text-sm text-muted-foreground">{t('kana.loading')}</p>;
   }
 
   if (finished) {
     return (
       <div className="space-y-4 text-center">
         <h1 className="text-2xl font-semibold">
-          {score} de {session.length}
+          {t('session.scoreOf', { correct: score, total: session.length })}
         </h1>
-        <p className="text-muted-foreground">
-          Practicaste {row.chars} en oraciones cortas.
-        </p>
+        <p className="text-muted-foreground">{t('kana.practicedSentence', { chars: row.chars })}</p>
         <div className="flex justify-center gap-2 pt-2">
           <Button variant="secondary" onClick={handleAnother}>
-            <RotateCcw className="mr-2 size-4" /> Otra sesión
+            <RotateCcw className="mr-2 size-4" /> {t('kana.anotherSession')}
           </Button>
           <Button asChild>
-            <Link href="/caracteres">Volver</Link>
+            <Link href="/caracteres">{t('session.back')}</Link>
           </Button>
         </div>
       </div>
@@ -210,12 +210,10 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-medium text-muted-foreground">
-          Escuchá y tocá las fichas en orden — cada una también suena sola
-        </p>
+        <p className="text-sm font-medium text-muted-foreground">{t('kana.listenAndTap')}</p>
         <Button variant="ghost" size="sm" onClick={() => setShowRomaji((s) => !s)} className="shrink-0">
           {showRomaji ? <EyeOff className="mr-1.5 size-3.5" /> : <Eye className="mr-1.5 size-3.5" />}
-          {showRomaji ? 'Ocultar romaji' : 'Mostrar romaji'}
+          {showRomaji ? t('kana.hideRomaji') : t('kana.showRomaji')}
         </Button>
       </div>
 
@@ -226,14 +224,14 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
             size="icon"
             className="size-16 rounded-full"
             onClick={() => speakJapanese(sentence.jp)}
-            title="Escuchar la oración"
+            title={t('kana.listenSentence')}
           >
             <Volume2 className="size-6" />
           </Button>
 
           <div className="flex min-h-14 w-full flex-wrap items-center justify-center gap-2 border-b border-dashed border-border pb-4">
             {answer.length === 0 && (
-              <span className="text-sm text-muted-foreground">Tocá las fichas en orden</span>
+              <span className="text-sm text-muted-foreground">{t('kana.tapInOrder')}</span>
             )}
             {answer.map((tile) => (
               <button
@@ -270,7 +268,7 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
               <p className="text-sm font-medium opacity-90">{sentence.translation}</p>
               {!correct && (
                 <p className="jp text-xs opacity-70">
-                  Armaste: {answer.map((t) => t.text).join('')}
+                  {t('kana.youBuilt', { text: answer.map((tile) => tile.text).join('') })}
                 </p>
               )}
             </div>
@@ -299,11 +297,11 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
 
       {checked ? (
         <Button className="w-full" size="lg" onClick={handleNext}>
-          {index + 1 >= session.length ? 'Terminar' : 'Siguiente'}
+          {index + 1 >= session.length ? t('kana.finish') : t('kana.next')}
         </Button>
       ) : (
         <Button className="w-full" size="lg" onClick={handleCheck} disabled={answer.length !== targetLength}>
-          Comprobar
+          {t('session.check')}
         </Button>
       )}
     </div>
