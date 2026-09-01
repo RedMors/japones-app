@@ -159,3 +159,13 @@ npm run dev
 - 「テーマ」練習モード用の新しいシーン
 
 IssueまたはPRをお送りください。技術スタックはTypeScript + Next.js（App Router）+ SQLiteです。
+
+---
+
+## License & attribution
+
+MIT — see [LICENSE](LICENSE).
+
+Bundled/generated dictionary data is not this project's own work and keeps its original license:
+- **JMdict** (used by `npm run build:jmdict`, not redistributed — you download it yourself) is © [Electronic Dictionary Research and Development Group](https://www.edrdg.org/), licensed under [CC BY-SA 4.0](https://www.edrdg.org/edrdg/licence.html).
+- **JLPT vocabulary lists** (`data/jlpt/raw/*.csv`, bundled) are from [elzup/jlpt-word-list](https://github.com/elzup/jlpt-word-list), MIT licensed.
