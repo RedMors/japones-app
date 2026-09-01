@@ -81,7 +81,7 @@ type Props = {
  * una mezcla distinta.
  */
 export function KanaSentenceSession({ row, onFinish }: Props) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   // Arranca con el orden fijo del pool y el banco SIN mezclar (igual en
   // servidor y cliente) y recién en el useEffect de abajo se sortea de
   // verdad. Math.random() corriendo durante el render (server o el primer
@@ -265,7 +265,7 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
                 {sentence.jp}
               </p>
               <p className="text-xs opacity-80">{sentence.reading}</p>
-              <p className="text-sm font-medium opacity-90">{sentence.translation}</p>
+              <p className="text-sm font-medium opacity-90">{sentence.translation[lang]}</p>
               {!correct && (
                 <p className="jp text-xs opacity-70">
                   {t('kana.youBuilt', { text: answer.map((tile) => tile.text).join('') })}

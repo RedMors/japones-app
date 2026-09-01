@@ -162,7 +162,7 @@ export function SessionRunner({
     if (!explainGrammar) return;
     setExplanation(null);
     startExplainTransition(async () => {
-      const text = await explainGrammar(question.prompt, question.answer, question.subtext, lang);
+      const text = await explainGrammar(question.prompt, question.answer, question.subtext?.[lang], lang);
       setExplanation(text);
     });
   }
@@ -271,7 +271,7 @@ export function SessionRunner({
           </div>
           {question.subtext && (
             <p className="text-center text-sm text-muted-foreground lg:text-base">
-              {question.subtext}
+              {question.subtext[lang]}
             </p>
           )}
         </CardContent>

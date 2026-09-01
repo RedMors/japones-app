@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { getSceneTheme } from '@/lib/curriculum/scenes-data';
 import { SceneSession } from '@/components/curriculum/scene-session';
 import { getOrGenerateImageKey } from '@/lib/image-cache';
+import { getLanguage } from '@/lib/i18n/language';
 import { logSceneSession } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -14,6 +15,7 @@ export default async function ThemePage({
   const { themeId } = await params;
   const theme = getSceneTheme(themeId);
   if (!theme) notFound();
+  const lang = await getLanguage();
 
   // Se generan (o se recuperan del caché) ACÁ, en el servidor, antes de
   // mandar nada al cliente — así el ejercicio arranca con las imágenes ya
@@ -51,7 +53,7 @@ export default async function ThemePage({
     // app/[unitId]/page.tsx.
     <main className="mx-auto max-w-xl px-6 pt-16 pb-4 lg:max-w-2xl">
       <h1 className="mb-6 flex items-center gap-2 text-2xl font-semibold tracking-tight">
-        <ThemeIcon className="size-6 shrink-0" /> {theme.title}
+        <ThemeIcon className="size-6 shrink-0" /> {theme.title[lang]}
       </h1>
       <SceneSession theme={sceneOnly} imageUrls={imageUrls} onFinish={onFinish} />
     </main>
