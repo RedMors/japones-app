@@ -82,6 +82,14 @@ const es: Dict = {
   'session.why': '¿Por qué?',
   'session.continue': 'Continuar',
   'session.check': 'Comprobar',
+
+  'teacher.title': 'Profesor',
+  'teacher.emptyHint': 'Preguntame lo que quieras, sin cortar lo que estás haciendo.',
+  'teacher.suggestion1': '¿Cuándo uso は en vez de が?',
+  'teacher.suggestion2': 'です vs だ, ¿cuál es la diferencia?',
+  'teacher.thinking': 'Pensando...',
+  'teacher.placeholder': 'Escribí tu pregunta...',
+  'teacher.fabTitle': 'Profesor (preguntas rápidas)',
 };
 
 const en: Dict = {
@@ -154,6 +162,14 @@ const en: Dict = {
   'session.why': 'Why?',
   'session.continue': 'Continue',
   'session.check': 'Check',
+
+  'teacher.title': 'Teacher',
+  'teacher.emptyHint': 'Ask me anything, without interrupting what you’re doing.',
+  'teacher.suggestion1': 'When do I use は instead of が?',
+  'teacher.suggestion2': 'です vs だ, what’s the difference?',
+  'teacher.thinking': 'Thinking...',
+  'teacher.placeholder': 'Type your question...',
+  'teacher.fabTitle': 'Teacher (quick questions)',
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };

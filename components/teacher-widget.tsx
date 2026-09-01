@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { askTeacher, type ChatTurn } from '@/app/profesor/actions';
-
-const SUGGESTIONS = ['¿Cuándo uso は en vez de が?', 'です vs だ, ¿cuál es la diferencia?'];
+import { useLanguage } from '@/components/language-provider';
 
 type Props = { keyConfigured: boolean };
 
@@ -15,11 +14,14 @@ type Props = { keyConfigured: boolean };
  *  sitio — para no tener que dejar lo que estás haciendo y navegar a otro
  *  lado por una duda rápida. */
 export function TeacherWidget({ keyConfigured }: Props) {
+  const { lang, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [history, setHistory] = useState<ChatTurn[]>([]);
   const [input, setInput] = useState('');
   const [isPending, startTransition] = useTransition();
   const listRef = useRef<HTMLDivElement>(null);
+
+  const suggestions = [t('teacher.suggestion1'), t('teacher.suggestion2')];
 
   if (!keyConfigured) return null;
 
@@ -37,7 +39,7 @@ export function TeacherWidget({ keyConfigured }: Props) {
     setInput('');
     scrollToBottom();
     startTransition(async () => {
-      const reply = await askTeacher(next);
+      const reply = await askTeacher(next, lang);
       setHistory((h) => [...h, { role: 'assistant', content: reply }]);
       scrollToBottom();
     });
@@ -49,7 +51,7 @@ export function TeacherWidget({ keyConfigured }: Props) {
         <div className="flex h-[28rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border bg-popover shadow-xl">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <p className="flex items-center gap-2 text-sm font-medium">
-              <GraduationCap className="size-4" /> Profesor
+              <GraduationCap className="size-4" /> {t('teacher.title')}
             </p>
             <button
               type="button"
@@ -63,11 +65,9 @@ export function TeacherWidget({ keyConfigured }: Props) {
           <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
             {history.length === 0 && (
               <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-                <p className="text-xs text-muted-foreground">
-                  Preguntame lo que quieras, sin cortar lo que estás haciendo.
-                </p>
+                <p className="text-xs text-muted-foreground">{t('teacher.emptyHint')}</p>
                 <div className="flex flex-col gap-1.5">
-                  {SUGGESTIONS.map((s) => (
+                  {suggestions.map((s) => (
                     <button
                       key={s}
                       type="button"
@@ -100,7 +100,7 @@ export function TeacherWidget({ keyConfigured }: Props) {
             {isPending && (
               <div className="flex justify-start">
                 <div className="flex items-center gap-2 rounded-2xl border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
-                  <Loader2 className="size-3.5 animate-spin" /> Pensando...
+                  <Loader2 className="size-3.5 animate-spin" /> {t('teacher.thinking')}
                 </div>
               </div>
             )}
@@ -116,7 +116,7 @@ export function TeacherWidget({ keyConfigured }: Props) {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Escribí tu pregunta..."
+              placeholder={t('teacher.placeholder')}
               disabled={isPending}
               className="h-9"
             />
@@ -130,7 +130,7 @@ export function TeacherWidget({ keyConfigured }: Props) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        title="Profesor (preguntas rápidas)"
+        title={t('teacher.fabTitle')}
         className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105"
       >
         {open ? <X className="size-5" /> : <GraduationCap className="size-5" />}
