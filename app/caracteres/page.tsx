@@ -11,6 +11,8 @@ import { getKanaProgressMap, type KanaCharStatus } from '@/lib/curriculum/progre
 import { KanaBoard, type KanaCell } from '@/components/curriculum/kana-board';
 import { KANA_ROW_PRACTICE } from '@/lib/curriculum/kana-sentences';
 import { Card, CardContent } from '@/components/ui/card';
+import { getLanguage } from '@/lib/i18n/language';
+import { getDictionary, t } from '@/lib/i18n/dictionary';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,16 +26,14 @@ function toCells(chars: KanaChar[], progress: Map<string, KanaCharStatus>): Kana
   }));
 }
 
-export default function CaracteresPage() {
+export default async function CaracteresPage() {
+  const dict = getDictionary(await getLanguage());
   const progress = getKanaProgressMap();
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="text-2xl font-semibold tracking-tight">Caracteres</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Todo el hiragana y katakana de un vistazo, con tu progreso real — sin esperar a
-        terminar una lección para ver dónde estás parado.
-      </p>
+      <h1 className="text-2xl font-semibold tracking-tight">{t(dict, 'nav.characters')}</h1>
+      <p className="mt-1 text-sm text-muted-foreground">{t(dict, 'caracteres.subtitle')}</p>
 
       <div className="mt-8">
         <KanaBoard
@@ -54,7 +54,9 @@ export default function CaracteresPage() {
           expandir a las demás filas sin que el usuario confirme que el
           formato funciona. */}
       <div className="mt-10">
-        <h2 className="text-sm font-semibold text-muted-foreground">Practicar en oraciones</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground">
+          {t(dict, 'caracteres.practiceInSentences')}
+        </h2>
         <div className="mt-3 space-y-2">
           {KANA_ROW_PRACTICE.map((row) => (
             <Link key={row.id} href={`/caracteres/practicar/${row.id}`}>
@@ -63,10 +65,12 @@ export default function CaracteresPage() {
                   <span className="jp text-xl">{row.chars}</span>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">
-                      {row.kind === 'hiragana' ? 'Hiragana' : 'Katakana'} en oraciones cortas
+                      {t(dict, 'caracteres.rowTitle', {
+                        kind: row.kind === 'hiragana' ? 'Hiragana' : 'Katakana',
+                      })}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Leé y escuchá {row.sentences.length} ejemplos reales con estos caracteres.
+                      {t(dict, 'caracteres.readAndListen', { count: row.sentences.length })}
                     </p>
                   </div>
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground" />

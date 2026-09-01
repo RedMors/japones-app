@@ -184,6 +184,28 @@ const es: Dict = {
 
   'sceneSession.natural': (v) => `¡Ya te sale natural en "${v.title}"!`,
   'sceneSession.keepPracticing': 'Seguí practicando esta escena.',
+
+  'caracteres.subtitle':
+    'Todo el hiragana y katakana de un vistazo, con tu progreso real — sin esperar a terminar una lección para ver dónde estás parado.',
+  'caracteres.practiceInSentences': 'Practicar en oraciones',
+  'caracteres.rowTitle': (v) => `${v.kind} en oraciones cortas`,
+  'caracteres.readAndListen': (v) => `Leé y escuchá ${v.count} ejemplos reales con estos caracteres.`,
+  'caracteres.inSentencesSuffix': 'en oraciones',
+
+  'kanaBoard.sectionComplete': 'Sección completa',
+  'kanaBoard.masteredAll': (v) => `¡Dominaste todo ${String(v.title).toLowerCase()}!`,
+  'kanaBoard.practice': 'Practicar',
+  'kanaBoard.basic': 'Básico',
+  'kanaBoard.dakutenYoon': 'Dakuten y yōon',
+
+  'nothingDue.title': (v) => `Nada para repasar en ${v.title} por ahora`,
+  'nothingDue.body':
+    'Volvé más tarde, o repasá igual solo para chequear qué te acordás — no afecta tu progreso.',
+  'nothingDue.reviewAnyway': 'Repasar igual',
+  'nothingDue.viewOtherUnits': 'Ver otras unidades',
+
+  'lockedUnit.title': (v) => `${v.title} todavía está bloqueada`,
+  'lockedUnit.body': 'Completá la unidad anterior primero.',
 };
 
 const en: Dict = {
@@ -356,6 +378,28 @@ const en: Dict = {
 
   'sceneSession.natural': (v) => `You've got the hang of "${v.title}"!`,
   'sceneSession.keepPracticing': 'Keep practicing this scene.',
+
+  'caracteres.subtitle':
+    'All hiragana and katakana at a glance, with your real progress — no need to finish a lesson to see where you stand.',
+  'caracteres.practiceInSentences': 'Practice in sentences',
+  'caracteres.rowTitle': (v) => `${v.kind} in short sentences`,
+  'caracteres.readAndListen': (v) => `Read and listen to ${v.count} real examples with these characters.`,
+  'caracteres.inSentencesSuffix': 'in sentences',
+
+  'kanaBoard.sectionComplete': 'Section complete',
+  'kanaBoard.masteredAll': (v) => `You've mastered all of ${v.title}!`,
+  'kanaBoard.practice': 'Practice',
+  'kanaBoard.basic': 'Basic',
+  'kanaBoard.dakutenYoon': 'Dakuten and yōon',
+
+  'nothingDue.title': (v) => `Nothing to review in ${v.title} right now`,
+  'nothingDue.body':
+    'Come back later, or review anyway just to check what you remember — it won’t affect your progress.',
+  'nothingDue.reviewAnyway': 'Review anyway',
+  'nothingDue.viewOtherUnits': 'View other units',
+
+  'lockedUnit.title': (v) => `${v.title} is still locked`,
+  'lockedUnit.body': 'Complete the previous unit first.',
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };

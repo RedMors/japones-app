@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { speakJapanese } from '@/lib/tts';
 import type { KanaCharStatus } from '@/lib/curriculum/progress';
+import { useLanguage } from '@/components/language-provider';
 
 export type KanaCell = {
   id: string;
@@ -78,6 +79,7 @@ function Section({
   unitId: string;
   cells: KanaCell[];
 }) {
+  const { t } = useLanguage();
   const mastered = cells.filter((c) => c.status === 'mastered').length;
   const complete = mastered === cells.length;
   const rows = groupByRow(cells);
@@ -87,7 +89,9 @@ function Section({
       <div className="mb-3 flex items-center justify-between">
         <h2 className="flex items-center gap-1.5 text-sm font-semibold">
           {title}
-          {complete && <Trophy className="size-4 text-accent-foreground" aria-label="Sección completa" />}
+          {complete && (
+            <Trophy className="size-4 text-accent-foreground" aria-label={t('kanaBoard.sectionComplete')} />
+          )}
         </h2>
         <span
           className={cn(
@@ -95,7 +99,7 @@ function Section({
             complete ? 'font-medium text-accent-foreground' : 'text-muted-foreground',
           )}
         >
-          {mastered}/{cells.length} dominados
+          {t('unit.masteredOf', { mastered, total: cells.length })}
         </span>
       </div>
       <div className="space-y-2 sm:space-y-3">
@@ -105,11 +109,11 @@ function Section({
       </div>
       {complete ? (
         <p className="mt-4 flex items-center justify-center gap-1.5 rounded-lg border border-accent-foreground/30 bg-accent px-4 py-2.5 text-center text-sm font-medium text-accent-foreground">
-          <PartyPopper className="size-4 shrink-0" /> ¡Dominaste todo {title.toLowerCase()}!
+          <PartyPopper className="size-4 shrink-0" /> {t('kanaBoard.masteredAll', { title })}
         </p>
       ) : (
         <Button asChild variant="secondary" className="mt-4 w-full">
-          <Link href={`/${unitId}`}>Practicar</Link>
+          <Link href={`/${unitId}`}>{t('kanaBoard.practice')}</Link>
         </Button>
       )}
     </div>
@@ -117,6 +121,7 @@ function Section({
 }
 
 export function KanaBoard({ data }: Props) {
+  const { t } = useLanguage();
   const [tab, setTab] = useState<Kind>('hiragana');
 
   return (
@@ -141,12 +146,12 @@ export function KanaBoard({ data }: Props) {
 
       <div className="mt-6">
         <Section
-          title="Básico"
+          title={t('kanaBoard.basic')}
           unitId={tab === 'hiragana' ? 'hiragana-basico' : 'katakana-basico'}
           cells={data[tab].basic}
         />
         <Section
-          title="Dakuten y yōon"
+          title={t('kanaBoard.dakutenYoon')}
           unitId={tab === 'hiragana' ? 'hiragana-avanzado' : 'katakana-avanzado'}
           cells={data[tab].advanced}
         />
