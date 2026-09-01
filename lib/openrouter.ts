@@ -9,7 +9,7 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 // Modelo barato por defecto. Si OpenRouter lo deprecó, poné otro id vigente
 // (ver openrouter.ai/models) en OPENROUTER_MODEL en vez de tocar este archivo.
-const DEFAULT_MODEL = 'google/gemini-2.0-flash-001';
+const DEFAULT_MODEL = 'google/gemini-2.5-flash';
 
 export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
 
