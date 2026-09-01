@@ -179,6 +179,11 @@ const es: Dict = {
   'anki.masteredCount': (v) => `${v.count} dominadas`,
 
   'heatmap.tooltip': (v) => `${v.date}: ${v.count} ${v.count === 1 ? 'actividad' : 'actividades'}`,
+
+  'temas.subtitle': 'Frases hechas por escena — escuchá y armá la oración, sin ver el texto primero.',
+
+  'sceneSession.natural': (v) => `¡Ya te sale natural en "${v.title}"!`,
+  'sceneSession.keepPracticing': 'Seguí practicando esta escena.',
 };
 
 const en: Dict = {
@@ -346,6 +351,11 @@ const en: Dict = {
   'anki.masteredCount': (v) => `${v.count} mastered`,
 
   'heatmap.tooltip': (v) => `${v.date}: ${v.count} ${v.count === 1 ? 'activity' : 'activities'}`,
+
+  'temas.subtitle': 'Ready-made phrases by scene — listen and build the sentence, without seeing the text first.',
+
+  'sceneSession.natural': (v) => `You've got the hang of "${v.title}"!`,
+  'sceneSession.keepPracticing': 'Keep practicing this scene.',
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };

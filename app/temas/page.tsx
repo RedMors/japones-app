@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronRight } from 'lucide-react';
 import { SCENE_THEMES } from '@/lib/curriculum/scenes-data';
+import { getLanguage } from '@/lib/i18n/language';
+import { getDictionary, t } from '@/lib/i18n/dictionary';
 
 /** Un color de la paleta de charts por escena — mismo criterio que
  *  "Por tipo de actividad" en /progreso, para que la lista no quede
@@ -15,13 +17,12 @@ const CHIP_COLORS = [
   'bg-chart-5/15 text-chart-5',
 ];
 
-export default function TemasPage() {
+export default async function TemasPage() {
+  const dict = getDictionary(await getLanguage());
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="text-2xl font-semibold tracking-tight">Temas</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Frases hechas por escena — escuchá y armá la oración, sin ver el texto primero.
-      </p>
+      <h1 className="text-2xl font-semibold tracking-tight">{t(dict, 'nav.themes')}</h1>
+      <p className="mt-1 text-sm text-muted-foreground">{t(dict, 'temas.subtitle')}</p>
 
       <div className="mt-8 space-y-2">
         {SCENE_THEMES.map((theme, i) => (
