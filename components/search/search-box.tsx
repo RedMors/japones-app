@@ -10,6 +10,7 @@ import { speakJapanese, isTtsAvailable } from '@/lib/tts';
 import { hiraganaToRomaji } from '@/lib/romaji';
 import type { search as searchAction } from '@/app/buscar/actions';
 import type { DictEntry } from '@/lib/dictionary';
+import { useLanguage } from '@/components/language-provider';
 
 const DEBOUNCE_MS = 250;
 
@@ -36,6 +37,7 @@ function renderSpokenReading(reading: string, range: SpokenRange | null) {
 }
 
 export function SearchBox({ search }: { search: typeof searchAction }) {
+  const { t } = useLanguage();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<DictEntry[]>([]);
   const [searched, setSearched] = useState(false);
@@ -87,15 +89,13 @@ export function SearchBox({ search }: { search: typeof searchAction }) {
           autoFocus
           value={query}
           onChange={(e) => handleChange(e.target.value)}
-          placeholder="Buscar en japonés o en inglés — 食べる, taberu, eat…"
+          placeholder={t('searchBox.placeholder')}
           className="pl-9"
         />
       </div>
 
       {!ttsAvailable.current && searched && (
-        <p className="text-xs text-muted-foreground">
-          Tu navegador no tiene voces de pronunciación disponibles.
-        </p>
+        <p className="text-xs text-muted-foreground">{t('searchBox.noVoices')}</p>
       )}
 
       <div className="space-y-2">
@@ -131,7 +131,7 @@ export function SearchBox({ search }: { search: typeof searchAction }) {
                 size="icon"
                 className="shrink-0 text-muted-foreground"
                 onClick={() => handleSpeak(entry)}
-                title="Escuchar"
+                title={t('session.listen')}
               >
                 <Volume2 className="size-4" />
               </Button>
@@ -140,7 +140,7 @@ export function SearchBox({ search }: { search: typeof searchAction }) {
         ))}
 
         {searched && results.length === 0 && (
-          <p className="text-sm text-muted-foreground">Sin resultados para &quot;{query}&quot;.</p>
+          <p className="text-sm text-muted-foreground">{t('searchBox.noResults', { query })}</p>
         )}
       </div>
     </div>

@@ -155,6 +155,16 @@ const es: Dict = {
   'speaking.expected': (v) => `Se esperaba: ${v.text}`,
   'speaking.listening': 'Escuchando...',
   'speaking.pronounce': 'Pronunciar',
+
+  'buscar.title': 'Buscar',
+  'buscar.dictNotReady': 'Diccionario no generado',
+  'buscar.dictNotReadyPrefix': 'Corré',
+  'buscar.dictNotReadySuffix': 'primero.',
+  'buscar.subtitle': 'Palabra, lectura o significado. Con pronunciación.',
+
+  'searchBox.placeholder': 'Buscar en japonés o en inglés — 食べる, taberu, eat…',
+  'searchBox.noVoices': 'Tu navegador no tiene voces de pronunciación disponibles.',
+  'searchBox.noResults': (v) => `Sin resultados para "${v.query}".`,
 };
 
 const en: Dict = {
@@ -298,6 +308,16 @@ const en: Dict = {
   'speaking.expected': (v) => `Expected: ${v.text}`,
   'speaking.listening': 'Listening...',
   'speaking.pronounce': 'Pronounce',
+
+  'buscar.title': 'Search',
+  'buscar.dictNotReady': 'Dictionary not generated',
+  'buscar.dictNotReadyPrefix': 'Run',
+  'buscar.dictNotReadySuffix': 'first.',
+  'buscar.subtitle': 'Word, reading, or meaning. With pronunciation.',
+
+  'searchBox.placeholder': 'Search in Japanese or English — 食べる, taberu, eat…',
+  'searchBox.noVoices': 'Your browser doesn’t have pronunciation voices available.',
+  'searchBox.noResults': (v) => `No results for "${v.query}".`,
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };
