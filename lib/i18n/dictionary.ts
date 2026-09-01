@@ -66,6 +66,22 @@ const es: Dict = {
   'activity.curriculum': 'Lecciones',
   'activity.speaking': 'Habla',
   'activity.anki_review': 'Repasos',
+
+  'session.scoreOf': (v) => `${v.correct} de ${v.total}`,
+  'session.freeReviewNote': 'Repaso libre — no afectó tu progreso.',
+  'session.unitComplete': (v) => `¡${v.title} completa!`,
+  'session.unitCompleteBody': 'Dominaste todo. La siguiente unidad ya está disponible.',
+  'session.keepGoing': 'Seguí así, un poco más.',
+  'session.back': 'Volver',
+  'session.freeReviewBanner': 'Repaso libre — esto no cambia tu progreso.',
+  'session.chooseAnswer': 'Elegí la respuesta correcta',
+  'session.buildAnswer': 'Armá la respuesta con las piezas',
+  'session.listen': 'Escuchar',
+  'session.tapInOrder': 'Tocá las piezas en orden',
+  'session.thinking': 'Pensando...',
+  'session.why': '¿Por qué?',
+  'session.continue': 'Continuar',
+  'session.check': 'Comprobar',
 };
 
 const en: Dict = {
@@ -122,6 +138,22 @@ const en: Dict = {
   'activity.curriculum': 'Lessons',
   'activity.speaking': 'Speaking',
   'activity.anki_review': 'Reviews',
+
+  'session.scoreOf': (v) => `${v.correct} of ${v.total}`,
+  'session.freeReviewNote': 'Free review — this didn’t affect your progress.',
+  'session.unitComplete': (v) => `${v.title} complete!`,
+  'session.unitCompleteBody': 'You mastered it all. The next unit is now available.',
+  'session.keepGoing': 'Keep going, a bit more.',
+  'session.back': 'Back',
+  'session.freeReviewBanner': 'Free review — this won’t change your progress.',
+  'session.chooseAnswer': 'Choose the correct answer',
+  'session.buildAnswer': 'Build the answer from the pieces',
+  'session.listen': 'Listen',
+  'session.tapInOrder': 'Tap the pieces in order',
+  'session.thinking': 'Thinking...',
+  'session.why': 'Why?',
+  'session.continue': 'Continue',
+  'session.check': 'Check',
 };
 
 const dictionaries: Record<Lang, Dict> = { es, en };

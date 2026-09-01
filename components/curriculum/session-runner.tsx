@@ -15,6 +15,7 @@ import { FuriganaText } from '@/components/curriculum/furigana-text';
 import { buildFillBlank, type SessionQuestion } from '@/lib/curriculum/exercises';
 import type { CurriculumItem } from '@/lib/curriculum/units';
 import type { beginSession, submitAnswer, endSession, explainGrammar } from '@/app/[unitId]/actions';
+import { useLanguage } from '@/components/language-provider';
 
 type Tile = { key: string; text: string };
 
@@ -49,6 +50,7 @@ export function SessionRunner({
   readOnly = false,
 }: Props) {
   const router = useRouter();
+  const { lang, t } = useLanguage();
   const [, startTransition] = useTransition();
   const [explanation, setExplanation] = useState<string | null>(null);
   const [isExplaining, startExplainTransition] = useTransition();
@@ -160,7 +162,7 @@ export function SessionRunner({
     if (!explainGrammar) return;
     setExplanation(null);
     startExplainTransition(async () => {
-      const text = await explainGrammar(question.prompt, question.answer, question.subtext);
+      const text = await explainGrammar(question.prompt, question.answer, question.subtext, lang);
       setExplanation(text);
     });
   }
@@ -203,28 +205,26 @@ export function SessionRunner({
         {readOnly ? (
           <>
             <h1 className="text-2xl font-semibold">
-              {correctCount} de {queue.length}
+              {t('session.scoreOf', { correct: correctCount, total: queue.length })}
             </h1>
-            <p className="text-muted-foreground">Repaso libre — no afectó tu progreso.</p>
+            <p className="text-muted-foreground">{t('session.freeReviewNote')}</p>
           </>
         ) : unitCompleted ? (
           <>
             <PartyPopper className="mx-auto size-10 text-accent-foreground" />
-            <h1 className="text-2xl font-semibold">¡{unitTitle} completa!</h1>
-            <p className="text-muted-foreground">
-              Dominaste todo. La siguiente unidad ya está disponible.
-            </p>
+            <h1 className="text-2xl font-semibold">{t('session.unitComplete', { title: unitTitle })}</h1>
+            <p className="text-muted-foreground">{t('session.unitCompleteBody')}</p>
           </>
         ) : (
           <>
             <h1 className="text-2xl font-semibold">
-              {correctCount} de {queue.length}
+              {t('session.scoreOf', { correct: correctCount, total: queue.length })}
             </h1>
-            <p className="text-muted-foreground">Seguí así, un poco más.</p>
+            <p className="text-muted-foreground">{t('session.keepGoing')}</p>
           </>
         )}
         <Button asChild className="mt-2">
-          <Link href="/">Volver</Link>
+          <Link href="/">{t('session.back')}</Link>
         </Button>
       </div>
     );
@@ -240,13 +240,11 @@ export function SessionRunner({
       </div>
 
       {readOnly && (
-        <p className="text-center text-xs text-muted-foreground">
-          Repaso libre — esto no cambia tu progreso.
-        </p>
+        <p className="text-center text-xs text-muted-foreground">{t('session.freeReviewBanner')}</p>
       )}
 
       <p className="text-sm font-medium text-muted-foreground">
-        {question.kind === 'choice' ? 'Elegí la respuesta correcta' : 'Armá la respuesta con las piezas'}
+        {question.kind === 'choice' ? t('session.chooseAnswer') : t('session.buildAnswer')}
       </p>
 
       <Card>
@@ -266,7 +264,7 @@ export function SessionRunner({
               size="icon"
               className="shrink-0 self-start text-muted-foreground lg:size-10"
               onClick={() => speakJapanese(stripFurigana(question.prompt))}
-              title="Escuchar"
+              title={t('session.listen')}
             >
               <Volume2 className="size-4 lg:size-5" />
             </Button>
@@ -331,7 +329,7 @@ export function SessionRunner({
         <div className="space-y-4">
           <div className="flex min-h-14 w-full flex-wrap items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border p-4">
             {fillAnswer.length === 0 && (
-              <span className="text-sm text-muted-foreground">Tocá las piezas en orden</span>
+              <span className="text-sm text-muted-foreground">{t('session.tapInOrder')}</span>
             )}
             {fillAnswer.map((tile) => (
               <button
@@ -390,16 +388,16 @@ export function SessionRunner({
               ) : (
                 <Sparkles className="mr-2 size-4" />
               )}
-              {isExplaining ? 'Pensando...' : '¿Por qué?'}
+              {isExplaining ? t('session.thinking') : t('session.why')}
             </Button>
           )}
           {revealed ? (
             <Button className="flex-1" size="lg" onClick={handleContinue}>
-              Continuar
+              {t('session.continue')}
             </Button>
           ) : question.kind === 'choice' ? (
             <Button className="flex-1" size="lg" onClick={handleConfirm} disabled={!picked}>
-              Comprobar
+              {t('session.check')}
             </Button>
           ) : (
             <Button
@@ -408,7 +406,7 @@ export function SessionRunner({
               onClick={handleFillCheck}
               disabled={fillAnswer.length === 0}
             >
-              Comprobar
+              {t('session.check')}
             </Button>
           )}
         </div>
