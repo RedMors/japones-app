@@ -30,7 +30,7 @@ export function GoalForm({ currentLevel, currentDate, saveGoal }: Props) {
   return (
     <div className="space-y-4">
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">{t('goalForm.levelLabel')}</label>
+        <label className="block text-sm font-medium">{t('goalForm.levelLabel')}</label>
         <div className="flex flex-wrap gap-2">
           {JLPT_GOAL_LEVELS.map((l) => (
             <button
@@ -50,7 +50,7 @@ export function GoalForm({ currentLevel, currentDate, saveGoal }: Props) {
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="goal-date" className="text-sm font-medium">
+        <label htmlFor="goal-date" className="block text-sm font-medium">
           {t('goalForm.dateLabel')}
         </label>
         <input
