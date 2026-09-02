@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import {
   Flame,
   Target,
@@ -9,10 +10,12 @@ import {
   BookOpen,
   Mic,
   Layers,
+  Sprout,
   type LucideIcon,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ActivityHeatmap } from '@/components/activity-heatmap';
 import { getActivityByDay, computeStudyStreak, getActivityTotals } from '@/lib/study-log';
@@ -70,35 +73,54 @@ export default async function ProgresoPage() {
       <h1 className="text-2xl font-semibold tracking-tight">{t(dict, 'progreso.title')}</h1>
       <p className="mt-1 text-sm text-muted-foreground">{t(dict, 'progreso.subtitle')}</p>
 
-      <div className="mt-6 grid grid-cols-2 gap-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground">
-              {t(dict, 'progreso.streakLabel')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="flex items-center gap-1.5 text-3xl font-semibold tabular-nums">
-              {streak > 0 && <Flame className="size-6 shrink-0 text-accent-foreground" />}
-              {streak}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {t(dict, 'progreso.streakSuffix', { days: streak })}
-            </p>
+      {totalActivities === 0 ? (
+        <Card className="mt-6 border-dashed">
+          <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
+            <div className="flex size-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
+              <Sprout className="size-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium">{t(dict, 'progreso.emptyTitle')}</p>
+              <p className="mt-1 max-w-xs text-sm text-muted-foreground">
+                {t(dict, 'progreso.emptyBody')}
+              </p>
+            </div>
+            <Button asChild size="sm" className="mt-1">
+              <Link href="/">{t(dict, 'progreso.emptyCta')}</Link>
+            </Button>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground">
-              {t(dict, 'progreso.totalActivitiesLabel')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-semibold tabular-nums">{totalActivities}</p>
-            <p className="text-xs text-muted-foreground">{t(dict, 'progreso.sinceStart')}</p>
-          </CardContent>
-        </Card>
-      </div>
+      ) : (
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-normal text-muted-foreground">
+                {t(dict, 'progreso.streakLabel')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="flex items-center gap-1.5 text-3xl font-semibold tabular-nums">
+                {streak > 0 && <Flame className="size-6 shrink-0 text-accent-foreground" />}
+                {streak}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t(dict, 'progreso.streakSuffix', { days: streak })}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-normal text-muted-foreground">
+                {t(dict, 'progreso.totalActivitiesLabel')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-semibold tabular-nums">{totalActivities}</p>
+              <p className="text-xs text-muted-foreground">{t(dict, 'progreso.sinceStart')}</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {milestone && (
         <div className="mt-4 flex items-center gap-3 rounded-xl border border-accent-foreground/30 bg-accent p-4 text-accent-foreground">

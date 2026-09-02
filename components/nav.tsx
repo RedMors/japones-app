@@ -46,10 +46,15 @@ const TOOL_ITEMS: NavItem[] = [
   { href: '/ajustes', labelKey: 'nav.settings', icon: Settings },
 ];
 
+// Antes solo cambiaba el color de texto — muy débil para señalar "estás
+// acá" (Ley de Jakob: la nav persistente debe decir dónde estás parado).
+// El chip de fondo lo hace legible de un vistazo, sin gritar.
 function linkClass(active: boolean) {
   return cn(
-    'text-sm transition-colors',
-    active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
+    'rounded-md px-2 py-1 text-sm transition-colors',
+    active
+      ? 'bg-accent text-accent-foreground font-medium'
+      : 'text-muted-foreground hover:text-foreground',
   );
 }
 
