@@ -143,7 +143,7 @@ export default async function LearnHome() {
               </span>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {levelUnits.map((unit) => (
                   <UnitCard key={unit.id} unit={unit} dict={dict} lang={lang} />
                 ))}

@@ -57,7 +57,7 @@ export default async function CaracteresPage() {
         <h2 className="text-sm font-semibold text-muted-foreground">
           {t(dict, 'caracteres.practiceInSentences')}
         </h2>
-        <div className="mt-3 space-y-2">
+        <div className="mt-3 space-y-3">
           {KANA_ROW_PRACTICE.map((row) => (
             <Link key={row.id} href={`/caracteres/practicar/${row.id}`}>
               <Card className="transition-colors hover:bg-muted/40">
