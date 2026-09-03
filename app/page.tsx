@@ -5,6 +5,7 @@ import Link from 'next/link';
 // al momento del build, en vez de leerlo en cada visita.
 export const dynamic = 'force-dynamic';
 import { Lock, CheckCircle2, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Accordion,
@@ -39,9 +40,20 @@ function UnitCard({ unit, dict, lang }: { unit: UnitRow; dict: Dict; lang: Lang 
   const locked = unit.status === 'locked';
 
   const content = (
-    <Card className={locked ? 'opacity-60' : 'transition-colors hover:bg-muted/40'}>
+    <Card
+      className={
+        locked
+          ? 'border-dashed opacity-45 shadow-none'
+          : 'transition-colors hover:bg-muted/40'
+      }
+    >
       <CardContent className="flex items-center gap-4 py-4">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+        <div
+          className={cn(
+            'flex size-9 shrink-0 items-center justify-center rounded-full',
+            locked ? 'bg-muted text-muted-foreground' : 'bg-accent text-accent-foreground',
+          )}
+        >
           {unit.status === 'completed' ? (
             <CheckCircle2 className="size-4" />
           ) : locked ? (
@@ -54,10 +66,12 @@ function UnitCard({ unit, dict, lang }: { unit: UnitRow; dict: Dict; lang: Lang 
           <p className="truncate text-sm font-medium">{unit.title[lang]}</p>
           {/* Track claro = ya visto al menos una vez; barra sólida = dominado
               (5 aciertos espaciados). Sin el track claro, practicar 30 ítems
-              nuevos se ve idéntico a no haber tocado nada — desalienta. */}
-          <div className="relative mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              nuevos se ve idéntico a no haber tocado nada — desalienta.
+              bg-border (no bg-muted) para que el track se note incluso sin
+              progreso: antes era casi invisible sobre el fondo oscuro. */}
+          <div className="relative mt-2 h-2 w-full overflow-hidden rounded-full bg-border">
             <div
-              className="absolute inset-y-0 left-0 rounded-full bg-primary/25"
+              className="absolute inset-y-0 left-0 rounded-full bg-primary/40"
               style={{ width: `${seenPct}%` }}
             />
             <div
@@ -129,7 +143,7 @@ export default async function LearnHome() {
               </span>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {levelUnits.map((unit) => (
                   <UnitCard key={unit.id} unit={unit} dict={dict} lang={lang} />
                 ))}

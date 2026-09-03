@@ -46,10 +46,15 @@ const TOOL_ITEMS: NavItem[] = [
   { href: '/ajustes', labelKey: 'nav.settings', icon: Settings },
 ];
 
+// Antes solo cambiaba el color de texto — muy débil para señalar "estás
+// acá" (Ley de Jakob: la nav persistente debe decir dónde estás parado).
+// El chip de fondo lo hace legible de un vistazo, sin gritar.
 function linkClass(active: boolean) {
   return cn(
-    'text-sm transition-colors',
-    active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
+    'rounded-md px-2 py-1 text-sm transition-colors',
+    active
+      ? 'bg-accent text-accent-foreground font-medium'
+      : 'text-muted-foreground hover:text-foreground',
   );
 }
 
@@ -57,23 +62,28 @@ function NavGroup({
   label,
   items,
   isActive,
+  pathname,
   t,
 }: {
   label: string;
   items: NavItem[];
   isActive: boolean;
+  pathname: string;
   t: (key: TranslationKey) => string;
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className={cn('flex items-center gap-1 outline-none', linkClass(isActive))}>
+      <DropdownMenuTrigger
+        aria-current={isActive ? 'true' : undefined}
+        className={cn('flex items-center gap-1 outline-none', linkClass(isActive))}
+      >
         {label}
         <ChevronDown className="size-3.5" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         {items.map((item) => (
           <DropdownMenuItem key={item.href} className="gap-2" asChild>
-            <Link href={item.href}>
+            <Link href={item.href} aria-current={item.href === pathname ? 'page' : undefined}>
               <item.icon className="size-4" /> {t(item.labelKey)}
             </Link>
           </DropdownMenuItem>
@@ -95,11 +105,27 @@ export function Nav() {
         <Link href="/" className="shrink-0 text-sm font-semibold tracking-tight">
           日本語
         </Link>
-        <NavGroup label={t('nav.practiceGroup')} items={PRACTICE_ITEMS} isActive={inPractice} t={t} />
-        <Link href="/progreso" className={linkClass(pathname === '/progreso')}>
+        <NavGroup
+          label={t('nav.practiceGroup')}
+          items={PRACTICE_ITEMS}
+          isActive={inPractice}
+          pathname={pathname}
+          t={t}
+        />
+        <Link
+          href="/progreso"
+          aria-current={pathname === '/progreso' ? 'page' : undefined}
+          className={linkClass(pathname === '/progreso')}
+        >
           {t('nav.progress')}
         </Link>
-        <NavGroup label={t('nav.toolsGroup')} items={TOOL_ITEMS} isActive={inTools} t={t} />
+        <NavGroup
+          label={t('nav.toolsGroup')}
+          items={TOOL_ITEMS}
+          isActive={inTools}
+          pathname={pathname}
+          t={t}
+        />
         <div className="ml-auto flex items-center gap-1">
           <LanguageToggle />
           <ThemeToggle />

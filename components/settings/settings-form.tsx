@@ -60,7 +60,7 @@ export function SettingsForm({ keyConfigured, currentModel, saveSettings }: Prop
     <div className="space-y-4">
       <div className="space-y-1.5">
         <div className="flex items-center gap-2">
-          <label htmlFor="openrouter-key" className="text-sm font-medium">
+          <label htmlFor="openrouter-key" className="block text-sm font-medium">
             {t('settingsForm.apiKeyLabel')}
           </label>
           {keyConfigured && (
@@ -85,7 +85,7 @@ export function SettingsForm({ keyConfigured, currentModel, saveSettings }: Prop
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="openrouter-model" className="text-sm font-medium">
+        <label htmlFor="openrouter-model" className="block text-sm font-medium">
           {t('settingsForm.modelLabel')}
         </label>
         <Select

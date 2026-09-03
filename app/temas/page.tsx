@@ -25,7 +25,7 @@ export default async function TemasPage() {
       <h1 className="text-2xl font-semibold tracking-tight">{t(dict, 'nav.themes')}</h1>
       <p className="mt-1 text-sm text-muted-foreground">{t(dict, 'temas.subtitle')}</p>
 
-      <div className="mt-8 space-y-2">
+      <div className="mt-8 space-y-3">
         {SCENE_THEMES.map((theme, i) => (
           <Link key={theme.id} href={`/temas/${theme.id}`}>
             <Card className="transition-colors hover:bg-muted/40">

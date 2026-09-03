@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Volume2 } from 'lucide-react';
+import { Volume2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { FuriganaText } from '@/components/curriculum/furigana-text';
-import { stripFurigana } from '@/lib/curriculum/furigana';
+import { RomajiText } from '@/components/curriculum/romaji-text';
+import { stripFurigana, toReading } from '@/lib/curriculum/furigana';
 import { speakJapanese } from '@/lib/tts';
 import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import type { ScenePhrase } from '@/lib/curriculum/scenes-data';
@@ -49,6 +50,7 @@ export function WordBuilder({ phrases, onFinish }: Props) {
   // que este ejercicio existe para no mostrar. Se oculta hasta que el
   // useEffect de abajo ya mezcló.
   const [ready, setReady] = useState(false);
+  const [showRomaji, setShowRomaji] = useState(false);
 
   useEffect(() => {
     setBank(shuffle(tilesOf(phrases[0])));
@@ -107,7 +109,13 @@ export function WordBuilder({ phrases, onFinish }: Props) {
         </span>
       </div>
 
-      <p className="text-sm font-medium text-muted-foreground">{t('wordBuilder.listenAndBuild')}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-medium text-muted-foreground">{t('wordBuilder.listenAndBuild')}</p>
+        <Button variant="ghost" size="sm" className="shrink-0" onClick={() => setShowRomaji((s) => !s)}>
+          {showRomaji ? <EyeOff className="mr-1.5 size-3.5" /> : <Eye className="mr-1.5 size-3.5" />}
+          {showRomaji ? t('kana.hideRomaji') : t('kana.showRomaji')}
+        </Button>
+      </div>
 
       <Card>
         <CardContent className="flex flex-col items-center gap-6 py-10">
@@ -131,9 +139,16 @@ export function WordBuilder({ phrases, onFinish }: Props) {
                 type="button"
                 onClick={() => unpick(tile)}
                 disabled={phase === 'result'}
-                className="jp rounded-lg border border-primary bg-primary/10 px-3 py-2 text-lg disabled:cursor-default"
+                className="flex flex-col items-center gap-1 rounded-lg border border-primary bg-primary/10 px-3 py-2 disabled:cursor-default"
               >
-                <FuriganaText text={tile.text} />
+                <span className="jp text-lg">
+                  <FuriganaText text={tile.text} />
+                </span>
+                {showRomaji && (
+                  <span className="text-lg text-muted-foreground">
+                    <RomajiText text={toReading(tile.text)} />
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -149,6 +164,11 @@ export function WordBuilder({ phrases, onFinish }: Props) {
               <p className="jp text-lg">
                 <FuriganaText text={fullSentence} />
               </p>
+              {showRomaji && (
+                <p className="mt-1 text-lg opacity-80">
+                  <RomajiText text={toReading(fullSentence)} />
+                </p>
+              )}
               <p className="mt-1 text-xs opacity-80">{phrase.translation[lang]}</p>
             </div>
           )}
@@ -160,9 +180,16 @@ export function WordBuilder({ phrases, onFinish }: Props) {
                 type="button"
                 onClick={() => pick(tile)}
                 disabled={phase === 'result'}
-                className="jp rounded-lg border border-border px-3 py-2 text-lg transition-colors hover:bg-muted/50 disabled:cursor-default disabled:opacity-40"
+                className="flex flex-col items-center gap-1 rounded-lg border border-border px-3 py-2 transition-colors hover:bg-muted/50 disabled:cursor-default disabled:opacity-40"
               >
-                <FuriganaText text={tile.text} />
+                <span className="jp text-lg">
+                  <FuriganaText text={tile.text} />
+                </span>
+                {showRomaji && (
+                  <span className="text-lg text-muted-foreground">
+                    <RomajiText text={toReading(tile.text)} />
+                  </span>
+                )}
               </button>
             ))}
           </div>

@@ -34,6 +34,9 @@ const es = {
 
   'progreso.title': 'Tu progreso',
   'progreso.subtitle': 'Todo lo que hiciste para aprender japonés, en un solo lugar.',
+  'progreso.emptyTitle': 'Todavía no arrancaste',
+  'progreso.emptyBody': 'Hacé tu primera lección y acá vas a ver tu racha, tus horas de estudio y tu avance por JLPT.',
+  'progreso.emptyCta': 'Empezar a aprender',
   'progreso.streakLabel': 'Racha',
   'progreso.streakSuffix': (v) => (v.days === 1 ? 'día seguido estudiando' : 'días seguidos estudiando'),
   'progreso.totalActivitiesLabel': 'Actividades totales',
@@ -280,6 +283,9 @@ const en: Dict = {
 
   'progreso.title': 'Your progress',
   'progreso.subtitle': 'Everything you did to learn Japanese, in one place.',
+  'progreso.emptyTitle': "You haven't started yet",
+  'progreso.emptyBody': "Do your first lesson and you'll see your streak, study time, and JLPT progress here.",
+  'progreso.emptyCta': 'Start learning',
   'progreso.streakLabel': 'Streak',
   'progreso.streakSuffix': (v) => (v.days === 1 ? 'day studying in a row' : 'days studying in a row'),
   'progreso.totalActivitiesLabel': 'Total activities',
