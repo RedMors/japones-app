@@ -35,12 +35,13 @@ export default async function MinerPage({
   searchParams: Promise<{ episode?: string; duplicate?: string; error?: string }>;
 }) {
   const params = await searchParams;
-  const dict = getDictionary(await getLanguage());
+  const lang = await getLanguage();
+  const dict = getDictionary(lang);
   const status = await getStatus();
   const syncedAt = getKnownVocabSyncedAt();
 
   const episodeId = params.episode ? Number(params.episode) : null;
-  const summary = episodeId ? getEpisodeSummary(episodeId) : null;
+  const summary = episodeId ? await getEpisodeSummary(episodeId, lang) : null;
   const groups = summary ? groupBySentence(summary.words) : [];
   const groupsWithFurigana = await Promise.all(
     groups.map(async (group) => ({

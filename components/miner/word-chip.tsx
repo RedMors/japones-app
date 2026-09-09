@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { speakJapanese } from '@/lib/tts';
+import { hiraganaToRomaji } from '@/lib/romaji';
 import type { MinedWordRow } from '@/lib/miner';
 import type { addWordToAnki, skipWord } from '@/app/miner/actions';
 import { useLanguage } from '@/components/language-provider';
@@ -75,7 +76,11 @@ export function WordChip({ word, addAction, skipAction }: Props) {
       <div className="flex flex-col leading-tight">
         <span className="jp text-base">{word.lemma}</span>
         <span className="text-xs text-muted-foreground">
-          {word.reading ?? '?'} {word.meaning ? `· ${truncate(word.meaning, 40)}` : ''}
+          {word.reading ?? '?'}
+          {word.reading && ` (${hiraganaToRomaji(word.reading)})`}
+          {' '}
+          {(word.meaningLocalized ?? word.meaning) &&
+            `· ${truncate(word.meaningLocalized ?? word.meaning!, 40)}`}
         </span>
       </div>
       <div className="ml-1 flex gap-1">

@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { speakJapanese } from '@/lib/tts';
 import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import { stripFurigana } from '@/lib/curriculum/furigana';
+import { useLeaveConfirm } from '@/lib/use-leave-confirm';
 import { FuriganaText } from '@/components/curriculum/furigana-text';
 import { buildFillBlank, type SessionQuestion } from '@/lib/curriculum/exercises';
 import type { CurriculumItem } from '@/lib/curriculum/units';
@@ -94,6 +95,9 @@ export function SessionRunner({
 
   const question = queue[index];
   const revealed = question.kind === 'choice' ? selected !== null : fillChecked;
+
+  const hasProgress = index > 0 || selected !== null || fillChecked;
+  useLeaveConfirm(hasProgress && !finished, t('session.confirmLeave'));
 
   function requeueMissed(itemId: string) {
     const item = poolById.get(itemId);

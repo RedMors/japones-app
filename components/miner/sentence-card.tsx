@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import { WordChip } from './word-chip';
 import { FuriganaText } from '@/components/curriculum/furigana-text';
 import { speakJapanese } from '@/lib/tts';
+import { hiraganaToRomaji } from '@/lib/romaji';
+import { katakanaToHiragana } from '@/lib/normalize';
+import { toReading } from '@/lib/curriculum/furigana';
 import type { MinedWordRow } from '@/lib/miner';
 import type { addWordToAnki, skipWord } from '@/app/miner/actions';
 import { useLanguage } from '@/components/language-provider';
@@ -44,6 +47,8 @@ export function SentenceCard({
   const { t } = useLanguage();
   const timestamp = formatTimestamp(startMs);
   const pending = words.filter((w) => w.status === 'new').length;
+  const romaji = hiraganaToRomaji(katakanaToHiragana(toReading(furiganaSentence)));
+  const translation = words[0]?.sentenceTranslation ?? null;
 
   return (
     <Card>
@@ -70,6 +75,8 @@ export function SentenceCard({
             )}
           </div>
         </div>
+        <p className="text-xs italic text-muted-foreground">{romaji}</p>
+        {translation && <p className="text-sm text-muted-foreground">{translation}</p>}
         <div className="flex flex-wrap gap-2">
           {words.map((word) => (
             <WordChip key={word.id} word={word} addAction={addAction} skipAction={skipAction} />
