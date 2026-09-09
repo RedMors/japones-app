@@ -12,6 +12,7 @@ import { speakJapanese } from '@/lib/tts';
 import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import type { ScenePhrase } from '@/lib/curriculum/scenes-data';
 import { useLanguage } from '@/components/language-provider';
+import { AnswerBanner, ShakeOnWrong, StreakBadge } from '@/components/curriculum/answer-feedback';
 
 type Tile = { key: string; text: string };
 
@@ -45,6 +46,7 @@ export function WordBuilder({ phrases, onFinish }: Props) {
   const [phase, setPhase] = useState<'building' | 'result'>('building');
   const [correct, setCorrect] = useState(false);
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
   // Sin esto, el primer render (server + primer paint del cliente) muestra
   // las fichas en el orden correcto — literalmente la respuesta, justo lo
   // que este ejercicio existe para no mostrar. Se oculta hasta que el
@@ -81,8 +83,10 @@ export function WordBuilder({ phrases, onFinish }: Props) {
     setPhase('result');
     if (isCorrect) {
       setScore((s) => s + 1);
+      setStreak((s) => s + 1);
       playCorrectSound();
     } else {
+      setStreak(0);
       playIncorrectSound();
     }
   }
@@ -104,6 +108,7 @@ export function WordBuilder({ phrases, onFinish }: Props) {
     <div className="space-y-6 pb-28">
       <div className="flex items-center gap-3">
         <Progress value={(index / phrases.length) * 100} className="h-2" />
+        <StreakBadge count={streak} label={t('session.streakCount', { count: streak })} />
         <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
           {index + 1}/{phrases.length}
         </span>
@@ -117,6 +122,7 @@ export function WordBuilder({ phrases, onFinish }: Props) {
         </Button>
       </div>
 
+      <ShakeOnWrong trigger={phase === 'result' && !correct}>
       <Card>
         <CardContent className="flex flex-col items-center gap-6 py-10">
           <Button
@@ -195,14 +201,20 @@ export function WordBuilder({ phrases, onFinish }: Props) {
           </div>
         </CardContent>
       </Card>
+      </ShakeOnWrong>
 
-      <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 lg:max-w-2xl">
-          {phase === 'result' ? (
-            <Button className="flex-1" size="lg" onClick={handleNext}>
-              {t('session.continue')}
-            </Button>
-          ) : (
+      {phase === 'result' ? (
+        <AnswerBanner
+          isCorrect={correct}
+          text={correct ? t('session.correctFeedback') : t('session.incorrectFeedback')}
+        >
+          <Button className="w-full" size="lg" variant={correct ? 'default' : 'destructive'} onClick={handleNext}>
+            {t('session.continue')}
+          </Button>
+        </AnswerBanner>
+      ) : (
+        <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur">
+          <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 lg:max-w-2xl">
             <Button
               className="flex-1"
               size="lg"
@@ -211,9 +223,9 @@ export function WordBuilder({ phrases, onFinish }: Props) {
             >
               {t('session.check')}
             </Button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
