@@ -49,14 +49,14 @@ const dictDb = new Database(DB_PATHS.DICT_DB_PATH);
 dictDb.exec(`
   CREATE TABLE IF NOT EXISTS entries (
     id INTEGER PRIMARY KEY, lemma TEXT NOT NULL, reading TEXT,
-    glosses TEXT NOT NULL, pos TEXT, is_common INTEGER DEFAULT 0, is_kana INTEGER DEFAULT 0
+    glosses TEXT NOT NULL, glosses_es TEXT, pos TEXT, is_common INTEGER DEFAULT 0, is_kana INTEGER DEFAULT 0
   );
 `);
 dictDb
   .prepare(
-    'INSERT INTO entries (lemma, reading, glosses, pos, is_common) VALUES (?,?,?,?,1)',
+    'INSERT INTO entries (lemma, reading, glosses, glosses_es, pos, is_common) VALUES (?,?,?,?,?,1)',
   )
-  .run('猫', 'ねこ', 'cat', '名詞-一般');
+  .run('猫', 'ねこ', 'cat', 'gato', '名詞-一般');
 dictDb.close();
 
 const db = getDb();
@@ -94,6 +94,7 @@ try {
   const neko = summary.words.find((w) => w.lemma === '猫');
   eq('trae significado del diccionario', neko?.meaning, 'cat');
   eq('trae lectura del diccionario', neko?.reading, 'ねこ');
+  eq('glosa en español sale de JMdict, no de IA', neko?.meaningLocalized, 'gato');
 
   // Línea 1 tiene 2 palabras nuevas (猫, 好き) -> unknownInLine=2.
   // Si el tokenizer solo saca 猫 como sustantivo, ajustamos la expectativa abajo.
@@ -113,7 +114,7 @@ try {
   // Acciones sobre palabras
   if (neko) {
     setWordStatus(neko.id, 'added', 12345);
-    const refreshed = getEpisodeSummary(summary.episodeId);
+    const refreshed = await getEpisodeSummary(summary.episodeId);
     const nekoAfter = refreshed.words.find((w) => w.id === neko.id);
     eq('setWordStatus actualiza status', nekoAfter?.status, 'added');
   }
@@ -121,7 +122,7 @@ try {
   const suki = summary.words.find((w) => w.lemma === '好き');
   if (suki) {
     ignoreWordGlobally('好き', 'prueba');
-    const refreshed = getEpisodeSummary(summary.episodeId);
+    const refreshed = await getEpisodeSummary(summary.episodeId);
     const sukiAfter = refreshed.words.find((w) => w.id === suki.id);
     eq('ignoreWordGlobally marca skipped', sukiAfter?.status, 'skipped');
 

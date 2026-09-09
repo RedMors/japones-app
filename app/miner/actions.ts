@@ -11,6 +11,7 @@ import {
   DuplicateEpisodeError,
 } from '@/lib/miner';
 import { clipAbsolutePath } from '@/lib/audio-clip';
+import { getLanguage } from '@/lib/i18n/language';
 import {
   getDeckNames,
   getModelNames,
@@ -35,6 +36,7 @@ export async function mineFile(formData: FormData): Promise<void> {
     const summary = await mineEpisode({
       filename: file.name,
       buffer,
+      lang: await getLanguage(),
       ...(mediaFile && {
         mediaFilename: mediaFile.name,
         mediaBuffer: new Uint8Array(await mediaFile.arrayBuffer()),

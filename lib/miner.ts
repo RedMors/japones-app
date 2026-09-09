@@ -20,15 +20,24 @@ import { extractWordsByLine, type WordCandidate } from './tokenizer.ts';
 import { fetchKnownVocab, type FetchKnownVocabOptions } from './anki-connect.ts';
 import { logStudy } from './study-log.ts';
 import { isFfmpegAvailable, extractClip } from './audio-clip.ts';
+import { ensureWordGlosses, ensureSentenceTranslations } from './translate.ts';
+import type { Lang } from './i18n/dictionary.ts';
 
 export type MinedWordRow = {
   id: number;
   lemma: string;
   surface: string;
   reading: string | null;
+  /** Glosa cruda de JMdict, siempre en inglés. */
   meaning: string | null;
+  /** Glosa traducida al idioma actual de la app — null si la app está en
+   *  inglés (meaning ya sirve) o si la traducción todavía no se cacheó. */
+  meaningLocalized: string | null;
   pos: string | null;
   sentence: string;
+  /** Traducción de la oración completa en el idioma actual — contenido nuevo,
+   *  no existe una versión JMdict de esto. Null si aún no se generó. */
+  sentenceTranslation: string | null;
   startMs: number | null;
   endMs: number | null;
   unknownInLine: number;
@@ -118,6 +127,9 @@ export type MineEpisodeInput = {
    *  se borra apenas termina — nunca queda guardado. */
   mediaFilename?: string;
   mediaBuffer?: Uint8Array;
+  /** Idioma de la app al minar — decide en qué idioma se traducen glosas y
+   *  oraciones nuevas (cacheadas después para siempre). Default 'es'. */
+  lang?: Lang;
 };
 
 type LineWithWords = {
@@ -229,7 +241,7 @@ export async function mineEpisode(input: MineEpisodeInput): Promise<EpisodeSumma
     await attachAudioClips(episodeId, input.mediaFilename, input.mediaBuffer);
   }
 
-  return getEpisodeSummary(episodeId);
+  return getEpisodeSummary(episodeId, input.lang ?? 'es');
 }
 
 /**
@@ -282,7 +294,13 @@ async function attachAudioClips(
   }
 }
 
-export function getEpisodeSummary(episodeId: number): EpisodeSummary {
+/**
+ * `lang` decide en qué idioma se muestran glosas/traducción de oración —
+ * cachea en `word_glosses_i18n` / `sentence_translations` lo que todavía no
+ * tenía traducido a ese idioma, así que un episodio viejo se enriquece solo
+ * la primera vez que se ve (o se mina) en un idioma nuevo.
+ */
+export async function getEpisodeSummary(episodeId: number, lang: Lang = 'es'): Promise<EpisodeSummary> {
   const db = getDb();
   const episode = db
     .prepare('SELECT * FROM episodes WHERE id = ?')
@@ -321,6 +339,26 @@ export function getEpisodeSummary(episodeId: number): EpisodeSummary {
     audio_clip_path: string | null;
   }[];
 
+  // JMdict-ES primero (gratis, local, ~39k entradas) — la IA (cacheada)
+  // solo cubre lo que JMdict-ES no tiene.
+  const jmdictEs = new Map<string, string>();
+  if (lang === 'es') {
+    const lemmas = [...new Set(rows.map((r) => r.lemma))];
+    for (const [lemma, entry] of lookupWords(lemmas)) {
+      if (entry.glossesEs) jmdictEs.set(lemma, entry.glossesEs);
+    }
+  }
+  const glossMap = await ensureWordGlosses(
+    rows
+      .filter((r) => r.meaning && !jmdictEs.has(r.lemma))
+      .map((r) => ({ lemma: r.lemma, englishGloss: r.meaning!, pos: r.pos })),
+    lang,
+  );
+  const sentenceMap = await ensureSentenceTranslations(
+    rows.map((r) => r.sentence),
+    lang,
+  );
+
   return {
     episodeId: episode.id,
     animeName: episode.anime_name,
@@ -333,8 +371,10 @@ export function getEpisodeSummary(episodeId: number): EpisodeSummary {
       surface: r.surface,
       reading: r.reading,
       meaning: r.meaning,
+      meaningLocalized: jmdictEs.get(r.lemma) ?? glossMap.get(r.lemma) ?? null,
       pos: r.pos,
       sentence: r.sentence,
+      sentenceTranslation: sentenceMap.get(r.sentence) ?? null,
       startMs: r.start_ms,
       endMs: r.end_ms,
       unknownInLine: r.unknown_in_line,

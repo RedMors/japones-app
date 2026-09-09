@@ -12,6 +12,7 @@ import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import { HIRAGANA, KATAKANA, HIRAGANA_AVANZADO, KATAKANA_AVANZADO } from '@/lib/curriculum/kana-data';
 import { SESSION_SIZE, type KanaSentence, type KanaRowPractice } from '@/lib/curriculum/kana-sentences';
 import { useLanguage } from '@/components/language-provider';
+import { useLeaveConfirm } from '@/lib/use-leave-confirm';
 
 type Tile = { key: string; text: string };
 
@@ -101,6 +102,9 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
   const [finished, setFinished] = useState(false);
   const [ready, setReady] = useState(false);
   const [showRomaji, setShowRomaji] = useState(false);
+
+  const hasProgress = index > 0 || answer.length > 0;
+  useLeaveConfirm(hasProgress && !finished, t('session.confirmLeave'));
 
   const sentence = session[index];
   const targetLength = correctCharsOf(sentence.jp).length;

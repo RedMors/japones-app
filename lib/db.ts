@@ -137,6 +137,28 @@ const MIGRATIONS: string[] = [
   `
   ALTER TABLE mined_words ADD COLUMN audio_clip_path TEXT;
   `,
+  // v6 — caché de traducciones IA para el miner: glosas de palabra y
+  // traducción de oración por idioma, keyed por lema/hash de oración + lang.
+  // Se llena una sola vez por (lema, lang) o (oración, lang) — nunca se
+  // vuelve a pedir a OpenRouter algo ya cacheado, sin importar el episodio.
+  `
+  CREATE TABLE word_glosses_i18n (
+    lemma      TEXT NOT NULL,
+    lang       TEXT NOT NULL,
+    gloss      TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (lemma, lang)
+  );
+
+  CREATE TABLE sentence_translations (
+    sentence_hash TEXT NOT NULL,
+    lang          TEXT NOT NULL,
+    sentence      TEXT NOT NULL,
+    translation   TEXT NOT NULL,
+    created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (sentence_hash, lang)
+  );
+  `,
 ];
 
 function applyMigrations(db: DB): void {

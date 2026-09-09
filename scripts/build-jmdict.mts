@@ -7,7 +7,13 @@
  *
  * Descarga (una vez, a mano):
  *   https://github.com/scriptin/jmdict-simplified/releases
- *   archivo jmdict-eng-<version>.json  ->  data/raw/jmdict-eng.json
+ *   archivo jmdict-eng-<version>.json  ->  data/raw/jmdict-eng.json  (obligatorio)
+ *
+ *   Opcional, para glosas en español sin depender de IA:
+ *   archivo jmdict-spa-<version>.json  ->  data/raw/jmdict-spa.json
+ *   Si no está, la app sigue andando igual — el miner usa IA (cacheada) como
+ *   respaldo solo para las palabras que el español de JMdict no cubre
+ *   (~39.000 entradas, bastante menos que las ~190.000 del inglés).
  */
 import Database from 'better-sqlite3';
 import fs from 'node:fs';
@@ -33,6 +39,7 @@ type JmdictWord = {
 const DATA_DIR = path.join(process.cwd(), 'data');
 const OUT_PATH = path.join(DATA_DIR, 'jmdict.db');
 const DEFAULT_IN = path.join(DATA_DIR, 'raw', 'jmdict-eng.json');
+const DEFAULT_IN_ES = path.join(DATA_DIR, 'raw', 'jmdict-spa.json');
 
 function fail(message: string): never {
   console.error(`\n${message}\n`);
@@ -50,7 +57,17 @@ function readSource(file: string): JmdictWord[] & { __meta?: unknown } {
         `Mientras tanto la app funciona igual, solo sin lectura ni significado.`,
     );
   }
+  return parseSource(file);
+}
 
+/** Igual que readSource pero sin morir si falta — se usa para el español,
+ *  que es opcional (la app cae a IA para lo que no cubra). */
+function readSourceOptional(file: string): JmdictWord[] | null {
+  if (!fs.existsSync(file)) return null;
+  return parseSource(file);
+}
+
+function parseSource(file: string): JmdictWord[] & { __meta?: unknown } {
   const buf = file.endsWith('.gz')
     ? zlib.gunzipSync(fs.readFileSync(file))
     : fs.readFileSync(file);
@@ -76,18 +93,31 @@ function readSource(file: string): JmdictWord[] & { __meta?: unknown } {
   return root.words as JmdictWord[] & { __meta?: unknown };
 }
 
-function buildGlosses(senses: JmdictSense[]): { glosses: string; pos: string } {
+function buildGlosses(senses: JmdictSense[], lang = 'eng'): { glosses: string; pos: string } {
   const glosses: string[] = [];
   const pos = new Set<string>();
 
   for (const sense of senses) {
     for (const tag of sense.partOfSpeech ?? []) pos.add(tag);
     for (const g of sense.gloss ?? []) {
-      if (g.lang && g.lang !== 'eng') continue;
+      // jmdict-simplified omite `lang` cuando es inglés (el default del formato).
+      const glossLang = g.lang ?? 'eng';
+      if (glossLang !== lang) continue;
       if (glosses.length < MAX_GLOSSES) glosses.push(g.text);
     }
   }
   return { glosses: glosses.join('; '), pos: [...pos].join(',') };
+}
+
+/** entry_id (JMdict) -> glosas en español, para pegarle al armar cada fila. */
+function buildEsGlossMap(words: JmdictWord[] | null): Map<string, string> {
+  const map = new Map<string, string>();
+  if (!words) return map;
+  for (const word of words) {
+    const { glosses } = buildGlosses(word.sense ?? [], 'spa');
+    if (glosses) map.set(word.id, glosses);
+  }
+  return map;
 }
 
 function main(): void {
@@ -99,6 +129,14 @@ function main(): void {
   const meta = (words as { __meta?: { version: string | null; dictDate: string | null } })
     .__meta;
   console.log(`entradas ${words.length.toLocaleString('es')}`);
+
+  const esWords = readSourceOptional(DEFAULT_IN_ES);
+  const esGlossMap = buildEsGlossMap(esWords);
+  console.log(
+    esWords
+      ? `español  ${esGlossMap.size.toLocaleString('es')} entradas con glosa (${DEFAULT_IN_ES})`
+      : `español  no encontrado, se omite (${DEFAULT_IN_ES})`,
+  );
 
   fs.mkdirSync(DATA_DIR, { recursive: true });
   // Se escribe a un temporal y se mueve al final: si el proceso muere a mitad,
@@ -119,6 +157,7 @@ function main(): void {
       lemma     TEXT NOT NULL,
       reading   TEXT,
       glosses   TEXT NOT NULL,
+      glosses_es TEXT,
       pos       TEXT,
       is_common INTEGER NOT NULL DEFAULT 0,
       is_kana   INTEGER NOT NULL DEFAULT 0
@@ -130,8 +169,8 @@ function main(): void {
   `);
 
   const insert = db.prepare(
-    `INSERT INTO entries (entry_id, lemma, reading, glosses, pos, is_common, is_kana)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO entries (entry_id, lemma, reading, glosses, glosses_es, pos, is_common, is_kana)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
   );
 
   let rows = 0;
@@ -145,6 +184,7 @@ function main(): void {
         skipped++;
         continue;
       }
+      const glossesEs = esGlossMap.get(word.id) ?? null;
 
       const kana = word.kana ?? [];
       // Katakana -> hiragana: JMdict guarda lecturas en katakana incluso para
@@ -170,6 +210,7 @@ function main(): void {
           lemma,
           primaryReading,
           glosses,
+          glossesEs,
           pos || null,
           form.common ? 1 : 0,
           form.isKana ? 1 : 0,

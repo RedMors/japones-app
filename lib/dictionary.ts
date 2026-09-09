@@ -4,6 +4,9 @@ export type DictEntry = {
   lemma: string;
   reading: string | null;
   glosses: string;
+  /** Glosa en español de JMdict, si esa entrada la tiene (~39k de las ~190k
+   *  del inglés) — null si no, ahí el miner cae a traducción IA cacheada. */
+  glossesEs: string | null;
   pos: string | null;
   isCommon: boolean;
 };
@@ -12,6 +15,7 @@ type Row = {
   lemma: string;
   reading: string | null;
   glosses: string;
+  glosses_es: string | null;
   pos: string | null;
   is_common: number;
 };
@@ -27,7 +31,7 @@ export function lookupWord(lemma: string): DictEntry | null {
 
   const row = db
     .prepare(
-      `SELECT lemma, reading, glosses, pos, is_common
+      `SELECT lemma, reading, glosses, glosses_es, pos, is_common
        FROM entries WHERE lemma = ?
        ORDER BY is_common DESC LIMIT 1`,
     )
@@ -51,7 +55,7 @@ export function lookupWords(lemmas: string[]): Map<string, DictEntry> {
     const placeholders = batch.map(() => '?').join(',');
     const rows = db
       .prepare(
-        `SELECT lemma, reading, glosses, pos, is_common
+        `SELECT lemma, reading, glosses, glosses_es, pos, is_common
          FROM entries WHERE lemma IN (${placeholders})
          ORDER BY is_common DESC`,
       )
@@ -72,6 +76,7 @@ function rowToEntry(row: Row): DictEntry {
     lemma: row.lemma,
     reading: row.reading,
     glosses: row.glosses,
+    glossesEs: row.glosses_es,
     pos: row.pos,
     isCommon: row.is_common === 1,
   };
@@ -94,7 +99,7 @@ function runQuery(
 ): void {
   if (state.results.length >= limit) return;
   const rows = db
-    .prepare(`SELECT lemma, reading, glosses, pos, is_common FROM entries WHERE ${whereSql}
+    .prepare(`SELECT lemma, reading, glosses, glosses_es, pos, is_common FROM entries WHERE ${whereSql}
               ORDER BY is_common DESC LIMIT ?`)
     .all(...params, limit - state.results.length) as Row[];
 
