@@ -77,6 +77,9 @@ const es = {
   'session.why': '¿Por qué?',
   'session.continue': 'Continuar',
   'session.check': 'Comprobar',
+  'session.correctFeedback': '¡Correcto!',
+  'session.incorrectFeedback': 'Incorrecto',
+  'session.streakCount': (v) => `Racha: ${v.count}`,
 
   'teacher.title': 'Profesor',
   'teacher.emptyHint': 'Preguntame lo que quieras, sin cortar lo que estás haciendo.',
@@ -327,6 +330,9 @@ const en: Dict = {
   'session.why': 'Why?',
   'session.continue': 'Continue',
   'session.check': 'Check',
+  'session.correctFeedback': 'Correct!',
+  'session.incorrectFeedback': 'Incorrect',
+  'session.streakCount': (v) => `Streak: ${v.count}`,
 
   'teacher.title': 'Teacher',
   'teacher.emptyHint': 'Ask me anything, without interrupting what you’re doing.',

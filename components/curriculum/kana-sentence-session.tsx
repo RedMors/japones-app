@@ -13,6 +13,7 @@ import { HIRAGANA, KATAKANA, HIRAGANA_AVANZADO, KATAKANA_AVANZADO } from '@/lib/
 import { SESSION_SIZE, type KanaSentence, type KanaRowPractice } from '@/lib/curriculum/kana-sentences';
 import { useLanguage } from '@/components/language-provider';
 import { useLeaveConfirm } from '@/lib/use-leave-confirm';
+import { AnswerBanner, ShakeOnWrong, StreakBadge } from '@/components/curriculum/answer-feedback';
 
 type Tile = { key: string; text: string };
 
@@ -99,6 +100,7 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
   const [checked, setChecked] = useState(false);
   const [correct, setCorrect] = useState(false);
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [finished, setFinished] = useState(false);
   const [ready, setReady] = useState(false);
   const [showRomaji, setShowRomaji] = useState(false);
@@ -148,8 +150,10 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
     setCorrect(isCorrect);
     if (isCorrect) {
       setScore((s) => s + 1);
+      setStreak((s) => s + 1);
       playCorrectSound();
     } else {
+      setStreak(0);
       playIncorrectSound();
     }
   }
@@ -178,6 +182,7 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
     setChecked(false);
     setCorrect(false);
     setScore(0);
+    setStreak(0);
     setFinished(false);
   }
 
@@ -205,9 +210,10 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-28">
       <div className="flex items-center gap-3">
         <Progress value={((index + (checked ? 1 : 0)) / session.length) * 100} className="h-2" />
+        <StreakBadge count={streak} label={t('session.streakCount', { count: streak })} />
         <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
           {index + 1}/{session.length}
         </span>
@@ -221,6 +227,7 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
         </Button>
       </div>
 
+      <ShakeOnWrong trigger={checked && !correct}>
       <Card>
         <CardContent className="flex flex-col items-center gap-6 py-10">
           <Button
@@ -298,15 +305,25 @@ export function KanaSentenceSession({ row, onFinish }: Props) {
           </div>
         </CardContent>
       </Card>
+      </ShakeOnWrong>
 
       {checked ? (
-        <Button className="w-full" size="lg" onClick={handleNext}>
-          {index + 1 >= session.length ? t('kana.finish') : t('kana.next')}
-        </Button>
+        <AnswerBanner
+          isCorrect={correct}
+          text={correct ? t('session.correctFeedback') : t('session.incorrectFeedback')}
+        >
+          <Button className="w-full" size="lg" variant={correct ? 'default' : 'destructive'} onClick={handleNext}>
+            {index + 1 >= session.length ? t('kana.finish') : t('kana.next')}
+          </Button>
+        </AnswerBanner>
       ) : (
-        <Button className="w-full" size="lg" onClick={handleCheck} disabled={answer.length !== targetLength}>
-          {t('session.check')}
-        </Button>
+        <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur">
+          <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 lg:max-w-2xl">
+            <Button className="flex-1" size="lg" onClick={handleCheck} disabled={answer.length !== targetLength}>
+              {t('session.check')}
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );

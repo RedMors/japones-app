@@ -13,6 +13,7 @@ import { speakJapanese } from '@/lib/tts';
 import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import type { SceneImageItem } from '@/lib/curriculum/scenes-data';
 import { useLanguage } from '@/components/language-provider';
+import { AnswerBanner, ShakeOnWrong, StreakBadge } from '@/components/curriculum/answer-feedback';
 
 const SCRIPT_LABEL = {
   hiragana: 'Hiragana',
@@ -58,6 +59,7 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
   const [picked, setPicked] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [ready, setReady] = useState(false);
   const [showRomaji, setShowRomaji] = useState(false);
 
@@ -83,8 +85,10 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
     setRevealed(true);
     if (isCorrect) {
       setScore((s) => s + 1);
+      setStreak((s) => s + 1);
       playCorrectSound();
     } else {
+      setStreak(0);
       playIncorrectSound();
     }
   }
@@ -104,6 +108,7 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
     <div className="space-y-6 pb-28">
       <div className="flex items-center gap-3">
         <Progress value={(index / questions.length) * 100} className="h-2" />
+        <StreakBadge count={streak} label={t('session.streakCount', { count: streak })} />
         <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
           {index + 1}/{questions.length}
         </span>
@@ -143,6 +148,7 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
         )}
       </div>
 
+      <ShakeOnWrong trigger={revealed && picked !== question.item.id}>
       <div className="grid grid-cols-3 gap-3">
         {question.choices.map((choice) => {
           const isPicked = picked === choice.id;
@@ -187,6 +193,7 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
           );
         })}
       </div>
+      </ShakeOnWrong>
 
       {revealed && (
         <Card>
@@ -196,19 +203,29 @@ export function ImageQuiz({ items, imageUrls, onDone }: Props) {
         </Card>
       )}
 
-      <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 lg:max-w-2xl">
-          {revealed ? (
-            <Button className="flex-1" size="lg" onClick={handleNext}>
-              {t('session.continue')}
-            </Button>
-          ) : (
+      {revealed ? (
+        <AnswerBanner
+          isCorrect={picked === question.item.id}
+          text={picked === question.item.id ? t('session.correctFeedback') : t('session.incorrectFeedback')}
+        >
+          <Button
+            className="w-full"
+            size="lg"
+            variant={picked === question.item.id ? 'default' : 'destructive'}
+            onClick={handleNext}
+          >
+            {t('session.continue')}
+          </Button>
+        </AnswerBanner>
+      ) : (
+        <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur">
+          <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 lg:max-w-2xl">
             <Button className="flex-1" size="lg" onClick={handleCheck} disabled={!picked}>
               {t('session.check')}
             </Button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

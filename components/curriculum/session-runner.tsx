@@ -13,6 +13,7 @@ import { playCorrectSound, playIncorrectSound } from '@/lib/sound-effects';
 import { stripFurigana } from '@/lib/curriculum/furigana';
 import { useLeaveConfirm } from '@/lib/use-leave-confirm';
 import { FuriganaText } from '@/components/curriculum/furigana-text';
+import { AnswerBanner, ShakeOnWrong, StreakBadge } from '@/components/curriculum/answer-feedback';
 import { buildFillBlank, type SessionQuestion } from '@/lib/curriculum/exercises';
 import type { CurriculumItem } from '@/lib/curriculum/units';
 import type { beginSession, submitAnswer, endSession, explainGrammar } from '@/app/[unitId]/actions';
@@ -90,11 +91,13 @@ export function SessionRunner({
   const [fillChecked, setFillChecked] = useState(false);
   const [fillCorrect, setFillCorrect] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [finished, setFinished] = useState(false);
   const [unitCompleted, setUnitCompleted] = useState(false);
 
   const question = queue[index];
   const revealed = question.kind === 'choice' ? selected !== null : fillChecked;
+  const lastCorrect = question.kind === 'choice' ? selected === question.answer : fillCorrect;
 
   const hasProgress = index > 0 || selected !== null || fillChecked;
   useLeaveConfirm(hasProgress && !finished, t('session.confirmLeave'));
@@ -117,8 +120,10 @@ export function SessionRunner({
     setSelected(choice);
     if (isCorrect) {
       setCorrectCount((c) => c + 1);
+      setStreak((s) => s + 1);
       playCorrectSound();
     } else {
+      setStreak(0);
       playIncorrectSound();
       requeueMissed(question.itemId);
     }
@@ -150,8 +155,10 @@ export function SessionRunner({
     setFillCorrect(isCorrect);
     if (isCorrect) {
       setCorrectCount((c) => c + 1);
+      setStreak((s) => s + 1);
       playCorrectSound();
     } else {
+      setStreak(0);
       playIncorrectSound();
       requeueMissed(question.itemId);
     }
@@ -239,6 +246,7 @@ export function SessionRunner({
     <div className="space-y-6 pb-28">
       <div className="flex items-center gap-3">
         <Progress value={((index + (revealed ? 1 : 0)) / queue.length) * 100} className="h-2" />
+        <StreakBadge count={streak} label={t('session.streakCount', { count: streak })} />
         <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
           {index + 1}/{queue.length}
         </span>
@@ -283,6 +291,7 @@ export function SessionRunner({
       </Card>
 
       {question.kind === 'choice' ? (
+        <ShakeOnWrong trigger={revealed && !lastCorrect}>
         <div className="flex flex-col gap-2.5 lg:gap-3">
           {question.choices.map((choice, i) => {
             const isPicked = picked === choice;
@@ -330,7 +339,9 @@ export function SessionRunner({
             );
           })}
         </div>
+        </ShakeOnWrong>
       ) : (
+        <ShakeOnWrong trigger={revealed && !lastCorrect}>
         <div className="space-y-4">
           <div className="flex min-h-14 w-full flex-wrap items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border p-4">
             {fillAnswer.length === 0 && (
@@ -376,6 +387,7 @@ export function SessionRunner({
             ))}
           </div>
         </div>
+        </ShakeOnWrong>
       )}
 
       {revealed && explainGrammar && explanation !== null && (
@@ -384,38 +396,52 @@ export function SessionRunner({
         </div>
       )}
 
-      <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 lg:max-w-2xl">
-          {revealed && explainGrammar && explanation === null && (
-            <Button variant="secondary" onClick={handleExplain} disabled={isExplaining}>
-              {isExplaining ? (
-                <Loader2 className="mr-2 size-4 animate-spin" />
-              ) : (
-                <Sparkles className="mr-2 size-4" />
-              )}
-              {isExplaining ? t('session.thinking') : t('session.why')}
-            </Button>
-          )}
-          {revealed ? (
-            <Button className="flex-1" size="lg" onClick={handleContinue}>
-              {t('session.continue')}
-            </Button>
-          ) : question.kind === 'choice' ? (
-            <Button className="flex-1" size="lg" onClick={handleConfirm} disabled={!picked}>
-              {t('session.check')}
-            </Button>
-          ) : (
+      {revealed ? (
+        <AnswerBanner
+          isCorrect={lastCorrect}
+          text={lastCorrect ? t('session.correctFeedback') : t('session.incorrectFeedback')}
+        >
+          <div className="flex items-center gap-3">
+            {explainGrammar && explanation === null && (
+              <Button variant="secondary" onClick={handleExplain} disabled={isExplaining}>
+                {isExplaining ? (
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                ) : (
+                  <Sparkles className="mr-2 size-4" />
+                )}
+                {isExplaining ? t('session.thinking') : t('session.why')}
+              </Button>
+            )}
             <Button
               className="flex-1"
               size="lg"
-              onClick={handleFillCheck}
-              disabled={fillAnswer.length === 0}
+              variant={lastCorrect ? 'default' : 'destructive'}
+              onClick={handleContinue}
             >
-              {t('session.check')}
+              {t('session.continue')}
             </Button>
-          )}
+          </div>
+        </AnswerBanner>
+      ) : (
+        <div className="fixed inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur">
+          <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 lg:max-w-2xl">
+            {question.kind === 'choice' ? (
+              <Button className="flex-1" size="lg" onClick={handleConfirm} disabled={!picked}>
+                {t('session.check')}
+              </Button>
+            ) : (
+              <Button
+                className="flex-1"
+                size="lg"
+                onClick={handleFillCheck}
+                disabled={fillAnswer.length === 0}
+              >
+                {t('session.check')}
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
